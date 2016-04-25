@@ -1,0 +1,15 @@
+{
+  "name": "goni-worker",
+  "version": "0.1.0",
+  "description": "Data를 처리할 Worker입니다.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/layer123/goni-api.git"
+  },
+  "author": "Sunghoon Kang",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/layer123/goni-api/issues"
+  },
+  "homepage": "https://github.com/layer123/goni-api#readme"
+}
