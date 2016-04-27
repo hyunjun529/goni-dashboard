@@ -10,18 +10,6 @@ import passport from 'passport';
 
 // React
 import React from 'react';
-import {renderToString} from 'react-dom/server';
-
-// React Router
-import {createMemoryHistory, match, RouterContext} from 'react-router';
-import {syncHistoryWithStore} from 'react-router-redux';
-
-// Redux
-import {Provider} from 'react-redux';
-import routes from 'routes';
-import createStore from 'util/redux/createStore';
-
-import history from 'history';
 
 const app = express();
 const server = app.listen(8080);
