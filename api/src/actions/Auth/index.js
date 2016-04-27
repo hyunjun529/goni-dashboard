@@ -28,7 +28,6 @@ const Actions = {
         const res = await httpGet(LOGIN_URL, token);
         localStorage.setItem('token', res.token);
         setCurrentUser(dispatch, res);
-        dispatch(push('/'));
       } catch (error) {
         dispatch(push('/'));
       }
