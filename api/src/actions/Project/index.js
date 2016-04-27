@@ -1,8 +1,10 @@
 import {
-  PROJECT_FETCH_ERROR,
   PROJECT_FETCHED,
   PROJECT_FETCHING,
 } from 'constants/project';
+import {
+  push,
+} from 'react-router-redux';
 import {
   httpGet,
 } from 'util/fetch';
@@ -27,9 +29,7 @@ const Actions = {
           project: res,
         });
       } catch (error) {
-        dispatch({
-          type: PROJECT_FETCH_ERROR,
-        });
+        dispatch(push('/'));
       }
     };
   },
