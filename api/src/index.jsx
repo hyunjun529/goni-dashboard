@@ -1,4 +1,6 @@
 /* eslint object-curly-spacing:0, curly:0, comma-dangle:0, no-unused-vars:0 */
+import 'babel-polyfill';
+
 // API
 import api from 'api';
 
@@ -11,8 +13,11 @@ import passport from 'passport';
 // React
 import React from 'react';
 
+const args = process.argv.slice(2);
+
 const app = express();
 const server = app.listen(8080);
+const template = (args[0] === '--DEV') ? 'index' : 'index_min';
 
 app.set('view engine', 'ejs');
 
@@ -31,7 +36,7 @@ app.use(passport.session());
 app.use('/api', api);
 
 app.get('*', async(req, res) => {
-  res.render('client');
+  res.render(template);
 });
 
 export default server;
