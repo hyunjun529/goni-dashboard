@@ -5,6 +5,7 @@ import { IndexRoute, Redirect, Route } from 'react-router';
 // React Components
 import App from 'components/App';
 import AuthContainer from 'components/AuthContainer';
+import GoniPlus from 'components/GoniPlus';
 import Login from 'components/Login';
 import Projects from 'components/Projects';
 import Register from 'components/Register';
@@ -24,7 +25,7 @@ function routes(store) {
     }
     callback();
   };
-  const _isGoniExists = (nextState, replace, callback) => {
+  const _isProjectExists = (nextState, replace, callback) => {
     const { dispatch } = store;
     const { project } = store.getState();
     const { currentProject } = project;
@@ -43,6 +44,7 @@ function routes(store) {
       <Route path="/register" component={Register} />
       <Route path="/" component={AuthContainer} onEnter={_isAuthenticated}>
         <IndexRoute component={Projects} />
+        <Route path="/goniplus/:id" component={GoniPlus} onEnter={_isProjectExists} />
       </Route>
       <Redirect from="*" to="/" />
     </Route>
