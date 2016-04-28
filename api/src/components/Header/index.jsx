@@ -1,11 +1,25 @@
 // React
 import React from 'react';
 import { connect } from 'react-redux';
+import {
+  push,
+} from 'react-router-redux';
 
 // Actions
 import Actions from 'actions/Auth';
 
 class Header extends React.Component {
+  constructor() {
+    super();
+    this._home = this._home.bind(this);
+  }
+
+  _home(e) {
+    e.preventDefault();
+    const { dispatch } = this.props;
+    dispatch(dispatch(push('/')));
+  }
+
   _logout() {
     const { dispatch } = this.props;
     dispatch(Actions.logout());
@@ -18,7 +32,7 @@ class Header extends React.Component {
           <div>
             <ul className="header-left">
               <li>
-                <a href="/">GONI</a>
+                <a href="#" onClick={this._home}>GONI</a>
               </li>
             </ul>
             <ul className="header-right">
@@ -36,7 +50,7 @@ class Header extends React.Component {
           <div>
             <ul className="header-left">
               <li>
-                <a href="/">GONI</a>
+                <a href="#" onClick={this._home}>GONI</a>
               </li>
             </ul>
             <ul className="header-right">
@@ -54,7 +68,7 @@ class Header extends React.Component {
           <div>
             <ul className="header-left">
               <li>
-                <a href="/">GONI</a>
+                <a href="#" onClick={this._home}>GONI</a>
               </li>
             </ul>
             <ul className="header-right">
