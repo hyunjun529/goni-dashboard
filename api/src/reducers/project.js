@@ -1,4 +1,5 @@
 import {
+  PROJECT_CLEAR,
   PROJECT_ENTER,
   PROJECT_FETCH_ERROR,
   PROJECT_FETCHED,
@@ -12,6 +13,14 @@ const initialState = {
 
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
+    case PROJECT_CLEAR:
+      return initialState;
+
+    case PROJECT_ENTER:
+      return {
+        ...state,
+        currentProject: action.project,
+      };
 
     case PROJECT_FETCH_ERROR:
       return {
@@ -30,13 +39,8 @@ export default function reducer(state = initialState, action = {}) {
     case PROJECT_FETCHING:
       return {
         ...state,
+        currentProject: null,
         fetching: true,
-      };
-
-    case PROJECT_ENTER:
-      return {
-        ...state,
-        currentProject: action.project,
       };
 
     default:

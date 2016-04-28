@@ -1,4 +1,5 @@
 import {
+  PROJECT_CLEAR,
   PROJECT_ENTER,
 } from 'constants/project';
 import {
@@ -23,6 +24,9 @@ const Actions = {
   getProjects: () => {
     return async dispatch => {
       try {
+        dispatch({
+          type: PROJECT_CLEAR,
+        });
         dispatch({
           type: PROJECTS_FETCHING,
         });

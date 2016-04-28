@@ -1,4 +1,5 @@
 // Projects
+export const PROJECT_CLEAR = 'PROJECT_CLEAR';
 export const PROJECT_ENTER = 'PROJECT_ENTER';
 export const PROJECT_FETCHED = 'PROJECT_FETCHED';
 export const PROJECT_FETCHING = 'PROJECT_FETCHING';
