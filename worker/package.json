@@ -11,5 +11,15 @@
   "bugs": {
     "url": "https://github.com/layer123/goni-api/issues"
   },
-  "homepage": "https://github.com/layer123/goni-api#readme"
+  "homepage": "https://github.com/layer123/goni-api#readme",
+  "dependencies": {
+    "amqplib": "^0.4.1",
+    "influx": "^4.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^2.8.0",
+    "eslint-config-airbnb": "^8.0.0",
+    "eslint-config-airbnb-base": "^1.0.3",
+    "eslint-plugin-import": "^1.6.0"
+  }
 }
