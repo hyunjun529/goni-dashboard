@@ -16,7 +16,11 @@ router
     async(req, res) => {
       try {
         const project = await getProject(req.params.id, req.user.id);
-        res.send(project);
+        if (project) {
+          res.send(project);
+        } else {
+          res.sendStatus(404);
+        }
       } catch (error) {
         res.sendStatus(500);
       }
