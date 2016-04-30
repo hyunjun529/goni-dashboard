@@ -2,15 +2,17 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import D3 from 'react-d3-components';
+import rd3 from 'rd3';
 
 const {
-  BarChart,
-  LineChart,
   AreaChart,
-  ScatterPlot,
+  BarChart,
+  CandleStickChart,
+  LineChart,
   PieChart,
-} = D3;
+  ScatterChart,
+  Treemap,
+} = rd3;
 
 const createClass = (chartType) => {
   class Chart extends React.Component {
@@ -34,23 +36,29 @@ const createClass = (chartType) => {
     getChartClass() {
       let Component;
       switch (chartType) {
+        case 'AreaChart':
+          Component = AreaChart;
+          break;
         case 'BarChart':
           Component = BarChart;
+          break;
+        case 'CandleStickChart':
+          Component = CandleStickChart;
           break;
         case 'LineChart':
           Component = LineChart;
           break;
-        case 'AreaChart':
-          Component = AreaChart;
-          break;
-        case 'ScatterPlot':
-          Component = ScatterPlot;
-          break;
         case 'PieChart':
           Component = PieChart;
           break;
+        case 'ScatterChart':
+          Component = ScatterChart;
+          break;
+        case 'Treemap':
+          Component = Treemap;
+          break;
         default:
-          console.error('Invalid Chart Type name.');
+          console.error('Invalid Chart Type name.'); // eslint-disable-line no-console
           break;
       }
       return Component;
@@ -66,13 +74,12 @@ const createClass = (chartType) => {
     }
 
     componentWillUnmount() {
-      window.removeEventListener('resize', ::this.handleResize);
+      window.removeEventListener('resize', ::this.fitToParentSize);
     }
 
     render() {
       let Component = this.getChartClass();
       let { width, height, margin, ...others } = this.props;
-
       width = this.state.size.w || 100;
       height = this.state.size.h || 100;
 
@@ -88,39 +95,40 @@ const createClass = (chartType) => {
   }
   Chart.defaultProps = {
     margin: {
-      top: 50,
-      bottom: 50,
-      left: 50,
-      right: 50,
     },
   };
   Chart.propTypes = {
     width: React.PropTypes.number,
     height: React.PropTypes.number,
     margin: React.PropTypes.object,
-    others: React.PropTypes.any,
   };
   return Chart;
 };
 
-const ResponsiveBarChart = createClass('BarChart');
-const ResponsiveLineChart = createClass('LineChart');
 const ResponsiveAreaChart = createClass('AreaChart');
-const ResponsiveScatterPlot = createClass('ScatterPlot');
+const ResponsiveBarChart = createClass('BarChart');
+const ResponsiveCandleStickChart = createClass('CandleStickChart');
+const ResponsiveLineChart = createClass('LineChart');
 const ResponsivePieChart = createClass('PieChart');
+const ResponsiveScatterChart = createClass('ScatterChart');
+const ResponsiveTreemap = createClass('Treemap');
 
 export {
-  ResponsiveBarChart,
-  ResponsiveLineChart,
   ResponsiveAreaChart,
-  ResponsiveScatterPlot,
+  ResponsiveBarChart,
+  ResponsiveCandleStickChart,
+  ResponsiveLineChart,
   ResponsivePieChart,
+  ResponsiveScatterChart,
+  ResponsiveTreemap,
 };
 
 export default {
-  ResponsiveBarChart,
-  ResponsiveLineChart,
   ResponsiveAreaChart,
-  ResponsiveScatterPlot,
+  ResponsiveBarChart,
+  ResponsiveCandleStickChart,
+  ResponsiveLineChart,
   ResponsivePieChart,
+  ResponsiveScatterChart,
+  ResponsiveTreemap,
 };
