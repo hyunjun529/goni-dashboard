@@ -9,15 +9,9 @@ import {
 import Actions from 'actions/Auth';
 
 class Header extends React.Component {
-  constructor() {
-    super();
-    this._home = this._home.bind(this);
-  }
-
-  _home(e) {
-    e.preventDefault();
+  _home() {
     const { dispatch } = this.props;
-    dispatch(dispatch(push('/')));
+    dispatch(push('/'));
   }
 
   _logout() {
@@ -32,7 +26,7 @@ class Header extends React.Component {
           <div>
             <ul className="header-left">
               <li>
-                <a href="#" onClick={this._home}>GONI</a>
+                <a href="#" onClick={() => this._home()}>GONI</a>
               </li>
             </ul>
             <ul className="header-right">
@@ -50,7 +44,7 @@ class Header extends React.Component {
           <div>
             <ul className="header-left">
               <li>
-                <a href="#" onClick={this._home}>GONI</a>
+                <a href="#" onClick={() => this._home()}>GONI</a>
               </li>
             </ul>
             <ul className="header-right">
@@ -68,7 +62,7 @@ class Header extends React.Component {
           <div>
             <ul className="header-left">
               <li>
-                <a href="#" onClick={this._home}>GONI</a>
+                <a href="#" onClick={() => this._home()}>GONI</a>
               </li>
             </ul>
             <ul className="header-right">
