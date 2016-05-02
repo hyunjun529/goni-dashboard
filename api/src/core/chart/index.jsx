@@ -1,7 +1,6 @@
 // https://github.com/codesuki/react-d3-components/issues/9
 
 import React from 'react';
-import ReactDOM from 'react-dom';
 import rd3 from 'rd3';
 
 const {
@@ -16,15 +15,14 @@ const {
 
 const createClass = (chartType) => {
   class Chart extends React.Component {
-    constructor() {
-      super();
+    constructor(props) {
+      super(props);
       this.state = { size: { w: 0, h: 0 } };
     }
 
     fitToParentSize() {
-      const elem = ReactDOM.findDOMNode(this);
-      const w = elem.parentNode.offsetWidth;
-      const h = elem.parentNode.offsetHeight;
+      const w = this.refs.wrapper.offsetWidth;
+      const h = this.refs.wrapper.offsetHeight;
       const currentSize = this.state.size;
       if (w !== currentSize.w || h !== currentSize.h) {
         this.setState({
@@ -69,10 +67,6 @@ const createClass = (chartType) => {
       this.fitToParentSize();
     }
 
-    componentWillReceiveProps() {
-      this.fitToParentSize();
-    }
-
     componentWillUnmount() {
       window.removeEventListener('resize', ::this.fitToParentSize);
     }
@@ -82,14 +76,15 @@ const createClass = (chartType) => {
       let { width, height, margin, ...others } = this.props;
       width = this.state.size.w || 100;
       height = this.state.size.h || 100;
-
       return (
-        <Component
-          width = {width}
-          height = {height}
-          margin = {margin}
-          {...others}
-        />
+        <div className="chart-wrapper" ref="wrapper">
+          <Component
+            width = {width}
+            height = {height}
+            margin = {margin}
+            {...others}
+          />
+        </div>
       );
     }
   }
