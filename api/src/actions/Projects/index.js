@@ -1,6 +1,8 @@
 import {
   PROJECT_CLEAR,
   PROJECT_ENTER,
+  PROJECT_ENTER_GONI,
+  PROJECT_ENTER_GONIPLUS,
 } from 'constants/project';
 import {
   PROJECTS_FETCH_ERROR,
@@ -52,6 +54,9 @@ const Actions = {
           dispatch({
             type: PROJECT_ENTER,
             project,
+          });
+          dispatch({
+            type: project.is_plus ? PROJECT_ENTER_GONIPLUS : PROJECT_ENTER_GONI,
           });
           dispatch(push(getProjectPageUrl(project)));
         }
