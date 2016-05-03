@@ -1,5 +1,6 @@
 import {
   PROJECT_CHANGE_DASHBOARD,
+  PROJECT_CHANGE_TIME,
   PROJECT_CLEAR,
   PROJECT_ENTER,
   PROJECT_ENTER_GONI,
@@ -25,6 +26,12 @@ export default function reducer(state = initialState, action = {}) {
       return {
         ...state,
         currentDashboard: action.selected,
+      };
+
+    case PROJECT_CHANGE_TIME:
+      return {
+        ...state,
+        currentDuration: action.time,
       };
 
     case PROJECT_ENTER:

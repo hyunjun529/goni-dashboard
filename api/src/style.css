@@ -275,7 +275,7 @@ h3 {
   margin: 0px 0px 10px 0px;
 }
 .tag-tab {
-  border: 1px solid #2c5ae9;
+  border: 1px solid #5f6466;
   display: inline-block;
   padding: 2px 5px;
   margin: 0px;
@@ -283,7 +283,7 @@ h3 {
   cursor: pointer;
 }
 .tag-tab-more {
-  border: 1px solid #2c5ae9;
+  border: 1px solid #5f6466;
   display: inline-block;
   padding: 2px 5px;
   margin: 0px 0px 0px 10px;
@@ -298,18 +298,24 @@ h3 {
   text-decoration: none !important;
 }
 .tag-tab a {
-  color: #2c5ae9;
+  color: #5f6466;
   font-size: 12px;
   font-family: 'Spoqa Han Sans', 'Sans-serif';
   font-weight: normal;
   text-decoration: none !important;
 }
 .tag-tab-more a {
-  color: #2c5ae9;
+  color: #5f6466;
   font-size: 12px;
   font-family: 'Spoqa Han Sans', 'Sans-serif';
   font-weight: normal;
   text-decoration: none !important;
+}
+.tag-selected {
+  border: 1px solid #2c5ae9;
+}
+.tag-selected a {
+  color: #2c5ae9 !important;
 }
 .tab-header {
   border-bottom: 1px solid #eaeeef;

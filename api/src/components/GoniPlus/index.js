@@ -8,6 +8,10 @@ import Sidebar from 'components/Sidebar';
 import { Expvar, Runtime } from 'components/Metric';
 
 import {
+  METRIC_CLEAR,
+} from 'constants/metric';
+import {
+  PROJECT_CHANGE_TIME,
   PROJECT_ENTER_GONIPLUS,
 } from 'constants/project';
 
@@ -42,6 +46,28 @@ class GoniPlus extends React.Component {
     });
   }
 
+  _timeBtn(t, more) {
+    const { currentDuration } = this.props;
+    const prefix = more ? 'tag-tab-more' : 'tag-tab';
+    if (t === currentDuration) {
+      return `${prefix} tag-selected`;
+    }
+    return prefix;
+  }
+
+  _changeTime(t) {
+    const { currentDuration, dispatch } = this.props;
+    if (t !== currentDuration) {
+      dispatch({
+        type: PROJECT_CHANGE_TIME,
+        time: t,
+      });
+      dispatch({
+        type: METRIC_CLEAR,
+      });
+    }
+  }
+
   _renderGraphs() {
     const { currentDashboard } = this.props;
     switch (currentDashboard) {
@@ -68,16 +94,16 @@ class GoniPlus extends React.Component {
               }
             </h1>
             <div className="tag-tab-wrap">
-              <div className="tag-tab">
+              <div className={this._timeBtn('30m', false)} onClick={() => this._changeTime('30m')}>
                 <a>30 MINUTES</a>
               </div>
-              <div className="tag-tab-more">
+              <div className={this._timeBtn('1h', true)} onClick={() => this._changeTime('1h')}>
                 <a>1 HOUR</a>
               </div>
-              <div className="tag-tab-more">
+              <div className={this._timeBtn('3h', true)} onClick={() => this._changeTime('3h')}>
                 <a>3 HOURS</a>
               </div>
-              <div className="tag-tab-more">
+              <div className={this._timeBtn('6h', true)} onClick={() => this._changeTime('6h')}>
                 <a>6 HOURS</a>
               </div>
             </div>
@@ -104,6 +130,7 @@ class GoniPlus extends React.Component {
 
 GoniPlus.propTypes = {
   currentDashboard: React.PropTypes.string,
+  currentDuration: React.PropTypes.string,
   currentProject: React.PropTypes.object,
   dispatch: React.PropTypes.func.isRequired,
   fetching: React.PropTypes.bool,
@@ -111,6 +138,7 @@ GoniPlus.propTypes = {
 
 const mapStateToProps = (state) => ({
   currentDashboard: state.project.currentDashboard,
+  currentDuration: state.project.currentDuration,
   currentProject: state.project.currentProject,
   fetching: state.project.fetching,
 });
