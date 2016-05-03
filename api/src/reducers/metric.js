@@ -6,6 +6,7 @@ import {
 } from 'constants/metric';
 
 const initialState = {
+  errored: false,
   fetchedData: null,
   fetching: false,
 };
@@ -15,12 +16,14 @@ export default function reducer(state = initialState, action = {}) {
     case METRIC_CLEAR:
       return {
         ...state,
+        errored: false,
         fetchedData: null,
       };
 
     case METRIC_FETCH_ERROR:
       return {
         ...state,
+        errored: true,
         fetchedData: null,
         fetching: false,
       };
@@ -35,6 +38,7 @@ export default function reducer(state = initialState, action = {}) {
     case METRIC_FETCHING:
       return {
         ...state,
+        errored: false,
         fetchedData: null,
         fetching: true,
       };

@@ -16,8 +16,12 @@ class Runtime extends React.Component {
   }
 
   _renderChart(title) {
-    const { fetchedData, fetching } = this.props;
+    const { currentDuration, currentProject } = this.props;
+    const { dispatch, errored, fetchedData, fetching } = this.props;
     if (!fetchedData) {
+      if (!fetching && !errored) {
+        dispatch(Actions.getGoniPlus(currentProject.apikey, 'runtime', currentDuration));
+      }
       return (
         <Loading title={title} fetching={fetching} />
       );
@@ -62,6 +66,7 @@ Runtime.propTypes = {
   currentDuration: React.PropTypes.string,
   currentProject: React.PropTypes.object,
   dispatch: React.PropTypes.func.isRequired,
+  errored: React.PropTypes.bool,
   fetchedData: React.PropTypes.object,
   fetching: React.PropTypes.bool,
 };
@@ -69,6 +74,7 @@ Runtime.propTypes = {
 const mapStateToProps = (state) => ({
   currentDuration: state.project.currentDuration,
   currentProject: state.project.currentProject,
+  errored: state.metric.errored,
   fetchedData: state.metric.fetchedData,
   fetching: state.metric.fetching,
 });
