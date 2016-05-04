@@ -6,15 +6,15 @@ import {
  * getExpvar(apikey, duration) returns expvar metrics
  *
  */
-export function getExpvar(apikey, duration) {
+export function getExpvar(apikey, instance, duration) {
   return new Promise((resolve, reject) => {
     goniPlus.query(
-      `SELECT time, alloc FROM expvar WHERE apikey = '${apikey}' and time > now() - ${duration};
-       SELECT time, heapalloc FROM expvar WHERE apikey = '${apikey}' and time > now() - ${duration};
-       SELECT time, heapinuse FROM expvar WHERE apikey = '${apikey}' and time > now() - ${duration};
-       SELECT time, numgc FROM expvar WHERE apikey = '${apikey}' and time > now() - ${duration};
-       SELECT time, pausetotalns FROM expvar WHERE apikey = '${apikey}' and time > now() - ${duration};
-       SELECT time, sys FROM expvar WHERE apikey = '${apikey}' and time > now() - ${duration};`,
+      `SELECT time, alloc FROM expvar WHERE apikey = '${apikey}' and instance = '${instance}' and time > now() - ${duration};
+       SELECT time, heapalloc FROM expvar WHERE apikey = '${apikey}' and instance = '${instance}' and time > now() - ${duration};
+       SELECT time, heapinuse FROM expvar WHERE apikey = '${apikey}' and instance = '${instance}' and time > now() - ${duration};
+       SELECT time, numgc FROM expvar WHERE apikey = '${apikey}' and instance = '${instance}' and time > now() - ${duration};
+       SELECT time, pausetotalns FROM expvar WHERE apikey = '${apikey}' and instance = '${instance}' and time > now() - ${duration};
+       SELECT time, sys FROM expvar WHERE apikey = '${apikey}' and instance = '${instance}' and time > now() - ${duration};`,
       (err, results) => {
         if (err) {
           reject(err);
@@ -33,14 +33,31 @@ export function getExpvar(apikey, duration) {
 }
 
 /**
+ * getInstances(apikey, metric) returns instances
+ *
+ */
+export function getInstances(apikey, metric) {
+  return new Promise((resolve, reject) => {
+    goniPlus.query(
+      `SHOW TAG VALUES FROM ${metric} WITH KEY = instance WHERE apikey='${apikey}';`,
+      (err, results) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(results[0]);
+      });
+  });
+}
+
+/**
  * getRuntime(apikey, duration) returns runtime metrics
  *
  */
-export function getRuntime(apikey, duration) {
+export function getRuntime(apikey, instance, duration) {
   return new Promise((resolve, reject) => {
     goniPlus.query(
-      `SELECT time, cgo FROM runtime WHERE apikey = '${apikey}' and time > now() - ${duration};
-       SELECT time, goroutine FROM runtime WHERE apikey = '${apikey}' and time > now() - ${duration};`,
+      `SELECT time, cgo FROM runtime WHERE apikey = '${apikey}' and instance = '${instance}' and time > now() - ${duration};
+       SELECT time, goroutine FROM runtime WHERE apikey = '${apikey}' and instance = '${instance}' and time > now() - ${duration};`,
       (err, results) => {
         if (err) {
           reject(err);
