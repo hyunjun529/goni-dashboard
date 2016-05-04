@@ -2,7 +2,7 @@ import {
   PROJECT_CHANGE_DASHBOARD,
 } from 'constants/project';
 import {
-  METRIC_CLEAR,
+  METRIC_CLEAR_ALL,
 } from 'constants/metric';
 
 import React from 'react';
@@ -13,7 +13,7 @@ const SidebarItem = (props) => {
     const { dispatch } = props;
     if (key !== props.currentDashboard) {
       dispatch({
-        type: METRIC_CLEAR,
+        type: METRIC_CLEAR_ALL,
       });
       dispatch({
         type: PROJECT_CHANGE_DASHBOARD,
