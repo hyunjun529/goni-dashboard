@@ -76,7 +76,7 @@ class GoniPlus extends React.Component {
       case 'Runtime':
         return <Runtime />;
       default:
-        return <Runtime />;
+        return false;
     }
   }
 
