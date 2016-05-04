@@ -22,6 +22,20 @@ Empty.propTypes = {
   title: React.PropTypes.string.isRequired,
 };
 
+export const Error = (props) => {
+  return (
+    <div>
+      <div className="chart-wrapper-header">{props.title}</div>
+      <div className="chart-wrapper-placeholder">{props.msg}</div>
+    </div>
+  );
+};
+
+Error.propTypes = {
+  title: React.PropTypes.string.isRequired,
+  msg: React.PropTypes.string.isRequired,
+};
+
 export const Loading = (props) => {
   return (
     <div>
