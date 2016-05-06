@@ -2,7 +2,7 @@
 import 'babel-polyfill';
 
 // API
-import api from 'api';
+import api from 'backend/api';
 
 // Express
 import bodyParser from 'body-parser';

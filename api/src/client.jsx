@@ -3,8 +3,8 @@ import { render } from 'react-dom';
 import { Router, browserHistory } from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux';
 import { Provider } from 'react-redux';
-import routes from 'routes';
-import configureStore from 'util/redux/createStore';
+import routes from 'frontend/routes';
+import configureStore from 'frontend/util/redux/createStore';
 
 const appContainer = document.getElementById('app');
 const store = configureStore(browserHistory);

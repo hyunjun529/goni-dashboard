@@ -8,3 +8,26 @@ export const PROJECT_ENTER_GONIPLUS = 'PROJECT_ENTER_GONIPLUS';
 export const PROJECT_FETCHED = 'PROJECT_FETCHED';
 export const PROJECT_FETCHING = 'PROJECT_FETCHING';
 export const PROJECT_FETCH_ERROR = 'PROJECT_FETCH_ERROR';
+
+export const GONIPLUS_SIDEBAR = [
+  {
+    header: 'metrics',
+    item: [
+      'Expvar',
+      'Runtime',
+    ],
+  },
+  {
+    header: 'API',
+    item: [
+      'Response',
+      'Statistics',
+    ],
+  },
+  {
+    header: 'SETTINGS',
+    item: [
+      'Guide',
+    ],
+  },
+];
