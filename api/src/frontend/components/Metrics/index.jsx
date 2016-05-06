@@ -3,7 +3,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 // Actions
-import { Metric as MetricAction } from 'frontend/actions';
+import { Metrics as MetricAction } from 'frontend/actions';
 
 // Components
 import { Empty, Error, Loading, tooltipFormat } from './Common';
@@ -139,13 +139,13 @@ Metrics.propTypes = {
 
 const mapStateToProps = (state) => ({
   currentDuration: state.project.currentDuration,
-  currentInstance: state.metric.currentInstance,
+  currentInstance: state.metrics.currentInstance,
   currentProject: state.project.currentProject,
-  errored: state.metric.errored,
-  fetchedData: state.metric.fetchedData,
-  fetchedInstances: state.metric.fetchedInstances,
-  fetching: state.metric.fetching,
-  instanceFetching: state.metric.instanceFetching,
+  errored: state.metrics.errored,
+  fetchedData: state.metrics.fetchedData,
+  fetchedInstances: state.metrics.fetchedInstances,
+  fetching: state.metrics.fetching,
+  instanceFetching: state.metrics.instanceFetching,
 });
 
 export default connect(mapStateToProps)(Metrics);
