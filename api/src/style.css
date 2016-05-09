@@ -352,3 +352,23 @@ h3 {
   align-items: center;
   justify-content: center;
 }
+.overview-card {
+  border: 1px solid #eaeeef;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+.overview-card-header {
+  color: #a9afb3;
+  font-size: 14px;
+  font-family: 'Spoqa Han Sans', 'Sans-serif';
+  font-weight: 100;
+  margin: 0px;
+}
+.overview-card-data {
+  padding-top: 5px;
+  color: #4d5256;
+  font-size: 36px;
+  font-family: 'Spoqa Han Sans', 'Sans-serif';
+  font-weight: 100;
+  margin: 0px;
+}
