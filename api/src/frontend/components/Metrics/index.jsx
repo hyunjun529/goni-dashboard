@@ -33,7 +33,7 @@ class Metrics extends React.Component {
       type: METRIC_CHANGE_INSTANCE,
       instance: v,
     });
-    dispatch(MetricAction.getGoniPlus(currentProject.apikey, type,
+    dispatch(MetricAction.getCommonMetric(currentProject.apikey, type,
       currentInstance, currentDuration));
   }
 
@@ -47,7 +47,7 @@ class Metrics extends React.Component {
     }
     if (!fetchedData) {
       if (!fetching && !errored) {
-        dispatch(MetricAction.getGoniPlus(currentProject.apikey, type,
+        dispatch(MetricAction.getCommonMetric(currentProject.apikey, type,
           currentInstance, currentDuration));
       }
       return (
