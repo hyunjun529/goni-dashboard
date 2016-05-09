@@ -80,7 +80,7 @@ class Response extends React.Component {
           <div className="col-xs-12 col-sm-6 col-md-3 col-lg-3">
             <div className="overview-card">
               <p className="overview-card-header">PANIC</p>
-              <p className="overview-card-data">{fetchedData[title].panic ? `${fetchedData[title].panic}ms` : 'no data'}</p>
+              <p className="overview-card-data">{fetchedData[title].panic ? `${fetchedData[title].panic}` : 'no data'}</p>
             </div>
           </div>
         </div>
