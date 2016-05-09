@@ -1,4 +1,5 @@
 /* eslint no-console: 0, func-names:0, space-before-function-paren:0 */
+var _ = require('lodash');
 var amqp = require('amqplib/callback_api');
 var influx = require('influx');
 
@@ -68,9 +69,35 @@ amqp.connect('amqp://' + queueUser + ':' + queuePass + '@' + queueHost + ':' + q
           instance: data.instance
         }]
       ];
-      var series = {
-        runtime: runtime,
-        expvar: expvar
+      var http = [];
+      _.forEach(data.app.http, function(metric, path) {
+        _.forEach(metric, function(resp, method) {
+          _.forEach(resp, function(result, code) {
+            _.forEach(result, function(v) {
+              var d = {
+                time: new Date(+v.time * 1000),
+                method: method,
+                status: code,
+                res: v.res
+              };
+              if (v.panic) {
+                d.panic = true;
+              }
+              http.push([
+                d, {
+                  apikey: data.apikey,
+                  instance: data.instance,
+                  path: path
+                }
+              ]);
+            });
+          });
+        });
+      });
+      var series = { // eslint-disable-line vars-on-top
+        expvar: expvar,
+        http: http,
+        runtime: runtime
       };
       influxClient.writeSeries(series, function(dbErr, response) { // eslint-disable-line
         if (dbErr) {

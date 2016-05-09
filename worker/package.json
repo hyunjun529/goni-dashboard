@@ -14,7 +14,8 @@
   "homepage": "https://github.com/layer123/goni-api#readme",
   "dependencies": {
     "amqplib": "^0.4.1",
-    "influx": "^4.1.0"
+    "influx": "^4.1.0",
+    "lodash": "^4.11.2"
   },
   "devDependencies": {
     "eslint": "^2.8.0",
