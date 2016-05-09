@@ -1,3 +1,4 @@
+import APIResponseMetrics from './Metrics/API/Response';
 import App from './App';
 import AuthContainer from './AuthContainer';
 import GoniPlus from './GoniPlus';
@@ -9,6 +10,7 @@ import Register from './Register';
 import Sidebar from './Sidebar';
 
 export {
+  APIResponseMetrics,
   App,
   AuthContainer,
   GoniPlus,

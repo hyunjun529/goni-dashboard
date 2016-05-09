@@ -7,6 +7,7 @@ import {
   Header,
   Sidebar,
   Metrics,
+  APIResponseMetrics,
 } from 'frontend/components';
 
 import {
@@ -55,6 +56,8 @@ class GoniPlus extends React.Component {
         return <Metrics type="expvar" />;
       case 'Runtime':
         return <Metrics type="runtime" />;
+      case 'Response':
+        return <APIResponseMetrics />;
       default:
         return false;
     }
