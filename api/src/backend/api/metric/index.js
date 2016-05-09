@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import passport from 'backend/core/passport';
 import {
+  getAPIMetrics,
   getExpvar,
   getInstances,
   getPaths,
@@ -17,6 +18,7 @@ const validAPIMetric = ['response'];
 const validTime = ['30m', '1h', '3h', '6h'];
 
 // GoniPlus
+// Common metric
 // Instances
 router
   .route('/goniplus/:key/:metric/instances')
@@ -79,7 +81,8 @@ router
       }
     });
 
-// API Paths
+// API Metric
+// Path
 router
   .route('/goniplus/:key/:metric/paths')
   .get(
@@ -97,6 +100,23 @@ router
           };
         });
         return res.send(processed);
+      } catch (error) {
+        return res.sendStatus(500);
+      }
+    }
+  );
+
+router
+  .route('/goniplus/:key/:metric/:time')
+  .post(
+    passport.authenticate('bearer'),
+    async(req, res) => {
+      try {
+        if (_.indexOf(validAPIMetric, req.params.metric) === -1) {
+          return res.sendStatus(400);
+        }
+        const results = await getAPIMetrics(req.params.key, req.body.path, req.params.time);
+        return res.send(results);
       } catch (error) {
         return res.sendStatus(500);
       }
