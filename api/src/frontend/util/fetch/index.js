@@ -18,11 +18,14 @@ export function httpGet(url, token) {
   });
 }
 
-export function httpPost(url, data) {
+export function httpPost(url, token, data) {
   return new Promise((resolve, reject) => {
     reqwest({
       url,
       method: 'post',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
       data,
       error: (err) => {
         reject(err);
