@@ -3,6 +3,7 @@ import passport from 'backend/core/passport';
 import {
   getExpvar,
   getInstances,
+  getPaths,
   getRuntime,
 } from './core';
 import {
@@ -12,6 +13,7 @@ import {
 const router = Router();
 
 const validMetric = ['expvar', 'runtime'];
+const validAPIMetric = ['response'];
 const validTime = ['30m', '1h', '3h', '6h'];
 
 // GoniPlus
@@ -58,6 +60,7 @@ router
       }
     });
 
+// Expvar
 router
   .route('/goniplus/:key/expvar/:instance/:time')
   .get(
@@ -75,5 +78,29 @@ router
         return res.sendStatus(500);
       }
     });
+
+// API Paths
+router
+  .route('/goniplus/:key/:metric/paths')
+  .get(
+    passport.authenticate('bearer'),
+    async(req, res) => {
+      try {
+        if (_.indexOf(validAPIMetric, req.params.metric) === -1) {
+          return res.sendStatus(400);
+        }
+        const results = await getPaths(req.params.key);
+        const processed = _.map(results, (o) => {
+          return {
+            value: o.path,
+            label: o.path,
+          };
+        });
+        return res.send(processed);
+      } catch (error) {
+        return res.sendStatus(500);
+      }
+    }
+  );
 
 export default router;

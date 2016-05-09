@@ -50,6 +50,23 @@ export function getInstances(apikey, metric) {
 }
 
 /**
+ * getPaths(apikey) returns api paths
+ *
+ */
+export function getPaths(apikey) {
+  return new Promise((resolve, reject) => {
+    goniPlus.query(
+      `SHOW TAG VALUES FROM http WITH KEY = path WHERE apikey='${apikey}';`,
+      (err, results) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(results[0]);
+      });
+  });
+}
+
+/**
  * getRuntime(apikey, duration) returns runtime metrics
  *
  */
