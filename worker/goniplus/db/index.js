@@ -73,11 +73,11 @@ amqp.connect('amqp://' + queueUser + ':' + queuePass + '@' + queueHost + ':' + q
       _.forEach(data.app.http, function(metric, path) {
         _.forEach(metric, function(resp, method) {
           _.forEach(resp, function(result, code) {
+            var codeParsed = parseInt(code, 10);
             _.forEach(result, function(v) {
               var d = {
                 time: new Date(+v.time * 1000),
                 method: method,
-                status: code,
                 res: v.res
               };
               if (v.panic) {
@@ -87,7 +87,8 @@ amqp.connect('amqp://' + queueUser + ':' + queuePass + '@' + queueHost + ':' + q
                 d, {
                   apikey: data.apikey,
                   instance: data.instance,
-                  path: path
+                  path: path,
+                  status: codeParsed
                 }
               ]);
             });
