@@ -1,8 +1,7 @@
 // https://github.com/nickbalestra/sankey/blob/master/app/SankeyChart.js
 import React from 'react';
 import ReactFauxDOM from 'react-faux-dom';
-import d3 from 'd3';
-import sankey from './sankey'; // eslint-disable-line no-unused-vars
+import d3 from './sankey';
 
 class SankeyChart extends React.Component {
   constructor() {
@@ -14,7 +13,7 @@ class SankeyChart extends React.Component {
 
   fitToParentSize() {
     const w = this.refs.wrapper.offsetWidth - 20;
-    const h = this.refs.wrapper.offsetHeight - 10;
+    const h = this.refs.wrapper.offsetHeight - 20;
     const currentSize = this.state.size;
     if (w !== currentSize.w || h !== currentSize.h) {
       this.setState({
@@ -38,20 +37,21 @@ class SankeyChart extends React.Component {
     width = this.state.size.w || 100;
     height = this.state.size.h || 100;
     const san = d3.sankey()
-      .size([width, height])
       .nodeWidth(15)
       .nodePadding(10)
-      .nodes(data.nodes)
-      .links(data.links)
-      .layout(32);
+      .size([width, height]);
 
     const path = san.link();
+    san.nodes(data.nodes)
+      .links(data.links)
+      .layout(32);
     const svgNode = ReactFauxDOM.createElement('div');
     const svg = d3.select(svgNode).append('svg')
       .attr('width', width + margin.left + margin.right)
       .attr('height', height + margin.top + margin.bottom)
+      .attr('viewBox', `0 0 ${width} ${height}`)
       .append('g')
-      .attr('transform', `translate(${margin.left}, ${margin.top})`);
+      .attr('transform', `translate(${margin.left},${margin.top})`);
 
     const link = svg.append('g').selectAll('.link')
       .data(data.links)
