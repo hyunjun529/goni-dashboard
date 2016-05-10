@@ -47,7 +47,6 @@ class SankeyChart extends React.Component {
 
     const path = san.link();
     const svgNode = ReactFauxDOM.createElement('div');
-    console.log(width);
     const svg = d3.select(svgNode).append('svg')
       .attr('width', width + margin.left + margin.right)
       .attr('height', height + margin.top + margin.bottom)
