@@ -367,8 +367,34 @@ h3 {
 .overview-card-data {
   padding-top: 5px;
   color: #4d5256;
-  font-size: 36px;
+  font-size: 22px;
   font-family: 'Spoqa Han Sans', 'Sans-serif';
   font-weight: 100;
   margin: 0px;
+}
+/* sankey */
+.node rect {
+  fill: #888888;
+  shape-rendering: crispEdges;
+}
+.node {
+  fill-opacity: .7;
+}
+.node:hover {
+  cursor: pointer;
+  fill-opacity: 1;
+}
+.node text {
+  fill: #888888;
+  stroke: none;
+  font-size: .8em;
+}
+.link {
+  stroke: #cccccc;
+  stroke-opacity: .4;
+  fill: none;
+}
+.link:hover {
+  stroke-opacity: .6;
+  cursor: pointer;
 }
