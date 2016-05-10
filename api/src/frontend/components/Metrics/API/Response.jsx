@@ -8,6 +8,7 @@ import { Metrics as MetricAction } from 'frontend/actions';
 // Components
 import { Empty, Error, Loading, getDuration, tickInterval } from '../Common';
 import { ResponsiveScatterChart } from 'frontend/core/chart';
+import SankeyChart from 'frontend/core/chart/SankeyChart';
 import Select from 'react-select';
 
 // Constants
@@ -152,6 +153,56 @@ class Response extends React.Component {
     );
   }
 
+  _renderResponseGraph() {
+    const title = 'responsegraph';
+    const { currentDuration, currentPath, currentProject } = this.props;
+    const { dispatch, errored, fetchedData, fetching } = this.props;
+    if (!currentPath) {
+      return (
+        <Error title={title} msg="Path를 선택해주세요" />
+      );
+    }
+    if (!fetchedData) {
+      if (!fetching && !errored) {
+        dispatch(MetricAction.getResponseMetric(currentProject.apikey, type,
+          currentPath, currentDuration));
+      }
+      return (
+        <Loading title={title} fetching={fetching} />
+      );
+    }
+    const dataLen = fetchedData[title].length;
+    if (dataLen === 0) {
+      return (
+        <Empty title={title} />
+      );
+    }
+    const chartData = {
+      nodes: [
+        { name: 'Request' },
+      ],
+      links: [],
+    };
+    // TODO : add custom breakpoint support for specific data
+    for (let i = 0; i < dataLen; i++) {
+      chartData.nodes.push({
+        name: fetchedData[title][i].status,
+      });
+      chartData.links.push({
+        source: 0,
+        target: chartData.nodes.length - 1,
+        value: fetchedData[title][i].count,
+      });
+    }
+    // TODO : add modal when graph clicked
+    return (
+      <div>
+        <div className="chart-wrapper-header">{title}</div>
+        <SankeyChart clickFunc={(e) => e} data={chartData} />
+      </div>
+    );
+  }
+
   _renderData() {
     return (
       <div>
@@ -167,6 +218,7 @@ class Response extends React.Component {
         <Select name="path" options={fetchedPaths} onChange={::this._changePath} isLoading={pathFetching} value={currentPath} placeholder="API Path" />
         {this._renderData()}
         {this._renderResponseScatter()}
+        {this._renderResponseGraph()}
       </div>
     );
   }
