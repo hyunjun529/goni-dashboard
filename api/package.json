@@ -73,7 +73,7 @@
     "passport": "^0.3.2",
     "passport-http-bearer": "^1.0.1",
     "passport-local": "^1.0.0",
-    "rd3": "^0.6.2",
+    "rd3": "^0.6.3",
     "react": "^0.14.8",
     "react-dom": "^0.14.8",
     "react-faux-dom": "^2.4.0",
