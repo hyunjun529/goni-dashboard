@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { Metrics as MetricAction } from 'frontend/actions';
 
 // Components
-import { Empty, Error, Loading, tooltipFormat } from './Common';
+import { Empty, Error, Loading, getDuration, tickInterval, tooltipFormat } from './Common';
 import { ResponsiveLineChart } from 'frontend/core/chart';
 import Select from 'react-select';
 
@@ -27,14 +27,14 @@ class Metrics extends React.Component {
   }
 
   _changeInstance(v) {
-    const { currentDuration, currentInstance, currentProject } = this.props;
+    const { currentDuration, currentProject } = this.props;
     const { dispatch, type } = this.props;
     dispatch({
       type: METRIC_CHANGE_INSTANCE,
       instance: v,
     });
     dispatch(MetricAction.getCommonMetric(currentProject.apikey, type,
-      currentInstance, currentDuration));
+      v, currentDuration));
   }
 
   _renderChart(title, unit, mod) {
@@ -80,7 +80,7 @@ class Metrics extends React.Component {
     return (
       <div>
         <div className="chart-wrapper-header">{title}</div>
-        <ResponsiveLineChart data={chartData} tooltipFormat={(v) => tooltipFormat(v, unit)} />
+        <ResponsiveLineChart data={chartData} duration={getDuration(currentDuration)} xAxisTickInterval={tickInterval(currentDuration)} tooltipFormat={(v) => tooltipFormat(v, unit)} />
       </div>
     );
   }

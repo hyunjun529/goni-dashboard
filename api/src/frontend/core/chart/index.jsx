@@ -1,6 +1,7 @@
 // https://github.com/codesuki/react-d3-components/issues/9
 
 import React from 'react';
+import d3 from 'd3';
 import rd3 from 'rd3';
 
 const {
@@ -21,8 +22,8 @@ const createClass = (chartType) => {
     }
 
     fitToParentSize() {
-      const w = this.refs.wrapper.offsetWidth;
-      const h = this.refs.wrapper.offsetHeight;
+      const w = this.refs.wrapper.offsetWidth - 20;
+      const h = this.refs.wrapper.offsetHeight - 20;
       const currentSize = this.state.size;
       if (w !== currentSize.w || h !== currentSize.h) {
         this.setState({
@@ -72,6 +73,7 @@ const createClass = (chartType) => {
     }
 
     render() {
+      const { duration } = this.props;
       let Component = this.getChartClass();
       let { width, height, margin, ...others } = this.props;
       width = this.state.size.w || 100;
@@ -82,6 +84,7 @@ const createClass = (chartType) => {
             width = {width}
             height = {height}
             margin = {margin}
+            xScale = {d3.time.scale().domain(duration).range([0, width - 65])}
             {...others}
           />
         </div>
@@ -93,6 +96,7 @@ const createClass = (chartType) => {
     },
   };
   Chart.propTypes = {
+    duration: React.PropTypes.array.isRequired,
     width: React.PropTypes.number,
     height: React.PropTypes.number,
     margin: React.PropTypes.object,

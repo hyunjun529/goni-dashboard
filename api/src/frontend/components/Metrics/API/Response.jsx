@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { Metrics as MetricAction } from 'frontend/actions';
 
 // Components
-import { Empty, Error, Loading, tooltipFormat } from '../Common';
+import { Empty, Error, Loading, getDuration, tickInterval } from '../Common';
 import { ResponsiveScatterChart } from 'frontend/core/chart';
 import Select from 'react-select';
 
@@ -40,7 +40,7 @@ class Response extends React.Component {
   }
 
   _changePath(v) {
-    const { currentDuration, currentPath, currentProject } = this.props;
+    const { currentDuration, currentProject } = this.props;
     const { dispatch } = this.props;
     dispatch({
       type: METRIC_CHANGE_PATH,
@@ -147,7 +147,7 @@ class Response extends React.Component {
     return (
       <div>
         <div className="chart-wrapper-header">{title}</div>
-        <ResponsiveScatterChart colors={d3RespColor} colorAccessor={(d, idx) => d3RespColorAccessor(d, idx)} data={chartData} />
+        <ResponsiveScatterChart colors={d3RespColor} colorAccessor={(d, idx) => d3RespColorAccessor(d, idx)} duration={getDuration(currentDuration)} xAxisTickInterval={tickInterval(currentDuration)} data={chartData} />
       </div>
     );
   }
