@@ -10,7 +10,7 @@ export function getAPIMetrics(apikey, path, duration) {
     goniPlus.query(
       `SELECT min(res),mean(res),max(res),count(panic) FROM http WHERE apikey = '${apikey}' and path = '${path}' and time > now() - ${duration};
        SELECT time, res, status FROM http WHERE apikey = '${apikey}' and path = '${path}' and time > now() - ${duration};
-       SELECT count(res) FROM http WHERE apikey = '${apikey}' and path = '${path}' and time > now() - ${duration} GROUP BY status;`,
+       SELECT count(res) FROM http WHERE apikey = '${apikey}' and path = '${path}' and time > now() - ${duration} GROUP BY breadcrumb, status;`,
       (err, results) => {
         if (err) {
           reject(err);
@@ -74,7 +74,11 @@ export function getInstances(apikey, metric) {
         if (err) {
           reject(err);
         }
-        resolve(results[0]);
+        if (results.length !== 0) {
+          resolve(results[0]);
+        } else {
+          reject(null);
+        }
       });
   });
 }
@@ -90,7 +94,11 @@ export function getPaths(apikey) {
         if (err) {
           reject(err);
         }
-        resolve(results[0]);
+        if (results.length !== 0) {
+          resolve(results[0]);
+        } else {
+          reject(null);
+        }
       });
   });
 }
