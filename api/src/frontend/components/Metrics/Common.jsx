@@ -22,10 +22,14 @@ export const getDuration = (duration) => {
 export const tickInterval = (duration) => {
   switch (duration) {
     case '30m':
-    case '1h':
       return {
         unit: 'minute',
         interval: 1,
+      };
+    case '1h':
+      return {
+        unit: 'minute',
+        interval: 5,
       };
     case '3h':
     default: // 6h
