@@ -8,37 +8,21 @@ import {
 export function getAPIMetrics(apikey, path, duration) {
   return new Promise((resolve, reject) => {
     goniPlus.query(
-      `SELECT min(res) FROM http WHERE apikey = '${apikey}' and path = '${path}' and time > now() - ${duration};
-       SELECT mean(res) FROM http WHERE apikey = '${apikey}' and path = '${path}' and time > now() - ${duration};
-       SELECT max(res) FROM http WHERE apikey = '${apikey}' and path = '${path}' and time > now() - ${duration};
-       SELECT count(panic) FROM http WHERE apikey = '${apikey}' and path = '${path}' and time > now() - ${duration};`,
+      `SELECT min(res),mean(res),max(res),count(panic) FROM http WHERE apikey = '${apikey}' and path = '${path}' and time > now() - ${duration};
+       SELECT time, res, status FROM http WHERE apikey = '${apikey}' and path = '${path}' and time > now() - ${duration};`,
       (err, results) => {
         if (err) {
           reject(err);
         }
-        let min = null;
-        let mean = null;
-        let max = null;
-        let panic = null;
-        if (results[0].length !== 0) {
-          min = results[0][0].min;
-        }
-        if (results[1].length !== 0) {
-          mean = results[1][0].mean;
-        }
-        if (results[2].length !== 0) {
-          max = results[2][0].max;
-        }
-        if (results[3].length !== 0) {
-          panic = results[3][0].count;
-        }
+        const exists = results[0][0].min !== null;
         const processed = {
           overview: {
-            min,
-            mean,
-            max,
-            panic,
+            min: exists ? `${results[0][0].min}ms` : 'no data',
+            mean: exists ? `${results[0][0].mean}ms` : 'no data',
+            max: exists ? `${results[0][0].max}ms` : 'no data',
+            panic: exists ? results[0][0].count : 'no data',
           },
+          responsemap: results[1],
         };
         resolve(processed);
       });
