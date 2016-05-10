@@ -1,8 +1,39 @@
 import React from 'react';
 
-export const tickInterval = {
-  unit: 'minute',
-  interval: 1,
+function getMinute(duration) {
+  switch (duration) {
+    case '30m':
+      return 30;
+    case '1h':
+      return 60;
+    case '3h':
+      return 180;
+    default: // 6h
+      return 360;
+  }
+}
+
+export const getDuration = (duration) => {
+  const now = Date.now();
+  const from = now - 60000 * getMinute(duration);
+  return [from, now];
+};
+
+export const tickInterval = (duration) => {
+  switch (duration) {
+    case '30m':
+    case '1h':
+      return {
+        unit: 'minute',
+        interval: 1,
+      };
+    case '3h':
+    default: // 6h
+      return {
+        unit: 'minute',
+        interval: 20,
+      };
+  }
 };
 
 export const tooltipFormat = (v, u) => (
