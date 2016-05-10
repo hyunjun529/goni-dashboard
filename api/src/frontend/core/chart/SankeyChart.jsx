@@ -61,7 +61,7 @@ class SankeyChart extends React.Component {
       .attr('d', path)
       .style('stroke-width', (d) => Math.max(1, d.dy));
     link.append('title')
-      .text((d) => `${d.source.name} → ${d.target.name} \n Data:`);
+      .text((d) => `${d.source.name} → ${d.target.name}`);
 
     const node = svg.append('g').selectAll('.node')
       .data(data.nodes)
