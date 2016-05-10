@@ -80,17 +80,19 @@ amqp.connect('amqp://' + queueUser + ':' + queuePass + '@' + queueHost + ':' + q
                 method: method,
                 res: v.res
               };
+              var t = {
+                apikey: data.apikey,
+                instance: data.instance,
+                path: path,
+                status: codeParsed
+              };
+              if (v.crumb) {
+                t.breadcrumb = JSON.stringify(v.crumb);
+              }
               if (v.panic) {
                 d.panic = true;
               }
-              http.push([
-                d, {
-                  apikey: data.apikey,
-                  instance: data.instance,
-                  path: path,
-                  status: codeParsed
-                }
-              ]);
+              http.push([d, t]);
             });
           });
         });
