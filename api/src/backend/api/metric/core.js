@@ -15,7 +15,10 @@ export function getAPIMetrics(apikey, path, duration) {
         if (err) {
           reject(err);
         }
-        const exists = results[0][0].min !== null;
+        let exists = 'min' in results[0][0];
+        if (exists) {
+          exists = results[0][0].min !== null;
+        }
         const processed = {
           overview: {
             min: exists ? `${results[0][0].min}ms` : 'no data',
