@@ -7,12 +7,31 @@ import { Metrics as MetricAction } from 'frontend/actions';
 
 // Components
 import { Empty, Error, Loading, tooltipFormat } from '../Common';
+import { ResponsiveScatterChart } from 'frontend/core/chart';
 import Select from 'react-select';
 
 // Constants
 import { METRIC_CHANGE_PATH } from 'constants/metric';
 
 const type = 'response';
+
+function d3RespColor(idx) {
+  return ['#4CAF50', '#009688', '#E91E63', '#F44336'][idx];
+}
+
+function d3RespColorAccessor(d, idx) { // eslint-disable-line no-unused-vars
+  const status = parseInt(d.status, 10);
+  if (status < 300) {
+    return 0;
+  }
+  if (status < 400) {
+    return 1;
+  }
+  if (status < 500) {
+    return 2;
+  }
+  return 3;
+}
 
 class Response extends React.Component {
   componentDidMount() {
@@ -28,7 +47,7 @@ class Response extends React.Component {
       path: v,
     });
     dispatch(MetricAction.getResponseMetric(currentProject.apikey, type,
-      currentPath, currentDuration));
+      v, currentDuration));
   }
 
   _renderOverview() {
@@ -61,29 +80,74 @@ class Response extends React.Component {
         <div className="row">
           <div className="col-xs-12 col-sm-6 col-md-3 col-lg-3">
             <div className="overview-card">
-              <p className="overview-card-header">MIN</p>
-              <p className="overview-card-data">{fetchedData[title].min ? `${fetchedData[title].min}ms` : 'no data'}</p>
+              <p className="overview-card-header">min</p>
+              <p className="overview-card-data">{fetchedData[title].min}</p>
             </div>
           </div>
           <div className="col-xs-12 col-sm-6 col-md-3 col-lg-3">
             <div className="overview-card">
-              <p className="overview-card-header">AVERAGE</p>
-              <p className="overview-card-data">{fetchedData[title].mean ? `${fetchedData[title].mean}ms` : 'no data'}</p>
+              <p className="overview-card-header">average</p>
+              <p className="overview-card-data">{fetchedData[title].mean}</p>
             </div>
           </div>
           <div className="col-xs-12 col-sm-6 col-md-3 col-lg-3">
             <div className="overview-card">
-              <p className="overview-card-header">MAX</p>
-              <p className="overview-card-data">{fetchedData[title].max ? `${fetchedData[title].max}ms` : 'no data'}</p>
+              <p className="overview-card-header">max</p>
+              <p className="overview-card-data">{fetchedData[title].max}</p>
             </div>
           </div>
           <div className="col-xs-12 col-sm-6 col-md-3 col-lg-3">
             <div className="overview-card">
-              <p className="overview-card-header">PANIC</p>
-              <p className="overview-card-data">{fetchedData[title].panic ? `${fetchedData[title].panic}` : 'no data'}</p>
+              <p className="overview-card-header">panic</p>
+              <p className="overview-card-data">{fetchedData[title].panic}</p>
             </div>
           </div>
         </div>
+      </div>
+    );
+  }
+
+  _renderResponseScatter() {
+    const title = 'responsemap';
+    const { currentDuration, currentPath, currentProject } = this.props;
+    const { dispatch, errored, fetchedData, fetching } = this.props;
+    if (!currentPath) {
+      return (
+        <Error title={title} msg="Path를 선택해주세요" />
+      );
+    }
+    if (!fetchedData) {
+      if (!fetching && !errored) {
+        dispatch(MetricAction.getResponseMetric(currentProject.apikey, type,
+          currentPath, currentDuration));
+      }
+      return (
+        <Loading title={title} fetching={fetching} />
+      );
+    }
+    const dataLen = fetchedData[title].length;
+    if (dataLen === 0) {
+      return (
+        <Empty title={title} />
+      );
+    }
+    const chartData = [];
+    const parsed = {
+      name: title,
+      values: [],
+    };
+    for (let i = 0; i < dataLen; i++) {
+      parsed.values.push({
+        x: new Date(fetchedData[title][i].time),
+        y: fetchedData[title][i].res,
+        status: fetchedData[title][i].status,
+      });
+    }
+    chartData.push(parsed);
+    return (
+      <div>
+        <div className="chart-wrapper-header">{title}</div>
+        <ResponsiveScatterChart colors={d3RespColor} colorAccessor={(d, idx) => d3RespColorAccessor(d, idx)} data={chartData} />
       </div>
     );
   }
@@ -102,6 +166,7 @@ class Response extends React.Component {
       <div>
         <Select name="path" options={fetchedPaths} onChange={::this._changePath} isLoading={pathFetching} value={currentPath} placeholder="API Path" />
         {this._renderData()}
+        {this._renderResponseScatter()}
       </div>
     );
   }
