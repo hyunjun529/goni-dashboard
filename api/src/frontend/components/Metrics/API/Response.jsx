@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 // React
 import React from 'react';
 import { connect } from 'react-redux';
@@ -183,16 +185,67 @@ class Response extends React.Component {
       ],
       links: [],
     };
-    // TODO : add custom breakpoint support for specific data
+    const targetIndex = [];
     for (let i = 0; i < dataLen; i++) {
-      chartData.nodes.push({
-        name: fetchedData[title][i].status,
-      });
-      chartData.links.push({
-        source: 0,
-        target: chartData.nodes.length - 1,
-        value: fetchedData[title][i].count,
-      });
+      let breadcrumb = [];
+      try {
+        breadcrumb = JSON.parse(fetchedData[title][i].breadcrumb);
+      } catch (err) { // eslint-disable-line no-empty-block
+      }
+      const breadcrumbLen = breadcrumb.length;
+      const count = fetchedData[title][i].count;
+      const status = fetchedData[title][i].status;
+      if (_.indexOf(targetIndex, status) === -1) {
+        chartData.nodes.push({
+          name: status,
+        });
+        targetIndex.push(status);
+      }
+      if (breadcrumbLen === 0) {
+        chartData.links.push({
+          source: 0,
+          target: _.indexOf(targetIndex, status) + 1,
+          value: count,
+        });
+        continue;
+      }
+      for (let j = 0; j < breadcrumbLen; j++) {
+        const target = breadcrumb[j];
+        if (_.indexOf(targetIndex, target) === -1) {
+          chartData.nodes.push({
+            name: target,
+          });
+          targetIndex.push(target);
+        }
+        const statusIdx = _.indexOf(targetIndex, status) + 1;
+        const targetIdx = _.indexOf(targetIndex, target) + 1;
+        if (j === 0 && j === breadcrumbLen - 1) {
+          chartData.links.push({
+            source: 0,
+            target: targetIdx,
+            value: count,
+          });
+          chartData.links.push({
+            source: targetIdx,
+            target: statusIdx,
+            value: count,
+          });
+          continue;
+        }
+        if (j === 0) {
+          chartData.links.push({
+            source: 0,
+            target: targetIdx,
+            value: count,
+          });
+          continue;
+        }
+        chartData.links.push({
+          source: _.indexOf(targetIndex, breadcrumb[j - 1]) + 1,
+          target: targetIdx,
+          value: count,
+        });
+      }
     }
     // TODO : add modal when graph clicked
     return (
