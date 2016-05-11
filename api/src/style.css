@@ -391,10 +391,10 @@ h3 {
 }
 .link {
   stroke: #cccccc;
-  stroke-opacity: .4;
+  stroke-opacity: .15;
   fill: none;
 }
 .link:hover {
-  stroke-opacity: .6;
+  stroke-opacity: .9;
   cursor: pointer;
 }
