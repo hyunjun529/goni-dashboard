@@ -24,7 +24,7 @@ export const tickInterval = (duration) => {
     case '30m':
       return {
         unit: 'minute',
-        interval: 1,
+        interval: 3,
       };
     case '1h':
       return {
