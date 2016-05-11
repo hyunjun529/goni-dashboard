@@ -8,7 +8,7 @@ import {
 } from 'react-router-redux';
 import {
   httpGet,
-  httpPost,
+  httpPostAuth,
 } from 'frontend/util/fetch';
 
 const LOGIN_URL = '/api/auth';
@@ -38,7 +38,7 @@ const Actions = {
   login: (data) => {
     return async dispatch => {
       try {
-        const res = await httpPost(LOGIN_URL, data);
+        const res = await httpPostAuth(LOGIN_URL, data);
         localStorage.setItem('token', res.token);
         setCurrentUser(dispatch, res);
         dispatch(push('/'));

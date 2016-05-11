@@ -36,3 +36,19 @@ export function httpPost(url, token, data) {
     });
   });
 }
+
+export function httpPostAuth(url, data) {
+  return new Promise((resolve, reject) => {
+    reqwest({
+      url,
+      method: 'post',
+      data,
+      error: (err) => {
+        reject(err);
+      },
+      success: (res) => {
+        resolve(res);
+      },
+    });
+  });
+}
