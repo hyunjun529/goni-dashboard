@@ -7,11 +7,16 @@ import { Projects as ProjectAction } from 'frontend/actions';
 
 // Components
 import { Header } from 'frontend/components';
+import CopyToClipboard from 'frontend/core/CopyToClipboard';
 
 class Projects extends React.Component {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch(ProjectAction.getProjects());
+  }
+
+  _handleKeyCopied() {
+    alert('API Key가 복사되었습니다');
   }
 
   _handleProjectClick(e, project) {
@@ -22,15 +27,16 @@ class Projects extends React.Component {
   _renderProjects() {
     const { projects } = this.props;
     return projects.map((project) => {
-      const keyUrl = `/setup/project/${project.id}`;
       return (
         <div key={project.id} className="col-xs-12 col-sm-6 col-md-6 col-lg-4">
           <div className="project-card" onClick={(e) => this._handleProjectClick(e, project)}>
             {project.is_plus ? <p className="isplus">Goni+</p> : <p className="isplus">Goni</p>}
             <p className="title">{project.name}</p>
-            <div className="tag">
-              <a href={keyUrl}>APIKEY : {project.apikey}</a>
-            </div>
+            <CopyToClipboard onCopy={() => this._handleKeyCopied()} text={project.apikey}>
+              <div className="tag" ref="clip-tag-wrap">
+                <a ref="clip-tag">APIKEY : {project.apikey.substr(0, 6)}</a>
+              </div>
+            </CopyToClipboard>
           </div>
         </div>
       );

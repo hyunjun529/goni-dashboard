@@ -57,6 +57,7 @@
   },
   "dependencies": {
     "body-parser": "^1.15.0",
+    "copy-to-clipboard": "^3.0.0",
     "d3": "^3.5.17",
     "d3-plugins-sankey": "^1.2.1",
     "ejs": "^2.4.1",
