@@ -219,7 +219,7 @@ class Response extends React.Component {
         }
         const statusIdx = _.indexOf(targetIndex, status) + 1;
         const targetIdx = _.indexOf(targetIndex, target) + 1;
-        if (j === 0 && j === breadcrumbLen - 1) {
+        if (breadcrumbLen === 1) {
           chartData.links.push({
             source: 0,
             target: targetIdx,
@@ -245,6 +245,14 @@ class Response extends React.Component {
           target: targetIdx,
           value: count,
         });
+        if (j === breadcrumbLen - 1) {
+          chartData.links.push({
+            source: targetIdx,
+            target: statusIdx,
+            value: count,
+          });
+          continue;
+        }
       }
     }
     // TODO : add modal when graph clicked
