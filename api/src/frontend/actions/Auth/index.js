@@ -29,7 +29,9 @@ const Actions = {
         localStorage.setItem('token', res.token);
         setCurrentUser(dispatch, res);
       } catch (error) {
-        dispatch(push('/'));
+        localStorage.removeItem('token');
+        setCurrentUser(dispatch, null);
+        dispatch(push('/login'));
       }
     };
   },

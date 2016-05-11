@@ -13,7 +13,7 @@ export function getTokenTimestamp() {
 }
 
 export function checkExpired(timestamp) {
-  if (Math.round(Date.now() / 1000) > time.Date.parse(timestamp, 'UTC')) {
+  if (Date.now() > time.Date.parse(timestamp, 'UTC')) {
     return true;
   }
   return false;
