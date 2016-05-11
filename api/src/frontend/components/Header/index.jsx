@@ -14,9 +14,19 @@ class Header extends React.Component {
     dispatch(push('/'));
   }
 
+  _login() {
+    const { dispatch } = this.props;
+    dispatch(push('/login'));
+  }
+
   _logout() {
     const { dispatch } = this.props;
     dispatch(AuthAction.logout());
+  }
+
+  _register() {
+    const { dispatch } = this.props;
+    dispatch(push('/register'));
   }
 
   _renderHeader() {
@@ -34,7 +44,7 @@ class Header extends React.Component {
                 <a href="https://github.com/layer123/goni"><i className="fa fa-github" aria-hidden="true" /> GITHUB</a>
               </li>
               <li>
-                <a href="/register">REGISTER</a>
+                <a href="#" onClick={() => this._register()}>REGISTER</a>
               </li>
             </ul>
           </div>
@@ -52,7 +62,7 @@ class Header extends React.Component {
                 <a href="https://github.com/layer123/goni"><i className="fa fa-github" aria-hidden="true" /> GITHUB</a>
               </li>
               <li>
-                <a href="/login">LOGIN</a>
+                <a href="#" onClick={() => this._login()}>LOGIN</a>
               </li>
             </ul>
           </div>
