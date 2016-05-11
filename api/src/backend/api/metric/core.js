@@ -10,12 +10,19 @@ export function getAPIMetrics(apikey, path, duration) {
     goniPlus.query(
       `SELECT min(res),mean(res),max(res),count(panic) FROM http WHERE apikey = '${apikey}' and path = '${path}' and time > now() - ${duration};
        SELECT time, res, status FROM http WHERE apikey = '${apikey}' and path = '${path}' and time > now() - ${duration};
-       SELECT count(res) FROM http WHERE apikey = '${apikey}' and path = '${path}' and time > now() - ${duration} GROUP BY breadcrumb, status;`,
+       SELECT count(res) FROM http WHERE apikey = '${apikey}' and path = '${path}' and time > now() - ${duration} GROUP BY breadcrumb, status;
+       SELECT count(res) FROM http WHERE apikey = '${apikey}' and path = '${path}' and time > now() - ${duration} GROUP BY status;`,
       (err, results) => {
         if (err) {
           reject(err);
         }
-        let exists = 'min' in results[0][0];
+        let exists = true;
+        if (!results[0].length) {
+          exists = false;
+        }
+        if (exists) {
+          exists = 'min' in results[0][0];
+        }
         if (exists) {
           exists = results[0][0].min !== null;
         }
@@ -28,6 +35,7 @@ export function getAPIMetrics(apikey, path, duration) {
           },
           responsemap: results[1],
           responsegraph: exists ? results[2] : [],
+          responsestatus: exists ? results[3] : [],
         };
         resolve(processed);
       });
