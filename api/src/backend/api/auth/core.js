@@ -107,12 +107,10 @@ export function registerUser(email, username, password) {
 }
 
 /**
- * registerUser(email, username, password) returns true
- * if user successfully registered
+ * registerUserToken(id) returns token
+ * if user successfully authenticated
  *
- * @param {String} email (length < 50)
- * @param {String} username (length < 16)
- * @param {String} password
+ * @param {String} userid
  * @return {String} token
  */
 export function registerUserToken(id) {

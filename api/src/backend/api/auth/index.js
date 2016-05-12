@@ -2,6 +2,7 @@ import {
   checkValidRegisterRequest,
   getUser,
   registerUser,
+  registerUserToken,
 } from './core';
 import passport from 'backend/core/passport';
 import {
@@ -39,18 +40,25 @@ router
   .post(
     checkValidRegisterRequest,
     async(req, res) => {
+      let status = 500;
       try {
         const userExists = await getUser(req.body.email);
         if (userExists) {
           return res.sendStatus(409);
         }
-        const isSuccess = await registerUser(req.body.email, req.body.username, req.body.password);
-        if (!isSuccess) {
+        const result = await registerUser(req.body.email, req.body.username, req.body.password);
+        if (!result) {
           return res.sendStatus(400);
         }
-        return res.sendStatus(200);
+        status = 200;
+        const id = result.insertId;
+        const auth = await registerUserToken(id);
+        return res.send({
+          token: auth,
+          user: id,
+        });
       } catch (error) {
-        return res.sendStatus(500);
+        return res.sendStatus(status);
       }
     });
 
