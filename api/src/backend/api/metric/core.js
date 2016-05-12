@@ -17,7 +17,7 @@ export function getAPIMetrics(apikey, path, duration) {
           reject(err);
         }
         let exists = true;
-        if (!results[0].length) {
+        if (!results || !results[0].length) {
           exists = false;
         }
         if (exists) {
@@ -82,7 +82,7 @@ export function getInstances(apikey, metric) {
         if (err) {
           reject(err);
         }
-        if (results.length !== 0) {
+        if (!!results && results.length !== 0) {
           resolve(results[0]);
         } else {
           reject(null);
@@ -102,7 +102,7 @@ export function getPaths(apikey) {
         if (err) {
           reject(err);
         }
-        if (results.length !== 0) {
+        if (!!results && results.length !== 0) {
           resolve(results[0]);
         } else {
           reject(null);
