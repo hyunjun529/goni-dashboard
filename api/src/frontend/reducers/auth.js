@@ -1,7 +1,8 @@
 import {
+  AUTH_CLEAR_ERROR,
   AUTH_CURRENT_USER,
-  AUTH_LOGGED_OUT,
   AUTH_ERROR,
+  AUTH_LOGGED_OUT,
 } from 'constants/auth';
 
 const initialState = {
@@ -25,6 +26,12 @@ export default function reducer(state = initialState, action = {}) {
       return {
         ...state,
         error: action.errors,
+      };
+
+    case AUTH_CLEAR_ERROR:
+      return {
+        ...state,
+        error: null,
       };
 
     default:

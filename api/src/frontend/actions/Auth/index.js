@@ -12,6 +12,7 @@ import {
 } from 'frontend/util/fetch';
 
 const LOGIN_URL = '/api/auth';
+const REGISTER_URL = '/api/auth/register';
 
 function setCurrentUser(dispatch, user) {
   dispatch({
@@ -45,7 +46,7 @@ const Actions = {
       } catch (error) {
         dispatch({
           type: AUTH_ERROR,
-          errors: error,
+          errors: error.statusText,
         });
       }
     };
@@ -57,6 +58,23 @@ const Actions = {
         type: AUTH_LOGGEDOUT,
       });
       dispatch(push('/login'));
+    };
+  },
+  registerUser: (data) => {
+    return async dispatch => {
+      try {
+        const res = await httpPostAuth(REGISTER_URL, data);
+        if (res.token) {
+          localStorage.setItem('token', res.token);
+          setCurrentUser(dispatch, res);
+        }
+        dispatch(push('/'));
+      } catch (error) {
+        dispatch({
+          type: AUTH_ERROR,
+          errors: error.statusText,
+        });
+      }
     };
   },
 };

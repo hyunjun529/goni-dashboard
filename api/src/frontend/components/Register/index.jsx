@@ -8,11 +8,15 @@ import { Auth as AuthAction } from 'frontend/actions';
 // Components
 import { Header } from 'frontend/components';
 
+// Constants
+import { AUTH_CLEAR_ERROR } from 'constants/auth';
+
 class Register extends React.Component {
-  constructor() {
-    super();
-    this._registerUser = this._registerUser.bind(this);
-    this._renderError = this._renderError.bind(this);
+  componentWillMount() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: AUTH_CLEAR_ERROR,
+    });
   }
 
   _renderError() {
@@ -44,9 +48,9 @@ class Register extends React.Component {
           <div className="login-parent">
             <div className="login-middle">
               <div className="login-child">
-                <form role="form" onSubmit={this._registerUser}>
+                <form role="form" onSubmit={::this._registerUser}>
                   <div className="form-group">
-                    {this._renderError()}
+                    {::this._renderError()}
                     <p className="login-title">회원가입</p>
                     <div className="login-input-wrapper">
                       <input ref="email" className="login-input-email" placeholder="Email" type="text" required />
@@ -74,11 +78,11 @@ class Register extends React.Component {
 
 Register.propTypes = {
   dispatch: React.PropTypes.func.isRequired,
-  errors: React.PropTypes.object,
+  errors: React.PropTypes.string,
 };
 
 const mapStateToProps = (state) => ({
-  errors: state.auth.errors,
+  errors: state.auth.error,
 });
 
 export default connect(mapStateToProps)(Register);

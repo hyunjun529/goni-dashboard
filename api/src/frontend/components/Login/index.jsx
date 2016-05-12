@@ -8,11 +8,15 @@ import { Auth as AuthAction } from 'frontend/actions';
 // Components
 import { Header } from 'frontend/components';
 
+// Constants
+import { AUTH_CLEAR_ERROR } from 'constants/auth';
+
 class Login extends React.Component {
-  constructor() {
-    super();
-    this._login = this._login.bind(this);
-    this._renderError = this._renderError.bind(this);
+  componentWillMount() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: AUTH_CLEAR_ERROR,
+    });
   }
 
   _login(e) {
@@ -43,9 +47,9 @@ class Login extends React.Component {
           <div className="login-parent">
             <div className="login-middle">
               <div className="login-child">
-                <form role="form" onSubmit={this._login}>
+                <form role="form" onSubmit={::this._login}>
                   <div className="form-group">
-                    {this._renderError()}
+                    {::this._renderError()}
                     <p className="login-title">GONI DASHBOARD</p>
                     <div className="login-input-wrapper">
                       <input ref="email" className="login-input-email" placeholder="Email" type="text" required />
