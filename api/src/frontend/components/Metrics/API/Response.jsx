@@ -264,20 +264,12 @@ class Response extends React.Component {
     );
   }
 
-  _renderData() {
-    return (
-      <div>
-        {this._renderOverview()}
-      </div>
-    );
-  }
-
   render() {
     const { currentPath, fetchedPaths, pathFetching } = this.props;
     return (
       <div>
         <Select name="path" options={fetchedPaths} onChange={::this._changePath} isLoading={pathFetching} value={currentPath} placeholder="API Path" />
-        {this._renderData()}
+        {this._renderOverview()}
         {this._renderResponseScatter()}
         {this._renderResponseGraph()}
       </div>
