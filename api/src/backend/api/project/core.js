@@ -7,7 +7,6 @@ import {
 } from 'backend/util/time';
 
 const ROLE_ADMIN = 0;
-const ROLE_MEMBER = 1;
 
 const createProjectColumn = '(name,is_plus,apikey,admin_id,created_at)';
 const createProjectField = '(?,?,?,?,FROM_UNIXTIME(?))';
@@ -43,7 +42,7 @@ export function createProject(name, isPlus, user) {
               reject(pErr);
             });
           }
-          connection.query({
+          return connection.query({
             sql: `INSERT INTO project_role ${projectRoleColumn} VALUES ${projectRoleField}`,
             values: [projectResult.insertId, user, ROLE_ADMIN],
           }, (rErr) => {
@@ -53,7 +52,7 @@ export function createProject(name, isPlus, user) {
                 reject(rErr);
               });
             }
-            connection.commit((err) => {
+            return connection.commit((err) => {
               if (err) {
                 return connection.rollback(() => {
                   connection.release();
@@ -70,11 +69,11 @@ export function createProject(name, isPlus, user) {
 }
 
 /**
- * getProject(id) returns project object
+ * getProject(id, user) returns project object
  *
  * @param {Integer} project id
  * @param {Integer} user id
- * @return {Object} id(String), password(String), salt(String)
+ * @return {Object} project id(Integer), name(String), isPlus(Boolean), APIKEY(String)
  */
 export function getProject(id, user) {
   return new Promise((resolve, reject) => {
@@ -83,14 +82,18 @@ export function getProject(id, user) {
         reject(connErr);
       }
       connection.query({
-        sql: 'SELECT project.id, project.name, project.is_plus, project.apikey FROM project JOIN project_role WHERE project.id=? AND project_role.user_id=?', // eslint-disable-line
+        sql: 'SELECT DISTINCT project.id, project.name, project.is_plus, project.apikey FROM project JOIN project_role ON project.id = project_role.project_id WHERE project.id = ? AND project_role.user_id = ?',
         values: [id, user],
       }, (err, results) => {
         connection.release();
         if (err) {
           reject(err);
         }
-        resolve(results[0]);
+        if (results.length !== 0) {
+          resolve(results[0]);
+        } else {
+          resolve(null);
+        }
       });
     });
   });
@@ -100,7 +103,7 @@ export function getProject(id, user) {
  * getProjectList(id) returns user's project list
  *
  * @param {Integer} user id
- * @return {Array} {Object} id(String), password(String), salt(String)
+ * @return {Array} {Object} project id(Integer), name(String), isPlus(Boolean), APIKEY(String)
  */
 export function getProjectList(id) {
   return new Promise((resolve, reject) => {
@@ -109,7 +112,7 @@ export function getProjectList(id) {
         reject(connErr);
       }
       connection.query({
-        sql: 'SELECT DISTINCT project.id, project.name, project.is_plus, project.apikey FROM project JOIN project_role WHERE project_role.user_id =?', // eslint-disable-line
+        sql: 'SELECT DISTINCT project.id, project.name, project.is_plus, project.apikey FROM project JOIN project_role ON project.id = project_role.project_id WHERE project_role.user_id = ?',
         values: [id],
       }, (err, results) => {
         connection.release();
