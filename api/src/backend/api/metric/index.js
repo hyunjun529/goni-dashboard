@@ -30,10 +30,10 @@ router
           return res.sendStatus(400);
         }
         const results = await getInstances(req.params.key, req.params.metric);
-        const processed = _.map(results, (o) => {
+        const processed = _.map(results, (v) => {
           return {
-            value: o.instance,
-            label: o.instance,
+            value: v,
+            label: v,
           };
         });
         return res.send(processed);
@@ -93,10 +93,10 @@ router
           return res.sendStatus(400);
         }
         const results = await getPaths(req.params.key);
-        const processed = _.map(results, (o) => {
+        const processed = _.map(results, (v) => {
           return {
-            value: o.path,
-            label: o.path,
+            value: v,
+            label: v,
           };
         });
         return res.send(processed);

@@ -16,15 +16,9 @@ export function getAPIMetrics(apikey, path, duration) {
         if (err) {
           reject(err);
         }
-        let exists = true;
-        if (!results || !results[0].length) {
-          exists = false;
-        }
-        if (exists) {
-          exists = 'min' in results[0][0];
-        }
-        if (exists) {
-          exists = results[0][0].min !== null;
+        let exists = false;
+        if (results && results[0].length !== 0) {
+          exists = true;
         }
         const processed = {
           overview: {
@@ -77,13 +71,13 @@ export function getExpvar(apikey, instance, duration) {
 export function getInstances(apikey, metric) {
   return new Promise((resolve, reject) => {
     goniPlus.query(
-      `SHOW TAG VALUES FROM ${metric} WITH KEY = instance WHERE apikey='${apikey}';`,
+      `SELECT DISTINCT(instance) FROM ${metric} WHERE apikey='${apikey}' and time > now() - 6h;`,
       (err, results) => {
         if (err) {
           reject(err);
         }
-        if (!!results && results.length !== 0) {
-          resolve(results[0]);
+        if (results && results[0].length !== 0) {
+          resolve(results[0][0].distinct);
         } else {
           reject(null);
         }
@@ -97,13 +91,13 @@ export function getInstances(apikey, metric) {
 export function getPaths(apikey) {
   return new Promise((resolve, reject) => {
     goniPlus.query(
-      `SHOW TAG VALUES FROM http WITH KEY = path WHERE apikey='${apikey}';`,
+      `SELECT DISTINCT(path) FROM http WHERE apikey='${apikey}' and time > now() - 6h;`,
       (err, results) => {
         if (err) {
           reject(err);
         }
-        if (!!results && results.length !== 0) {
-          resolve(results[0]);
+        if (results && results[0].length !== 0) {
+          resolve(results[0][0].distinct);
         } else {
           reject(null);
         }
