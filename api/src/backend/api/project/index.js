@@ -1,11 +1,15 @@
 import passport from 'backend/core/passport';
 import {
+  createProject,
   getProject,
   getProjectList,
 } from './core';
 import {
   Router,
 } from 'express';
+
+const isGoniAllowed = false;
+
 const router = Router();
 
 // Project
@@ -17,12 +21,33 @@ router
       try {
         const project = await getProject(req.params.id, req.user.id);
         if (project) {
-          res.send(project);
-        } else {
-          res.sendStatus(404);
+          return res.send(project);
         }
+        return res.sendStatus(404);
       } catch (error) {
-        res.sendStatus(500);
+        return res.sendStatus(500);
+      }
+    });
+
+// Create Project
+router
+  .route('/project')
+  .post(
+    passport.authenticate('bearer'),
+    async(req, res) => {
+      try {
+        if (!req.body.name || !req.body.isPlus) {
+          return res.sendStatus(400);
+        }
+        if (!req.body.isPlus && !isGoniAllowed) {
+          return res.sendStatus(400);
+        }
+        const project = await createProject(req.body.name, req.body.isPlus, req.user.id);
+        return res.send({
+          id: project,
+        });
+      } catch (error) {
+        return res.sendStatus(500);
       }
     });
 
@@ -34,28 +59,11 @@ router
     async(req, res) => {
       try {
         const projects = await getProjectList(req.user.id);
-        res.send(projects);
+        return res.send(projects);
       } catch (error) {
-        res.sendStatus(500);
+        return res.sendStatus(500);
       }
     });
 
-// Goni server list
-router
-  .route('/projects/goni/:id/server/list')
-  .get(
-    passport.authenticate('bearer'),
-    async(req, res) => {
-
-    });
-
-// Goni server detail (Application View)
-router
-  .route('/projects/goni/:id/server/:serverid')
-  .get(
-    passport.authenticate('bearer'),
-    async(req, res) => {
-
-    });
 
 export default router;
