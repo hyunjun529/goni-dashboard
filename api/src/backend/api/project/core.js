@@ -109,7 +109,7 @@ export function getProjectList(id) {
         reject(connErr);
       }
       connection.query({
-        sql: 'SELECT project.id, project.name, project.is_plus, project.apikey FROM project JOIN project_role WHERE project_role.user_id =?', // eslint-disable-line
+        sql: 'SELECT DISTINCT project.id, project.name, project.is_plus, project.apikey FROM project JOIN project_role WHERE project_role.user_id =?', // eslint-disable-line
         values: [id],
       }, (err, results) => {
         connection.release();
