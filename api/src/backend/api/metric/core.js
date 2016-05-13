@@ -22,9 +22,9 @@ export function getAPIMetrics(apikey, path, duration) {
         }
         const processed = {
           overview: {
-            min: exists ? `${results[0][0].min}ms` : 'no data',
-            mean: exists ? `${results[0][0].mean}ms` : 'no data',
-            max: exists ? `${results[0][0].max}ms` : 'no data',
+            min: exists ? `${parseInt(results[0][0].min, 10)}ms` : 'no data',
+            mean: exists ? `${parseInt(results[0][0].mean, 10)}ms` : 'no data',
+            max: exists ? `${parseInt(results[0][0].max, 10)}ms` : 'no data',
             panic: exists ? results[0][0].count : 'no data',
           },
           responsemap: results[1],
