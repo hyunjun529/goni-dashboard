@@ -10,6 +10,7 @@
     "rules": {
         "arrow-body-style": 0,
         "curly": 2,
+        "max-len": 0,
         "new-cap": [
             2, {
                 "capIsNewExceptions": ["Router"]

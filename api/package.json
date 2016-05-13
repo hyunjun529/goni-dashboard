@@ -5,6 +5,7 @@
   "scripts": {
     "build": "npm install && gulp build",
     "dev": "gulp build-dev && npm run startdev",
+    "lint": "eslint . --ext .js,.jsx",
     "start": "gulp build && node build/dist/index.js",
     "startdev": "node build/dist/index.js --DEV"
   },
@@ -90,7 +91,6 @@
     "redux-thunk": "^2.0.1",
     "reqwest": "^2.0.5",
     "time": "^0.11.4",
-    "underscore": "^1.8.3",
     "xhr2": "^0.1.3"
   }
 }
