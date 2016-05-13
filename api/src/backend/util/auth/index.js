@@ -1,4 +1,4 @@
-import _ from 'underscore';
+import _ from 'lodash';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 
@@ -39,7 +39,7 @@ export function checkPassword(dbp, p, s) {
  */
 export function createSalt() {
   let s = '';
-  _.each(_.range(32), () => {
+  _.forEach(_.range(32), () => {
     s += salt.substr(_.random(0, 61), 1);
   });
   return s;
