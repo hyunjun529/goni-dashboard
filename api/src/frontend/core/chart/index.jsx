@@ -1,3 +1,4 @@
+/* eslint no-use-before-define:0 */
 // https://github.com/codesuki/react-d3-components/issues/9
 
 import React from 'react';
@@ -73,9 +74,10 @@ const createClass = (chartType) => {
     }
 
     render() {
-      const { duration } = this.props;
+      const { duration, margin, ...others } = this.props;
       let Component = this.getChartClass();
-      let { width, height, margin, ...others } = this.props;
+      let width = this.props.width;
+      let height = this.props.height;
       width = this.state.size.w || 100;
       height = this.state.size.h || 100;
       return (

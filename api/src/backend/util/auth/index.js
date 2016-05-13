@@ -33,7 +33,7 @@ export function checkPassword(dbp, p, s) {
 }
 
 /**
- * createSalt() returns 32 length string
+ * createSalt() returns 32 length random string
  *
  * @return {String} salt
  */

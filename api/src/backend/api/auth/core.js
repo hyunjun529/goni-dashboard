@@ -93,7 +93,7 @@ export function registerUser(email, username, password) {
       const t = getTimestamp();
       const salt = createSalt();
       connection.query({
-        sql: `INSERT INTO user ${userRegisterField} VALUES (?,?,?,?,FROM_UNIXTIME(?),FROM_UNIXTIME(?))`, //eslint-disable-line
+        sql: `INSERT INTO user ${userRegisterField} VALUES (?,?,?,?,FROM_UNIXTIME(?),FROM_UNIXTIME(?))`,
         values: [email, username, hashPassword(password, salt), salt, t, t],
       }, (err, result) => {
         connection.release();
@@ -124,7 +124,7 @@ export function registerUserToken(id) {
       });
       const expiredAt = getTokenTimestamp();
       connection.query({
-        sql: `INSERT INTO user_token ${userTokenField} VALUES (?,?,FROM_UNIXTIME(?))`, //eslint-disable-line
+        sql: `INSERT INTO user_token ${userTokenField} VALUES (?,?,FROM_UNIXTIME(?))`,
         values: [hashToken(token), id, expiredAt],
       }, (err) => {
         connection.release();

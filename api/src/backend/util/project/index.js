@@ -10,7 +10,7 @@ const salt = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 export const secret = 'secret';
 
 /**
- * createSalt() returns 32 length string
+ * createSalt() returns 32 length random string
  *
  * @return {String} salt
  */
