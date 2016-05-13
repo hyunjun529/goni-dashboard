@@ -46,16 +46,15 @@ router
         if (userExists) {
           return res.sendStatus(409);
         }
-        const result = await registerUser(req.body.email, req.body.username, req.body.password);
-        if (!result) {
+        const userId = await registerUser(req.body.email, req.body.username, req.body.password);
+        if (!userId) {
           return res.sendStatus(400);
         }
         status = 200;
-        const id = result.insertId;
-        const auth = await registerUserToken(id);
+        const auth = await registerUserToken(userId);
         return res.send({
           token: auth,
-          user: id,
+          user: userId,
         });
       } catch (error) {
         return res.sendStatus(status);

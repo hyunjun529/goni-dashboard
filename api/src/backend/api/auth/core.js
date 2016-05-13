@@ -76,13 +76,13 @@ export function getUserByToken(token) {
 }
 
 /**
- * registerUser(email, username, password) returns result object
+ * registerUser(email, username, password) returns userId
  * if user successfully registered
  *
  * @param {String} email (length < 50)
  * @param {String} username (length < 16)
  * @param {String} password
- * @return {Object} result
+ * @return {Integer} userId
  */
 export function registerUser(email, username, password) {
   return new Promise((resolve, reject) => {
@@ -100,7 +100,7 @@ export function registerUser(email, username, password) {
         if (err) {
           reject(err);
         }
-        resolve(result);
+        resolve(result.insertId);
       });
     });
   });
