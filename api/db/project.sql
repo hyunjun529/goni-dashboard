@@ -5,5 +5,6 @@ CREATE TABLE `project` (
   `apikey` varchar(64) NOT NULL DEFAULT '',
   `admin_id` int(11) DEFAULT NULL,
   `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
