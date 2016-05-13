@@ -14,8 +14,10 @@ import {
 } from 'react-router-redux';
 import {
   httpGet,
+  httpPost,
 } from 'frontend/util/fetch';
 
+const CREATE_PROJECT_URL = '/api/project';
 const PROJECTS_URL = '/api/projects';
 
 function getProjectPageUrl(project) {
@@ -23,6 +25,41 @@ function getProjectPageUrl(project) {
 }
 
 const Actions = {
+  createProject: (data) => {
+    return async dispatch => {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await httpPost(CREATE_PROJECT_URL, token, data);
+        if (data.isPlus) {
+          dispatch(push(`/goniplus/${res.id}`));
+        } else {
+          dispatch(push(`/goni/${res.id}`));
+        }
+      } catch (err) { // eslint-disable-line
+        // TODO : push to eror page
+        dispatch(push('/'));
+      }
+    };
+  },
+  enterProject: (project) => {
+    return async dispatch => {
+      try {
+        if (project) {
+          dispatch({
+            type: PROJECT_ENTER,
+            project,
+          });
+          dispatch({
+            type: project.is_plus ? PROJECT_ENTER_GONIPLUS : PROJECT_ENTER_GONI,
+          });
+          dispatch(push(getProjectPageUrl(project)));
+        }
+      } catch (err) { // eslint-disable-line
+        // TODO : push to eror page
+        dispatch(push('/'));
+      }
+    };
+  },
   getProjects: () => {
     return async dispatch => {
       try {
@@ -44,25 +81,6 @@ const Actions = {
         dispatch({
           type: PROJECTS_FETCH_ERROR,
         });
-      }
-    };
-  },
-  enterProject: (project) => {
-    return async dispatch => {
-      try {
-        if (project) {
-          dispatch({
-            type: PROJECT_ENTER,
-            project,
-          });
-          dispatch({
-            type: project.is_plus ? PROJECT_ENTER_GONIPLUS : PROJECT_ENTER_GONI,
-          });
-          dispatch(push(getProjectPageUrl(project)));
-        }
-      } catch (err) { // eslint-disable-line
-        // TODO : push to eror page
-        dispatch(push('/'));
       }
     };
   },
