@@ -63,5 +63,9 @@ gulp.task('client', () => {
   .pipe(gulp.dest(`${buildPath}/public`));
 });
 
+gulp.task('production', () => {
+  process.env.NODE_ENV = 'production';
+});
+
 gulp.task('build-dev', ['client-dev', 'server']);
-gulp.task('build', ['client', 'server']);
+gulp.task('build', ['production', 'client', 'server']);
