@@ -75,7 +75,7 @@ const createClass = (chartType) => {
 
     render() {
       const { duration, margin, ...others } = this.props;
-      let Component = this.getChartClass();
+      const Component = this.getChartClass();
       let width = this.props.width;
       let height = this.props.height;
       width = this.state.size.w || 100;
