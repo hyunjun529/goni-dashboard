@@ -1,6 +1,10 @@
 import _ from 'lodash';
 import crypto from 'crypto';
 import {
+  canAccessProject,
+  canAccessProjectByKey,
+} from 'backend/api/project/core';
+import {
   getTimestamp,
 } from 'backend/util/time';
 
@@ -33,3 +37,27 @@ export function createAPIKey(userid) {
     .update(userid + getTimestamp().toString() + createSalt())
     .digest('hex');
 }
+
+export const projectAccessCheck = async(req, res, next) => {
+  try {
+    const canAccess = await canAccessProject(req.params.id, req.user.id);
+    if (!canAccess) {
+      return res.sendStatus(401);
+    }
+    return next();
+  } catch (err) {
+    return res.sendStatus(500);
+  }
+};
+
+export const projectAccessCheckByKey = async(req, res, next) => {
+  try {
+    const canAccess = await canAccessProjectByKey(req.params.key, req.user.id);
+    if (!canAccess) {
+      return res.sendStatus(401);
+    }
+    return next();
+  } catch (err) {
+    return res.sendStatus(500);
+  }
+};
