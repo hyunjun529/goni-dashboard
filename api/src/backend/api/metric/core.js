@@ -79,7 +79,7 @@ export function getInstances(apikey, metric) {
         if (results && results[0].length !== 0) {
           resolve(results[0][0].distinct);
         } else {
-          reject(null);
+          resolve([]);
         }
       });
   });
@@ -99,7 +99,7 @@ export function getPaths(apikey) {
         if (results && results[0].length !== 0) {
           resolve(results[0][0].distinct);
         } else {
-          reject(null);
+          resolve([]);
         }
       });
   });
