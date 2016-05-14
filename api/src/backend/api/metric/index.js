@@ -1,6 +1,9 @@
 import _ from 'lodash';
 import passport from 'backend/core/passport';
 import {
+  projectAccessCheckByKey,
+} from 'backend/util/project';
+import {
   getAPIMetrics,
   getExpvar,
   getInstances,
@@ -24,6 +27,7 @@ router
   .route('/goniplus/:key/:metric/instances')
   .get(
     passport.authenticate('bearer'),
+    projectAccessCheckByKey,
     async(req, res) => {
       try {
         if (_.indexOf(validMetric, req.params.metric) === -1) {
@@ -48,12 +52,12 @@ router
   .route('/goniplus/:key/runtime/:instance/:time')
   .get(
     passport.authenticate('bearer'),
+    projectAccessCheckByKey,
     async(req, res) => {
       try {
         if (_.indexOf(validTime, req.params.time) === -1) {
           return res.sendStatus(400);
         }
-        // TODO : check if user can access project
         // TODO : return 400 if project is not goniplus project
         const results = await getRuntime(req.params.key, req.params.instance, req.params.time);
         return res.send(results);
@@ -67,12 +71,12 @@ router
   .route('/goniplus/:key/expvar/:instance/:time')
   .get(
     passport.authenticate('bearer'),
+    projectAccessCheckByKey,
     async(req, res) => {
       try {
         if (_.indexOf(validTime, req.params.time) === -1) {
           return res.sendStatus(400);
         }
-        // TODO : check if user can access project
         // TODO : return 400 if project is not goniplus project
         const results = await getExpvar(req.params.key, req.params.instance, req.params.time);
         return res.send(results);
@@ -87,6 +91,7 @@ router
   .route('/goniplus/:key/:metric/paths')
   .get(
     passport.authenticate('bearer'),
+    projectAccessCheckByKey,
     async(req, res) => {
       try {
         if (_.indexOf(validAPIMetric, req.params.metric) === -1) {
@@ -110,6 +115,7 @@ router
   .route('/goniplus/:key/:metric/:time')
   .post(
     passport.authenticate('bearer'),
+    projectAccessCheckByKey,
     async(req, res) => {
       try {
         if (_.indexOf(validAPIMetric, req.params.metric) === -1) {
