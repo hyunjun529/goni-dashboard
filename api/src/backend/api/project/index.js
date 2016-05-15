@@ -1,8 +1,12 @@
 import passport from 'backend/core/passport';
 import {
+  projectAccessCheck,
+} from 'backend/util/project';
+import {
   createProject,
   getProject,
   getProjectList,
+  getProjectMemberList,
 } from './core';
 import {
   Router,
@@ -13,22 +17,6 @@ const isGoniAllowed = false;
 const router = Router();
 
 // Project
-router
-  .route('/project/:id')
-  .get(
-    passport.authenticate('bearer'),
-    async(req, res) => {
-      try {
-        const project = await getProject(req.params.id, req.user.id);
-        if (project) {
-          return res.send(project);
-        }
-        return res.sendStatus(404);
-      } catch (error) {
-        return res.sendStatus(500);
-      }
-    });
-
 // Create Project
 router
   .route('/project')
@@ -46,6 +34,40 @@ router
         return res.send({
           id: project,
         });
+      } catch (error) {
+        return res.sendStatus(500);
+      }
+    });
+
+router
+  .route('/project/:id')
+  .get(
+    passport.authenticate('bearer'),
+    projectAccessCheck,
+    async(req, res) => {
+      try {
+        const project = await getProject(req.params.id, req.user.id);
+        if (project) {
+          return res.send(project);
+        }
+        return res.sendStatus(404);
+      } catch (error) {
+        return res.sendStatus(500);
+      }
+    });
+
+router
+  .route('/project/:id/member')
+  .get(
+    passport.authenticate('bearer'),
+    projectAccessCheck,
+    async(req, res) => {
+      try {
+        const member = await getProjectMemberList(req.params.id);
+        if (member) {
+          return res.send(member);
+        }
+        return res.sendStatus(404);
       } catch (error) {
         return res.sendStatus(500);
       }
