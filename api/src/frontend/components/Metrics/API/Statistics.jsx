@@ -82,7 +82,7 @@ class Statistics extends React.Component {
     return (
       <div>
         <div className="chart-wrapper-header">{title}</div>
-        <ResponsivePieChart data={chartData} radius={125} innerRadius={20} valueTextFormatter={(val) => `${val}`} />
+        <ResponsivePieChart data={chartData} radius={100} innerRadius={20} valueTextFormatter={(val) => `${val}`} />
       </div>
     );
   }
