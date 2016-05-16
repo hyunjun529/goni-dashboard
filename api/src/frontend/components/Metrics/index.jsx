@@ -12,8 +12,16 @@ import Select from 'react-select';
 
 // Constants
 import { METRIC_CHANGE_INSTANCE } from 'constants/metric';
+import { PROJECT_ENTER_METRIC_PAGE } from 'constants/project';
 
 class Metrics extends React.Component {
+  componentWillMount() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: PROJECT_ENTER_METRIC_PAGE,
+    });
+  }
+
   componentDidMount() {
     const { currentProject, dispatch, type } = this.props;
     dispatch(MetricAction.getInstances(currentProject.apikey, type));

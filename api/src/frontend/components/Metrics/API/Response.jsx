@@ -15,6 +15,7 @@ import Select from 'react-select';
 
 // Constants
 import { METRIC_CHANGE_PATH } from 'constants/metric';
+import { PROJECT_ENTER_METRIC_PAGE } from 'constants/project';
 
 const type = 'response';
 
@@ -37,6 +38,13 @@ function d3RespColorAccessor(d, idx) { // eslint-disable-line no-unused-vars
 }
 
 class Response extends React.Component {
+  componentWillMount() {
+    const { dispatch } = this.props;
+    dispatch({
+      type: PROJECT_ENTER_METRIC_PAGE,
+    });
+  }
+
   componentDidMount() {
     const { currentProject, dispatch } = this.props;
     dispatch(MetricAction.getPaths(currentProject.apikey, type));
