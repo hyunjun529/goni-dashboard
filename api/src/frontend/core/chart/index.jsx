@@ -82,13 +82,21 @@ const createClass = (chartType) => {
       height = this.state.size.h || 100;
       return (
         <div className="chart-wrapper" ref="wrapper">
-          <Component
-            width = {width}
-            height = {height}
-            margin = {margin}
-            xScale = {d3.time.scale().domain(duration).range([0, width - 65])}
-            {...others}
-          />
+          { duration ?
+            <Component
+              width = {width}
+              height = {height}
+              margin = {margin}
+              xScale = {d3.time.scale().domain(duration).range([0, width - 65])}
+              {...others}
+            /> :
+            <Component
+              width = {width}
+              height = {height}
+              margin = {margin}
+              {...others}
+            />
+          }
         </div>
       );
     }
@@ -98,7 +106,7 @@ const createClass = (chartType) => {
     },
   };
   Chart.propTypes = {
-    duration: React.PropTypes.array.isRequired,
+    duration: React.PropTypes.array,
     width: React.PropTypes.number,
     height: React.PropTypes.number,
     margin: React.PropTypes.object,
