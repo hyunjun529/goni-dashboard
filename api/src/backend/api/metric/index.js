@@ -112,15 +112,12 @@ router
   );
 
 router
-  .route('/goniplus/:key/:metric/:time')
+  .route('/goniplus/:key/response/:time')
   .post(
     passport.authenticate('bearer'),
     projectAccessCheckByKey,
     async(req, res) => {
       try {
-        if (_.indexOf(validAPIMetric, req.params.metric) === -1) {
-          return res.sendStatus(400);
-        }
         const results = await getAPIMetrics(req.params.key, req.body.path, req.params.time);
         return res.send(results);
       } catch (error) {

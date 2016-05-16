@@ -17,7 +17,7 @@ export function getAPIMetrics(apikey, path, duration) {
           reject(err);
         }
         let exists = false;
-        if (results && results[0].length !== 0) {
+        if (results && results[0].length !== 0 && results[0][0].min !== null) {
           exists = true;
         }
         const processed = {
