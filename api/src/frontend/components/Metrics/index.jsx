@@ -34,7 +34,7 @@ class Metrics extends React.Component {
     }
     if (nextProps.currentDuration !== currentDuration) {
       dispatch(MetricAction.getCommonMetric(currentProject.apikey, type,
-        currentInstance, currentDuration));
+        currentInstance, nextProps.currentDuration));
     }
   }
 

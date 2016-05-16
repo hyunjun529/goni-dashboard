@@ -50,6 +50,14 @@ class Response extends React.Component {
     dispatch(MetricAction.getPaths(currentProject.apikey, type));
   }
 
+  componentWillReceiveProps(nextProps) {
+    const { currentDuration, currentPath, currentProject, dispatch } = this.props;
+    if (nextProps.currentDuration !== currentDuration) {
+      dispatch(MetricAction.getResponseMetric(currentProject.apikey, type,
+        currentPath, nextProps.currentDuration));
+    }
+  }
+
   _changePath(v) {
     const { currentDuration, currentProject } = this.props;
     const { dispatch } = this.props;
