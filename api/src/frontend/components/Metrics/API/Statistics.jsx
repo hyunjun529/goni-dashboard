@@ -6,6 +6,8 @@ import { connect } from 'react-redux';
 import { Metrics as MetricAction } from 'frontend/actions';
 
 // Components
+import { Empty, Error, Loading } from '../Common';
+import { ResponsivePieChart } from 'frontend/core/chart';
 import Select from 'react-select';
 
 // Constants
@@ -22,9 +24,17 @@ class Statistics extends React.Component {
     });
   }
 
+  componentWillReceiveProps(nextProps) {
+    const { currentDuration, currentPath, currentProject, dispatch } = this.props;
+    if (nextProps.currentDuration !== currentDuration) {
+      dispatch(MetricAction.getResponseMetric(currentProject.apikey, type,
+        currentPath, nextProps.currentDuration));
+    }
+  }
+
   componentDidMount() {
     const { currentProject, dispatch } = this.props;
-    dispatch(MetricAction.getPaths(currentProject.apikey, type));
+    dispatch(MetricAction.getPaths(currentProject.apikey, 'response'));
   }
 
   _changePath(v) {
@@ -38,11 +48,51 @@ class Statistics extends React.Component {
       v, currentDuration));
   }
 
+  _renderResponseStatusPie() {
+    const title = 'responsestatus';
+    const { currentDuration, currentPath, currentProject } = this.props;
+    const { dispatch, errored, fetchedData, fetching } = this.props;
+    if (!currentPath) {
+      return (
+        <Error title={title} msg="Path를 선택해주세요" />
+      );
+    }
+    if (!fetchedData) {
+      if (!fetching && !errored) {
+        dispatch(MetricAction.getResponseMetric(currentProject.apikey, type,
+          currentPath, currentDuration));
+      }
+      return (
+        <Loading title={title} fetching={fetching} />
+      );
+    }
+    const dataLen = fetchedData[title].length;
+    if (dataLen === 0) {
+      return (
+        <Empty title={title} />
+      );
+    }
+    const chartData = [];
+    for (let i = 0; i < dataLen; i++) {
+      chartData.push({
+        label: fetchedData[title][i].status,
+        value: fetchedData[title][i].count,
+      });
+    }
+    return (
+      <div>
+        <div className="chart-wrapper-header">{title}</div>
+        <ResponsivePieChart data={chartData} radius={125} innerRadius={20} valueTextFormatter={(val) => `${val}`} />
+      </div>
+    );
+  }
+
   render() {
     const { currentPath, fetchedPaths, pathFetching } = this.props;
     return (
       <div>
         <Select name="path" options={fetchedPaths} onChange={::this._changePath} isLoading={pathFetching} value={currentPath} placeholder="API Path" />
+        {this._renderResponseStatusPie()}
       </div>
     );
   }

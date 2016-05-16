@@ -5,6 +5,7 @@ import {
 } from 'backend/util/project';
 import {
   getAPIMetrics,
+  getAPIStatistics,
   getExpvar,
   getInstances,
   getPaths,
@@ -119,6 +120,21 @@ router
     async(req, res) => {
       try {
         const results = await getAPIMetrics(req.params.key, req.body.path, req.params.time);
+        return res.send(results);
+      } catch (error) {
+        return res.sendStatus(500);
+      }
+    }
+  );
+
+router
+  .route('/goniplus/:key/response/statistics/:time')
+  .post(
+    passport.authenticate('bearer'),
+    projectAccessCheckByKey,
+    async(req, res) => {
+      try {
+        const results = await getAPIStatistics(req.params.key, req.body.path, req.params.time);
         return res.send(results);
       } catch (error) {
         return res.sendStatus(500);
