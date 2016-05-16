@@ -1,6 +1,23 @@
 {
+    "root": true,
+    "parser": "babel-eslint",
+    "extends": "airbnb",
     "env": {
+        "browser": true,
+        "mocha": true,
         "node": true
     },
-    "extends": "airbnb/legacy"
+    "rules": {
+        "arrow-body-style": 0,
+        "curly": 2,
+        "max-len": 0,
+        "new-cap": [
+            2, {
+                "capIsNewExceptions": ["Router"]
+            }
+        ],
+        "quotes": [2, "single"],
+        "react/sort-comp": 0,
+        "semi": [2, "always"]
+    }
 }
