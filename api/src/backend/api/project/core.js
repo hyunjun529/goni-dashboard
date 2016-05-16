@@ -1,3 +1,6 @@
+import {
+  getUser,
+} from 'backend/api/auth/core';
 import pool from 'backend/core/mysql';
 import {
   createAPIKey,
@@ -7,11 +10,44 @@ import {
 } from 'backend/util/time';
 
 const ROLE_ADMIN = 0;
+const ROLE_MEMBER = 1;
 
 const createProjectColumn = '(name,is_plus,apikey,admin_id,created_at)';
 const createProjectField = '(?,?,?,?,FROM_UNIXTIME(?))';
 const projectRoleColumn = '(project_id,user_id,user_role)';
 const projectRoleField = '(?,?,?)';
+
+/**
+ * addUserToProject(id, user) returns true
+ * if user successfully added to project
+ *
+ * @param {Integer} project id
+ * @param {Integer} user id
+ * @return {Boolean}
+ */
+export function addUserToProject(id, user) {
+  return new Promise((resolve, reject) => {
+    pool.getConnection((connErr, connection) => {
+      if (connErr) {
+        reject(connErr);
+      }
+      connection.query({
+        sql: `INSERT INTO project_role ${projectRoleColumn} VALUES ${projectRoleField}`,
+        values: [id, user, ROLE_MEMBER],
+      }, (err, result) => {
+        connection.release();
+        if (err) {
+          reject(err);
+        }
+        if (result.affectedRows === 0) {
+          reject(false);
+        } else {
+          resolve(true);
+        }
+      });
+    });
+  });
+}
 
 /**
  * canAccessProject(id, user) returns true
@@ -214,3 +250,70 @@ export function getProjectMemberList(id) {
     });
   });
 }
+
+/**
+ * getProjectRole(id, user) returns user_role if user is project admin
+ *
+ * @param {Integer} project id
+ * @param {Integer} user id
+ * @return {Integer} user role (0: Admin / 1: Member)
+ */
+export function getProjectRole(id, user) {
+  return new Promise((resolve, reject) => {
+    pool.getConnection((connErr, connection) => {
+      if (connErr) {
+        reject(connErr);
+      }
+      connection.query({
+        sql: 'SELECT user_role FROM project_role WHERE project_id=? AND user_id=?',
+        values: [id, user],
+      }, (err, results) => {
+        connection.release();
+        if (err) {
+          reject(err);
+        }
+        if (results.length === 0) {
+          resolve(null);
+        } else {
+          resolve(results[0].user_role);
+        }
+      });
+    });
+  });
+}
+
+/**
+ * removeUserFromProject(id, user) returns true
+ * if user successfully removed from project
+ *
+ * @param {Integer} project id
+ * @param {Integer} user id
+ * @return {Boolean}
+ */
+export function removeUserFromProject(id, user) {
+  return new Promise((resolve, reject) => {
+    pool.getConnection((connErr, connection) => {
+      if (connErr) {
+        reject(connErr);
+      }
+      connection.query({
+        sql: 'DELETE FROM project_role WHERE project_id=? AND user_id=?',
+        values: [id, user],
+      }, (err, result) => {
+        connection.release();
+        if (err) {
+          reject(err);
+        }
+        if (result.affectedRows === 0) {
+          reject(false);
+        } else {
+          resolve(true);
+        }
+      });
+    });
+  });
+}
+
+export {
+  getUser,
+};

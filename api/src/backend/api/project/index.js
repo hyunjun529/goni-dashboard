@@ -3,16 +3,22 @@ import {
   projectAccessCheck,
 } from 'backend/util/project';
 import {
+  addUserToProject,
   createProject,
   getProject,
   getProjectList,
   getProjectMemberList,
+  getProjectRole,
+  getUser,
+  removeUserFromProject,
 } from './core';
 import {
   Router,
 } from 'express';
 
 const isGoniAllowed = false;
+const ROLE_ADMIN = 0;
+const ROLE_MEMBER = 0;
 
 const router = Router();
 
@@ -68,6 +74,54 @@ router
           return res.send(member);
         }
         return res.sendStatus(404);
+      } catch (error) {
+        return res.sendStatus(500);
+      }
+    })
+  .post(
+    passport.authenticate('bearer'),
+    projectAccessCheck,
+    async(req, res) => {
+      try {
+        const targetUser = await getUser(req.body.email);
+        if (!targetUser) {
+          return res.sendStatus(400);
+        }
+        const role = await getProjectRole(req.params.id, targetUser.id);
+        if (role) {
+          return res.sendStatus(409);
+        }
+        await addUserToProject(req.params.id, targetUser.id);
+        return res.send({
+          id: targetUser.id,
+          email: req.body.email,
+          user_role: ROLE_MEMBER,
+        });
+      } catch (error) {
+        return res.sendStatus(500);
+      }
+    });
+
+router
+  .route('/project/:id/member/:mid')
+  .delete(
+    passport.authenticate('bearer'),
+    projectAccessCheck,
+    async(req, res) => {
+      try {
+        let role = ROLE_MEMBER;
+        if (req.params.mid !== req.user.id) {
+          role = await getProjectRole(req.params.id, req.user.id);
+        }
+        if (role !== ROLE_ADMIN) {
+          return res.sendStatus(401);
+        }
+        const targetUserRole = await getProjectRole(req.params.id, req.params.mid);
+        if (!targetUserRole) {
+          return res.sendStatus(400);
+        }
+        await removeUserFromProject(req.params.id, req.params.mid);
+        return res.sendStatus(200);
       } catch (error) {
         return res.sendStatus(500);
       }
