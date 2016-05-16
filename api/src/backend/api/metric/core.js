@@ -59,8 +59,16 @@ export function getAPIStatistics(apikey, path, duration) {
         if (results && results[0].length !== 0 && results[0][0].count !== 0) {
           exists = true;
         }
+        const respStatus = [];
+        if (exists) {
+          _.map(results[1], (v) => {
+            if (v.count !== 0) {
+              respStatus.push(v);
+            }
+          });
+        }
         const processed = {
-          responsestatus: exists ? results[1] : [],
+          responsestatus: exists ? respStatus : [],
         };
         resolve(processed);
       });
