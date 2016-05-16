@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import {
   influxGoniPlusClient as goniPlus,
 } from 'backend/core/influx';
@@ -10,8 +11,7 @@ export function getAPIMetrics(apikey, path, duration) {
     goniPlus.query(
       `SELECT min(res),mean(res),max(res),count(panic) FROM http WHERE apikey = '${apikey}' and path = '${path}' and time > now() - ${duration};
        SELECT time, res, status FROM http WHERE apikey = '${apikey}' and path = '${path}' and time > now() - ${duration};
-       SELECT count(res) FROM http WHERE apikey = '${apikey}' and path = '${path}' and time > now() - ${duration} GROUP BY breadcrumb, status;
-       SELECT count(res) FROM http WHERE apikey = '${apikey}' and path = '${path}' and time > now() - ${duration} GROUP BY status;`,
+       SELECT count(res) FROM http WHERE apikey = '${apikey}' and path = '${path}' and time > now() - ${duration} GROUP BY breadcrumb, status;`,
       (err, results) => {
         if (err) {
           reject(err);
@@ -19,6 +19,14 @@ export function getAPIMetrics(apikey, path, duration) {
         let exists = false;
         if (results && results[0].length !== 0 && results[0][0].min !== null) {
           exists = true;
+        }
+        const respGraph = [];
+        if (exists) {
+          _.map(results[2], (v) => {
+            if (v.count !== 0) {
+              respGraph.push(v);
+            }
+          });
         }
         const processed = {
           overview: {
@@ -28,7 +36,7 @@ export function getAPIMetrics(apikey, path, duration) {
             panic: exists ? results[0][0].count : 'no data',
           },
           responsemap: results[1],
-          responsegraph: exists ? results[2] : [],
+          responsegraph: exists ? respGraph : [],
         };
         resolve(processed);
       });
