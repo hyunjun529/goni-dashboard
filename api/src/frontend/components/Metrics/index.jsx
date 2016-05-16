@@ -28,9 +28,13 @@ class Metrics extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { currentProject, dispatch, type } = this.props;
+    const { currentDuration, currentInstance, currentProject, dispatch, type } = this.props;
     if (nextProps.type !== type) {
       dispatch(MetricAction.getInstances(currentProject.apikey, type));
+    }
+    if (nextProps.currentDuration !== currentDuration) {
+      dispatch(MetricAction.getCommonMetric(currentProject.apikey, type,
+        currentInstance, currentDuration));
     }
   }
 

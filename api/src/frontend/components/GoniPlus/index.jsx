@@ -4,17 +4,14 @@ import { connect } from 'react-redux';
 
 // Components
 import {
-  Header,
-  Sidebar,
-  Metrics,
   APIResponseMetrics,
   GeneralSettings,
+  Header,
   MemberSettings,
+  Metrics,
+  Sidebar,
 } from 'frontend/components';
 
-import {
-  METRIC_CLEAR,
-} from 'constants/metric';
 import {
   PROJECT_CHANGE_TIME,
   PROJECT_ENTER_GONIPLUS,
@@ -44,9 +41,6 @@ class GoniPlus extends React.Component {
       dispatch({
         type: PROJECT_CHANGE_TIME,
         time: t,
-      });
-      dispatch({
-        type: METRIC_CLEAR,
       });
     }
   }
