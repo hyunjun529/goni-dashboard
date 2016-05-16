@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 // Components
 import {
   APIResponseMetrics,
+  APIStatisticsMetrics,
   GeneralSettings,
   Header,
   MemberSettings,
@@ -47,16 +48,18 @@ class GoniPlus extends React.Component {
 
   _renderGraphs() {
     const { currentDashboard } = this.props;
-    switch (currentDashboard) {
-      case 'Expvar':
+    switch (currentDashboard.key) {
+      case 'metrics_expvar':
         return <Metrics type="expvar" />;
-      case 'Runtime':
+      case 'metrics_runtime':
         return <Metrics type="runtime" />;
-      case 'Response':
+      case 'api_response':
         return <APIResponseMetrics />;
-      case 'General':
+      case 'api_statistics':
+        return <APIStatisticsMetrics />;
+      case 'settings_general':
         return <GeneralSettings />;
-      case 'Member':
+      case 'settings_member':
         return <MemberSettings />;
       default:
         return false;
@@ -115,7 +118,7 @@ class GoniPlus extends React.Component {
 }
 
 GoniPlus.propTypes = {
-  currentDashboard: React.PropTypes.string,
+  currentDashboard: React.PropTypes.object,
   currentDuration: React.PropTypes.string,
   currentProject: React.PropTypes.object,
   dispatch: React.PropTypes.func.isRequired,

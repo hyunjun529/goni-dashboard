@@ -24,7 +24,10 @@ import {
 } from 'constants/project';
 
 const initialState = {
-  currentDashboard: '',
+  currentDashboard: {
+    title: 'Runtime',
+    key: 'metrics_runtime',
+  },
   currentDuration: '6h',
   currentProject: null,
   isMetricPage: false,
@@ -70,7 +73,7 @@ export default function reducer(state = initialState, action = {}) {
     case PROJECT_ENTER_GONIPLUS:
       return {
         ...state,
-        currentDashboard: 'Runtime',
+        currentDashboard: initialState.currentDashboard,
       };
 
     case PROJECT_ENTER_METRIC_PAGE:

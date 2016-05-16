@@ -9,29 +9,29 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 const SidebarItem = (props) => {
-  const changeDashboard = key => {
+  const changeDashboard = item => {
     const { dispatch } = props;
-    if (key !== props.currentDashboard) {
+    if (item !== props.currentDashboard) {
       dispatch({
         type: METRIC_CLEAR_ALL,
       });
       dispatch({
         type: PROJECT_CHANGE_DASHBOARD,
-        selected: key,
+        selected: item,
       });
     }
   };
 
   const menu = item => (
-    item === props.currentDashboard ? (
-      <a className="selected">{item}</a>
+    item.key === props.currentDashboard.key ? (
+      <a className="selected">{item.title}</a>
     )
     : (
-      <a className="default">{item}</a>
+      <a className="default">{item.title}</a>
     )
   );
   const createItem = (item) => (
-    <li key={item} onClick={() => changeDashboard(item)}>
+    <li key={item.key} onClick={() => changeDashboard(item)}>
       {menu(item)}
     </li>
   );
@@ -51,7 +51,7 @@ const SidebarItem = (props) => {
 };
 
 SidebarItem.propTypes = {
-  currentDashboard: React.PropTypes.string.isRequired,
+  currentDashboard: React.PropTypes.object.isRequired,
   dispatch: React.PropTypes.func.isRequired,
   menu: React.PropTypes.object.isRequired,
 };

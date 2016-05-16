@@ -22,26 +22,31 @@ export const PROJECT_SETTING_REQUEST = 'PROJECT_SETTING_REQUEST';
 export const PROJECT_SETTING_REQUEST_CLEAR_ERROR = 'PROJECT_SETTING_REQUEST_CLEAR_ERROR';
 export const PROJECT_SETTING_REQUEST_ERROR = 'PROJECT_SETTING_REQUEST_ERROR';
 
-export const GONIPLUS_SIDEBAR = [
-  {
-    header: 'metrics',
-    item: [
-      'Expvar',
-      'Runtime',
-    ],
-  },
-  {
-    header: 'API',
-    item: [
-      'Response',
-      'Statistics',
-    ],
-  },
-  {
-    header: 'SETTINGS',
-    item: [
-      'General',
-      'Member',
-    ],
-  },
-];
+export const GONIPLUS_SIDEBAR = [{
+  header: 'metrics',
+  item: [{
+    title: 'Expvar',
+    key: 'metrics_expvar',
+  }, {
+    title: 'Runtime',
+    key: 'metrics_runtime',
+  }],
+}, {
+  header: 'API',
+  item: [{
+    title: 'Response',
+    key: 'api_response',
+  }, {
+    title: 'Statistics',
+    key: 'api_statistics',
+  }],
+}, {
+  header: 'SETTINGS',
+  item: [{
+    title: 'General',
+    key: 'settings_general',
+  }, {
+    title: 'Member',
+    key: 'settings_member',
+  }],
+}];
