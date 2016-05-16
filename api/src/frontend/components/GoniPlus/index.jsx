@@ -8,6 +8,8 @@ import {
   Sidebar,
   Metrics,
   APIResponseMetrics,
+  GeneralSettings,
+  MemberSettings,
 } from 'frontend/components';
 
 import {
@@ -58,13 +60,17 @@ class GoniPlus extends React.Component {
         return <Metrics type="runtime" />;
       case 'Response':
         return <APIResponseMetrics />;
+      case 'General':
+        return <GeneralSettings />;
+      case 'Member':
+        return <MemberSettings />;
       default:
         return false;
     }
   }
 
   _renderLayout() {
-    const { currentProject, fetching } = this.props;
+    const { currentProject, fetching, isMetricPage } = this.props;
     return (
       <div className="child">
         <Sidebar menu={GONIPLUS_SIDEBAR} />
@@ -76,20 +82,23 @@ class GoniPlus extends React.Component {
                 null
               }
             </h1>
-            <div className="tag-tab-wrap">
-              <div className={this._timeBtn('30m', false)} onClick={() => this._changeTime('30m')}>
-                <a>30 MINUTES</a>
-              </div>
-              <div className={this._timeBtn('1h', true)} onClick={() => this._changeTime('1h')}>
-                <a>1 HOUR</a>
-              </div>
-              <div className={this._timeBtn('3h', true)} onClick={() => this._changeTime('3h')}>
-                <a>3 HOURS</a>
-              </div>
-              <div className={this._timeBtn('6h', true)} onClick={() => this._changeTime('6h')}>
-                <a>6 HOURS</a>
-              </div>
-            </div>
+            { isMetricPage ?
+              <div className="tag-tab-wrap">
+                <div className={this._timeBtn('30m', false)} onClick={() => this._changeTime('30m')}>
+                  <a>30 MINUTES</a>
+                </div>
+                <div className={this._timeBtn('1h', true)} onClick={() => this._changeTime('1h')}>
+                  <a>1 HOUR</a>
+                </div>
+                <div className={this._timeBtn('3h', true)} onClick={() => this._changeTime('3h')}>
+                  <a>3 HOURS</a>
+                </div>
+                <div className={this._timeBtn('6h', true)} onClick={() => this._changeTime('6h')}>
+                  <a>6 HOURS</a>
+                </div>
+              </div> :
+              null
+            }
           </div>
           {this._renderGraphs()}
         </div>
@@ -117,6 +126,7 @@ GoniPlus.propTypes = {
   currentProject: React.PropTypes.object,
   dispatch: React.PropTypes.func.isRequired,
   fetching: React.PropTypes.bool,
+  isMetricPage: React.PropTypes.bool,
 };
 
 const mapStateToProps = (state) => ({
@@ -124,6 +134,7 @@ const mapStateToProps = (state) => ({
   currentDuration: state.project.currentDuration,
   currentProject: state.project.currentProject,
   fetching: state.project.fetching,
+  isMetricPage: state.project.isMetricPage,
 });
 
 export default connect(mapStateToProps)(GoniPlus);
