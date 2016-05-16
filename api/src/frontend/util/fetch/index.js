@@ -1,5 +1,23 @@
 import reqwest from 'reqwest';
 
+export function httpDelete(url, token) {
+  return new Promise((resolve, reject) => {
+    reqwest({
+      url,
+      method: 'delete',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      error: (err) => {
+        reject(err);
+      },
+      success: (res) => {
+        resolve(res);
+      },
+    });
+  });
+}
+
 export function httpGet(url, token) {
   return new Promise((resolve, reject) => {
     reqwest({
