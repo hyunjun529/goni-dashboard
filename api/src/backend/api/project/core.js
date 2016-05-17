@@ -82,7 +82,7 @@ export function canAccessProject(id, user) {
 }
 
 /**
- * canAccessProject(id, user) returns true
+ * canAccessProjectByKey(key, user) returns true
  * if user can access project
  *
  * @param {String} project apikey
