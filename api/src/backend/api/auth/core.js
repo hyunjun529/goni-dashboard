@@ -9,9 +9,35 @@ import {
   getTimestamp,
   getTokenTimestamp,
 } from 'backend/util/time';
+import {
+  SLACK_CLIENT_ID,
+} from 'constants/auth';
+import {
+  SLACK_CLIENT_SECRET,
+} from './credential';
+import request from 'request';
 
+const slackTokenField = '(project_id,user_id,slack_user_id,access_token,team_name,team_id,channel,channel_id,configuration_url,url,created_at)';
+const slackTokenValues = '(?,?,?,?,?,?,?,?,?,?,FROM_UNIXTIME(?))';
 const userRegisterField = '(email,username,password,salt,created_at,updated_at)';
 const userTokenField = '(token,user_id,expired_at)';
+
+/**
+ * getSlackToken(code) returns credential
+ *
+ * @param {String} code
+ * @return {Object} access_token(String), team_name(String), team_id(String), incoming_webhook(Object)
+ */
+export function getSlackToken(code) {
+  return new Promise((resolve, reject) => {
+    request(`https://slack.com/api/oauth.access?client_id=${SLACK_CLIENT_ID}&client_secret=${SLACK_CLIENT_SECRET}&code=${code}`, (err, resp, body) => {
+      if (!err && resp.statusCode === 200) {
+        resolve(JSON.parse(body));
+      }
+      reject(err);
+    });
+  });
+}
 
 /**
  * getUser(email) returns user Object
@@ -70,6 +96,43 @@ export function getUserByToken(token) {
           resolve(null);
         }
         resolve(results[0]);
+      });
+    });
+  });
+}
+
+/**
+ * registerSlackToken(pid, uid, data) returns true
+ * if token successfully registered
+ *
+ * @param {String} projectid
+ * @param {String} userid
+ * @param {Object} data
+ * @return {Boolean} registered
+ */
+export function registerSlackToken(pid, uid, data) {
+  return new Promise((resolve, reject) => {
+    pool.getConnection((connErr, connection) => {
+      if (connErr) {
+        reject(connErr);
+      }
+      const hook = data.incoming_webhook;
+      connection.query({
+        sql: `INSERT INTO notification_slack ${slackTokenField} VALUES ${slackTokenValues}`,
+        values: [pid, uid, data.user_id, data.access_token, data.team_name, data.team_id, hook.channel, hook.channel_id, hook.configuration_url, hook.url, getTimestamp()],
+      }, (err, result) => {
+        connection.release();
+        if (err) {
+          reject(err);
+        }
+        if (!result) {
+          reject(null);
+        }
+        if (result.affectedRows === 1) {
+          resolve(true);
+        } else {
+          resolve(false);
+        }
       });
     });
   });
