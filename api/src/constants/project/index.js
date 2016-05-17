@@ -43,10 +43,10 @@ export const GONIPLUS_SIDEBAR = [{
 }, {
   header: 'SETTINGS',
   item: [{
-    title: 'General',
-    key: 'settings_general',
-  }, {
     title: 'Member',
     key: 'settings_member',
+  }, {
+    title: 'Notification',
+    key: 'settings_notification',
   }],
 }];

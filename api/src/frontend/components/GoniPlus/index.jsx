@@ -6,25 +6,46 @@ import { connect } from 'react-redux';
 import {
   APIResponseMetrics,
   APIStatisticsMetrics,
-  GeneralSettings,
   Header,
   MemberSettings,
   Metrics,
+  NotificationSettings,
   Sidebar,
 } from 'frontend/components';
 
 import {
+  PROJECT_CHANGE_DASHBOARD,
   PROJECT_CHANGE_TIME,
   PROJECT_ENTER_GONIPLUS,
   GONIPLUS_SIDEBAR,
 } from 'constants/project';
 
+const keyToObject = (key) => {
+  switch (key) {
+    case 'settings_notification':
+      return {
+        title: 'Notification',
+        key: 'settings_notification',
+      };
+    default:
+      return null;
+  }
+};
+
 class GoniPlus extends React.Component {
   componentDidMount() {
-    const { dispatch } = this.props;
+    const { dispatch, location } = this.props;
     dispatch({
       type: PROJECT_ENTER_GONIPLUS,
     });
+    let dashboard = location.query && location.query.dashboard ? location.query.dashboard : null;
+    dashboard = keyToObject(dashboard);
+    if (dashboard) {
+      dispatch({
+        type: PROJECT_CHANGE_DASHBOARD,
+        selected: dashboard,
+      });
+    }
   }
 
   _timeBtn(t, more) {
@@ -57,10 +78,10 @@ class GoniPlus extends React.Component {
         return <APIResponseMetrics />;
       case 'api_statistics':
         return <APIStatisticsMetrics />;
-      case 'settings_general':
-        return <GeneralSettings />;
       case 'settings_member':
         return <MemberSettings />;
+      case 'settings_notification':
+        return <NotificationSettings />;
       default:
         return false;
     }
@@ -124,6 +145,7 @@ GoniPlus.propTypes = {
   dispatch: React.PropTypes.func.isRequired,
   fetching: React.PropTypes.bool,
   isMetricPage: React.PropTypes.bool,
+  location: React.PropTypes.object,
 };
 
 const mapStateToProps = (state) => ({
