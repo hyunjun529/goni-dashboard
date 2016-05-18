@@ -283,6 +283,68 @@ export function getProjectRole(id, user) {
 }
 
 /**
+ * getSlackIntegrationData(id) returns slack integration data
+ *
+ * @param {Integer} project id
+ * @return {Object}
+ */
+export function getSlackIntegrationData(id) {
+  return new Promise((resolve, reject) => {
+    pool.getConnection((connErr, connection) => {
+      if (connErr) {
+        reject(connErr);
+      }
+      connection.query({
+        sql: 'SELECT team_name, channel, configuration_url, created_at FROM notification_slack WHERE project_id=?',
+        values: [id],
+      }, (err, results) => {
+        connection.release();
+        if (err) {
+          reject(err);
+        }
+        if (results.length === 0) {
+          resolve(null);
+        } else {
+          resolve(results[0]);
+        }
+      });
+    });
+  });
+}
+
+/**
+ * removeSlackIntegrationFromProject(id, user) returns true
+ * if user successfully removed from project
+ *
+ * @param {Integer} project id
+ * @param {Integer} user id
+ * @return {Boolean} returns false when user is not admin
+ */
+export function removeSlackIntegrationFromProject(id, user) {
+  return new Promise((resolve, reject) => {
+    pool.getConnection((connErr, connection) => {
+      if (connErr) {
+        reject(connErr);
+      }
+      connection.query({
+        sql: 'DELETE FROM notification_slack WHERE project_id=? AND user_id=?',
+        values: [id, user],
+      }, (err, result) => {
+        connection.release();
+        if (err) {
+          reject(err);
+        }
+        if (result.affectedRows === 0) {
+          resolve(false);
+        } else {
+          resolve(true);
+        }
+      });
+    });
+  });
+}
+
+/**
  * removeUserFromProject(id, user) returns true
  * if user successfully removed from project
  *
@@ -305,7 +367,7 @@ export function removeUserFromProject(id, user) {
           reject(err);
         }
         if (result.affectedRows === 0) {
-          reject(false);
+          resolve(false);
         } else {
           resolve(true);
         }

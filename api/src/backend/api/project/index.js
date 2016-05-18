@@ -9,7 +9,9 @@ import {
   getProjectList,
   getProjectMemberList,
   getProjectRole,
+  getSlackIntegrationData,
   getUser,
+  removeSlackIntegrationFromProject,
   removeUserFromProject,
 } from './core';
 import {
@@ -120,7 +122,41 @@ router
         if (!targetUserRole) {
           return res.sendStatus(400);
         }
-        await removeUserFromProject(req.params.id, req.params.mid);
+        const success = await removeUserFromProject(req.params.id, req.params.mid);
+        if (!success) {
+          return res.sendStatus(400);
+        }
+        return res.sendStatus(200);
+      } catch (error) {
+        return res.sendStatus(500);
+      }
+    });
+
+router
+  .route('/project/:id/notification/slack')
+  .get(
+    passport.authenticate('bearer'),
+    projectAccessCheck,
+    async(req, res) => {
+      try {
+        const slackData = await getSlackIntegrationData(req.params.id);
+        if (slackData) {
+          return res.send(slackData);
+        }
+        return res.sendStatus(404);
+      } catch (error) {
+        return res.sendStatus(500);
+      }
+    })
+  .delete(
+    passport.authenticate('bearer'),
+    projectAccessCheck,
+    async(req, res) => {
+      try {
+        const success = await removeSlackIntegrationFromProject(req.params.id, req.user.id);
+        if (!success) {
+          return res.sendStatus(401);
+        }
         return res.sendStatus(200);
       } catch (error) {
         return res.sendStatus(500);
