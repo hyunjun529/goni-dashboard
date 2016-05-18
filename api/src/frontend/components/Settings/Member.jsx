@@ -12,13 +12,9 @@ import Modal from 'react-modal';
 import { memberModalStyle } from 'constants/settings';
 
 class Member extends React.Component {
-  componentWillMount() {
-    const { dispatch } = this.props;
-    dispatch(MemberSettings.enterDashboard());
-  }
-
   componentDidMount() {
     const { currentProject, dispatch } = this.props;
+    dispatch(MemberSettings.enterDashboard());
     dispatch(MemberSettings.getMemberList(currentProject.id));
   }
 
