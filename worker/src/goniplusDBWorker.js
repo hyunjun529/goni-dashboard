@@ -93,25 +93,28 @@ amqp.connect(`amqp://${queueUser}:${queuePass}@${queueHost}:${queuePort}`, (conn
           _.forEach(metric, (resp, method) => {
             _.forEach(resp, (result, code) => {
               const codeParsed = parseInt(code, 10);
-              _.forEach(result, (v) => {
-                const d = {
-                  time: new Date(+v.time * 1000),
-                  method,
-                  path,
-                  instance: data.instance,
-                  res: v.res,
-                };
-                const t = {
-                  apikey: data.apikey,
-                  status: codeParsed,
-                };
-                if (v.crumb) {
-                  t.breadcrumb = JSON.stringify(v.crumb);
-                }
-                if (v.panic) {
-                  d.panic = true;
-                }
-                http.push([d, t]);
+              _.forEach(result, (res, browser) => {
+                _.forEach(res, (v) => {
+                  const d = {
+                    time: new Date(+v.time * 1000),
+                    browser,
+                    method,
+                    path,
+                    instance: data.instance,
+                    res: v.res,
+                  };
+                  const t = {
+                    apikey: data.apikey,
+                    status: codeParsed,
+                  };
+                  if (v.crumb) {
+                    t.breadcrumb = JSON.stringify(v.crumb);
+                  }
+                  if (v.panic) {
+                    d.panic = true;
+                  }
+                  http.push([d, t]);
+                });
               });
             });
           });
