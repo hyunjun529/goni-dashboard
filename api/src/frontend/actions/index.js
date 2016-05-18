@@ -3,6 +3,7 @@ import Metrics from 'frontend/actions/Metrics';
 import Project from 'frontend/actions/Project';
 import Projects from 'frontend/actions/Projects';
 import MemberSettings from 'frontend/actions/Settings/member';
+import NotificationSettings from 'frontend/actions/Settings/notification';
 
 export {
   Auth,
@@ -10,4 +11,5 @@ export {
   Project,
   Projects,
   MemberSettings,
+  NotificationSettings,
 };
