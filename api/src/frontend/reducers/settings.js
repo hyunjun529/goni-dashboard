@@ -8,6 +8,15 @@ import {
   SETTINGS_MEMBER_MODAL_FETCHED,
   SETTINGS_MEMBER_MODAL_FETCHING,
   SETTINGS_MEMBER_MODAL_OPEN,
+  SETTINGS_NOTIFICATION_FETCH_ERROR,
+  SETTINGS_NOTIFICATION_FETCHED,
+  SETTINGS_NOTIFICATION_FETCHING,
+  SETTINGS_NOTIFICATION_INIT,
+  SETTINGS_NOTIFICATION_MODAL_CLOSE,
+  SETTINGS_NOTIFICATION_MODAL_FETCH_ERROR,
+  SETTINGS_NOTIFICATION_MODAL_FETCHED,
+  SETTINGS_NOTIFICATION_MODAL_FETCHING,
+  SETTINGS_NOTIFICATION_MODAL_OPEN,
 } from 'constants/settings';
 
 const initialState = {
@@ -16,26 +25,34 @@ const initialState = {
     error: null,
     fetching: false,
     modal: {
-      isOpened: false,
+      data: null,
       error: null,
       fetching: false,
+      isOpened: false,
       type: '',
     },
   },
   notification: {
     data: null,
+    error: null,
     fetching: false,
+    modal: {
+      isOpened: false,
+      error: null,
+      fetching: false,
+    },
   },
 };
 
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
-    // MEMBER
+    // Member
     case SETTINGS_MEMBER_FETCH_ERROR:
       return {
         ...state,
         member: {
           ...state.member,
+          data: [],
           error: action.error,
           fetching: false,
         },
@@ -54,6 +71,7 @@ export default function reducer(state = initialState, action = {}) {
         ...state,
         member: {
           ...state.member,
+          data: [],
           fetching: true,
         },
       };
@@ -115,6 +133,93 @@ export default function reducer(state = initialState, action = {}) {
             data: action.data,
             isOpened: true,
             type: action.modal,
+          },
+        },
+      };
+      // Notification
+    case SETTINGS_NOTIFICATION_FETCH_ERROR:
+      return {
+        ...state,
+        notification: {
+          ...state.notification,
+          error: action.error,
+          fetching: false,
+        },
+      };
+    case SETTINGS_NOTIFICATION_FETCHED:
+      return {
+        ...state,
+        notification: {
+          ...state.notification,
+          data: action.data,
+          fetching: false,
+        },
+      };
+    case SETTINGS_NOTIFICATION_FETCHING:
+      return {
+        ...state,
+        notification: {
+          ...state.notification,
+          fetching: true,
+        },
+      };
+    case SETTINGS_NOTIFICATION_INIT:
+      return {
+        ...state,
+        notification: initialState.notification,
+      };
+    case SETTINGS_NOTIFICATION_MODAL_CLOSE:
+      return {
+        ...state,
+        notification: {
+          ...state.notification,
+          modal: initialState.notification.modal,
+        },
+      };
+    case SETTINGS_NOTIFICATION_MODAL_FETCH_ERROR:
+      return {
+        ...state,
+        notification: {
+          ...state.notification,
+          modal: {
+            ...state.notification.modal,
+            error: action.error,
+            fetching: false,
+          },
+        },
+      };
+    case SETTINGS_NOTIFICATION_MODAL_FETCHED:
+      return {
+        ...state,
+        notification: {
+          ...state.notification,
+          data: action.data,
+          modal: {
+            ...state.notification.modal,
+            fetching: false,
+          },
+        },
+      };
+    case SETTINGS_NOTIFICATION_MODAL_FETCHING:
+      return {
+        ...state,
+        notification: {
+          ...state.notification,
+          modal: {
+            ...state.notification.modal,
+            fetching: true,
+          },
+        },
+      };
+    case SETTINGS_NOTIFICATION_MODAL_OPEN:
+      return {
+        ...state,
+        notification: {
+          ...state.notification,
+          modal: {
+            ...state.notification.modal,
+            data: action.data,
+            isOpened: true,
           },
         },
       };

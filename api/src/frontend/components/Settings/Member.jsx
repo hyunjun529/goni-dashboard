@@ -9,7 +9,7 @@ import { MemberSettings } from 'frontend/actions';
 import Modal from 'react-modal';
 
 // Constants
-import { memberModalStyle } from 'constants/settings';
+import { settingsModalStyle } from 'constants/settings';
 
 class Member extends React.Component {
   componentDidMount() {
@@ -101,7 +101,7 @@ class Member extends React.Component {
     switch (modalType) {
       case 'remove':
         return (
-          <Modal isOpen={isModalOpen} onRequestClose={::this._closeModal} style={memberModalStyle} >
+          <Modal isOpen={isModalOpen} onRequestClose={::this._closeModal} style={settingsModalStyle} >
             <center>
               <form role="form" onSubmit={::this._removeUser}>
                 <div className="form-group">
@@ -119,7 +119,7 @@ class Member extends React.Component {
         );
       default:
         return (
-          <Modal isOpen={isModalOpen} onRequestClose={::this._closeModal} style={memberModalStyle} >
+          <Modal isOpen={isModalOpen} onRequestClose={::this._closeModal} style={settingsModalStyle} >
             <center>
               <form role="form" onSubmit={::this._addUser}>
                 <div className="form-group">
@@ -141,17 +141,11 @@ class Member extends React.Component {
   }
 
   render() {
-    const { memberFetching } = this.props;
+    const { fetching } = this.props;
     return (
       <div>
         {this._renderModal()}
-        <div className="chart-wrapper-header">{ 'Member ' }
-        {
-          memberFetching ?
-          <i className="fa fa-circle-o-notch fa-spin" aria-hidden="true" /> :
-          null
-        }
-        </div>
+        <div className="chart-wrapper-header">Member { fetching ? <i className="fa fa-circle-o-notch fa-spin" aria-hidden="true" /> : null } </div>
         <div className="row">
           {this._renderMembers()}
           {this._renderAddMember()}
@@ -165,10 +159,11 @@ Member.propTypes = {
   currentProject: React.PropTypes.object,
   dispatch: React.PropTypes.func.isRequired,
   isModalOpen: React.PropTypes.bool,
+  fetching: React.PropTypes.bool,
   member: React.PropTypes.array,
-  memberFetching: React.PropTypes.bool,
   modalData: React.PropTypes.any,
   modalError: React.PropTypes.string,
+  modalFetching: React.PropTypes.bool,
   modalType: React.PropTypes.string,
 };
 
