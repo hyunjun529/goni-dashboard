@@ -11,6 +11,7 @@ import apimetric from './apimetric';
 import metrics from './metrics';
 import project from './project';
 import projects from './projects';
+import settings from './settings';
 
 const reducers = combineReducers({
   routing: routerReducer,
@@ -19,6 +20,7 @@ const reducers = combineReducers({
   metrics,
   project,
   projects,
+  settings,
 });
 
 export default reducers;

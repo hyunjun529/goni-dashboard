@@ -3,50 +3,23 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 // Actions
-import { Project as ProjectAction } from 'frontend/actions';
+import { MemberSettings } from 'frontend/actions';
 
 // Components
 import Modal from 'react-modal';
 
 // Constants
-import {
-  PROJECT_ENTER_NON_METRIC_PAGE,
-  PROJECT_MODAL_CLOSE,
-} from 'constants/project';
-
-const modalStyle = {
-  overlay: {
-    alignItems: 'center',
-    display: 'flex',
-    justifyContent: 'center',
-    position: 'absolute',
-    width: '100%',
-    zIndex: 1000,
-  },
-  content: {
-    position: 'none',
-    width: '300px',
-  },
-};
+import { memberModalStyle } from 'constants/settings';
 
 class Member extends React.Component {
   componentWillMount() {
     const { dispatch } = this.props;
-    dispatch({
-      type: PROJECT_ENTER_NON_METRIC_PAGE,
-    });
+    dispatch(MemberSettings.enterDashboard());
   }
 
   componentDidMount() {
     const { currentProject, dispatch } = this.props;
-    dispatch(ProjectAction.getProjectMemberList(currentProject.id));
-  }
-
-  _closeModal() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: PROJECT_MODAL_CLOSE,
-    });
+    dispatch(MemberSettings.getMemberList(currentProject.id));
   }
 
   _addUser(e) {
@@ -59,23 +32,28 @@ class Member extends React.Component {
     if (member === null) {
       member = [];
     }
-    dispatch(ProjectAction.addUserToProject(currentProject.id, data, member));
+    dispatch(MemberSettings.addMember(currentProject.id, data, member));
+  }
+
+  _closeModal() {
+    const { dispatch } = this.props;
+    dispatch(MemberSettings.closeModal());
   }
 
   _openAddModal() {
     const { dispatch } = this.props;
-    dispatch(ProjectAction.openModal('add'));
+    dispatch(MemberSettings.openModal('add'));
   }
 
   _openRemoveModal(e, id) {
     const { dispatch } = this.props;
-    dispatch(ProjectAction.openModal('remove', id));
+    dispatch(MemberSettings.openModal('remove', id));
   }
 
   _removeUser(e) {
     e.preventDefault();
     const { currentProject, dispatch, member, modalData } = this.props;
-    dispatch(ProjectAction.removeUserFromProject(currentProject.id, modalData, member));
+    dispatch(MemberSettings.removeMember(currentProject.id, modalData, member));
   }
 
   _renderAddMember() {
@@ -111,13 +89,13 @@ class Member extends React.Component {
   }
 
   _renderModalError() {
-    const { settingError } = this.props;
-    if (!settingError) {
+    const { modalError } = this.props;
+    if (!modalError) {
       return false;
     }
     return (
       <div className="error">
-        {settingError}
+        {modalError}
       </div>
     );
   }
@@ -127,7 +105,7 @@ class Member extends React.Component {
     switch (modalType) {
       case 'remove':
         return (
-          <Modal isOpen={isModalOpen} onRequestClose={::this._closeModal} style={modalStyle} >
+          <Modal isOpen={isModalOpen} onRequestClose={::this._closeModal} style={memberModalStyle} >
             <center>
               <form role="form" onSubmit={::this._removeUser}>
                 <div className="form-group">
@@ -145,7 +123,7 @@ class Member extends React.Component {
         );
       default:
         return (
-          <Modal isOpen={isModalOpen} onRequestClose={::this._closeModal} style={modalStyle} >
+          <Modal isOpen={isModalOpen} onRequestClose={::this._closeModal} style={memberModalStyle} >
             <center>
               <form role="form" onSubmit={::this._addUser}>
                 <div className="form-group">
@@ -194,20 +172,19 @@ Member.propTypes = {
   member: React.PropTypes.array,
   memberFetching: React.PropTypes.bool,
   modalData: React.PropTypes.any,
+  modalError: React.PropTypes.string,
   modalType: React.PropTypes.string,
-  settingError: React.PropTypes.string,
-  settingUpdated: React.PropTypes.bool,
 };
 
 const mapStateToProps = (state) => ({
   currentProject: state.project.currentProject,
-  isModalOpen: state.project.isModalOpen,
-  member: state.project.member,
-  memberFetching: state.project.memberFetching,
-  modalData: state.project.modalData,
-  modalType: state.project.modalType,
-  settingError: state.project.settingError,
-  settingUpdated: state.project.settingUpdated,
+  fetching: state.settings.member.fetching,
+  isModalOpen: state.settings.member.modal.isOpened,
+  member: state.settings.member.data,
+  modalData: state.settings.member.modal.data,
+  modalError: state.settings.member.modal.error,
+  modalFetching: state.settings.member.modal.fetching,
+  modalType: state.settings.member.modal.type,
 });
 
 export default connect(mapStateToProps)(Member);
