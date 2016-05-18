@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "description": "Worker for handling data",
   "scripts": {
-    "dbworker": "gulp build && node build/dist/goniplusDBWorker.js"
+    "dbworker": "gulp build && node build/dist/goniplusDBWorker.js",
+    "devmsg": "gulp build && node build/dist/msgChecker.js"
   },
   "babel": {
     "presets": [
