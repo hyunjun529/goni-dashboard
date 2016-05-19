@@ -14,7 +14,7 @@ export function getAPIMetrics(apikey, path, duration) {
        SELECT count(res) FROM http WHERE apikey = '${apikey}' and path = '${path}' and time > now() - ${duration} GROUP BY breadcrumb, status;`,
       (err, results) => {
         if (err) {
-          reject(err);
+          return reject(err);
         }
         let exists = false;
         if (results && results[0].length !== 0 && results[0][0].min !== null) {
@@ -38,7 +38,7 @@ export function getAPIMetrics(apikey, path, duration) {
           responsemap: results[1],
           responsegraph: exists ? respGraph : [],
         };
-        resolve(processed);
+        return resolve(processed);
       });
   });
 }
@@ -53,7 +53,7 @@ export function getAPIStatistics(apikey, path, duration) {
       SELECT count(res) FROM http WHERE apikey = '${apikey}' and path = '${path}' and time > now() - ${duration} GROUP BY status;`,
       (err, results) => {
         if (err) {
-          reject(err);
+          return reject(err);
         }
         let exists = false;
         if (results && results[0].length !== 0 && results[0][0].count !== 0) {
@@ -70,7 +70,7 @@ export function getAPIStatistics(apikey, path, duration) {
         const processed = {
           responsestatus: exists ? respStatus : [],
         };
-        resolve(processed);
+        return resolve(processed);
       });
   });
 }
@@ -89,7 +89,7 @@ export function getExpvar(apikey, instance, duration) {
        SELECT time, sys FROM expvar WHERE apikey = '${apikey}' and instance = '${instance}' and time > now() - ${duration};`,
       (err, results) => {
         if (err) {
-          reject(err);
+          return reject(err);
         }
         const processed = {
           alloc: results[0],
@@ -99,7 +99,7 @@ export function getExpvar(apikey, instance, duration) {
           pausetotalns: results[4],
           sys: results[5],
         };
-        resolve(processed);
+        return resolve(processed);
       });
   });
 }
@@ -113,13 +113,12 @@ export function getInstances(apikey, metric) {
       `SELECT DISTINCT(instance) FROM ${metric} WHERE apikey='${apikey}' and time > now() - 6h;`,
       (err, results) => {
         if (err) {
-          reject(err);
+          return reject(err);
         }
         if (results && results[0].length !== 0) {
-          resolve(results[0][0].distinct);
-        } else {
-          resolve([]);
+          return resolve(results[0][0].distinct);
         }
+        return resolve([]);
       });
   });
 }
@@ -133,13 +132,12 @@ export function getPaths(apikey) {
       `SELECT DISTINCT(path) FROM http WHERE apikey='${apikey}' and time > now() - 6h;`,
       (err, results) => {
         if (err) {
-          reject(err);
+          return reject(err);
         }
         if (results && results[0].length !== 0) {
           resolve(results[0][0].distinct);
-        } else {
-          resolve([]);
         }
+        return resolve([]);
       });
   });
 }
@@ -154,13 +152,13 @@ export function getRuntime(apikey, instance, duration) {
        SELECT time, goroutine FROM runtime WHERE apikey = '${apikey}' and instance = '${instance}' and time > now() - ${duration};`,
       (err, results) => {
         if (err) {
-          reject(err);
+          return reject(err);
         }
         const processed = {
           cgo: results[0],
           goroutine: results[1],
         };
-        resolve(processed);
+        return resolve(processed);
       });
   });
 }

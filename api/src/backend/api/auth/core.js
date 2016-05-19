@@ -33,8 +33,9 @@ export function getSlackToken(code) {
     request(`https://slack.com/api/oauth.access?client_id=${SLACK_CLIENT_ID}&client_secret=${SLACK_CLIENT_SECRET}&code=${code}`, (err, resp, body) => {
       if (!err && resp.statusCode === 200) {
         resolve(JSON.parse(body));
+      } else {
+        reject(err);
       }
-      reject(err);
     });
   });
 }
@@ -52,20 +53,21 @@ export function getUser(email) {
     pool.getConnection((connErr, connection) => {
       if (connErr) {
         reject(connErr);
+      } else {
+        connection.query({
+          sql: 'SELECT id,password,salt FROM `user` WHERE `email` = ?',
+          values: [email],
+        }, (err, results) => {
+          connection.release();
+          if (err) {
+            return reject(err);
+          }
+          if (results.length === 0) {
+            return resolve(null);
+          }
+          return resolve(results[0]);
+        });
       }
-      connection.query({
-        sql: 'SELECT id,password,salt FROM `user` WHERE `email` = ?',
-        values: [email],
-      }, (err, results) => {
-        connection.release();
-        if (err) {
-          reject(err);
-        }
-        if (results.length === 0) {
-          resolve(null);
-        }
-        resolve(results[0]);
-      });
     });
   });
 }
@@ -83,20 +85,21 @@ export function getUserByToken(token) {
     pool.getConnection((connErr, connection) => {
       if (connErr) {
         reject(connErr);
+      } else {
+        connection.query({
+          sql: 'SELECT user_id,expired_at FROM `user_token` WHERE `token` = ?',
+          values: [hashToken(token)],
+        }, (err, results) => {
+          connection.release();
+          if (err) {
+            return reject(err);
+          }
+          if (results.length === 0) {
+            return resolve(null);
+          }
+          return resolve(results[0]);
+        });
       }
-      connection.query({
-        sql: 'SELECT user_id,expired_at FROM `user_token` WHERE `token` = ?',
-        values: [hashToken(token)],
-      }, (err, results) => {
-        connection.release();
-        if (err) {
-          reject(err);
-        }
-        if (results.length === 0) {
-          resolve(null);
-        }
-        resolve(results[0]);
-      });
     });
   });
 }
@@ -115,25 +118,25 @@ export function registerSlackToken(pid, uid, data) {
     pool.getConnection((connErr, connection) => {
       if (connErr) {
         reject(connErr);
+      } else {
+        const hook = data.incoming_webhook;
+        connection.query({
+          sql: `INSERT INTO notification_slack ${slackTokenField} VALUES ${slackTokenValues}`,
+          values: [pid, uid, data.user_id, data.access_token, data.team_name, data.team_id, hook.channel, hook.channel_id, hook.configuration_url, hook.url, getTimestamp()],
+        }, (err, result) => {
+          connection.release();
+          if (err) {
+            return reject(err);
+          }
+          if (!result) {
+            return reject(null);
+          }
+          if (result.affectedRows === 1) {
+            return resolve(true);
+          }
+          return resolve(false);
+        });
       }
-      const hook = data.incoming_webhook;
-      connection.query({
-        sql: `INSERT INTO notification_slack ${slackTokenField} VALUES ${slackTokenValues}`,
-        values: [pid, uid, data.user_id, data.access_token, data.team_name, data.team_id, hook.channel, hook.channel_id, hook.configuration_url, hook.url, getTimestamp()],
-      }, (err, result) => {
-        connection.release();
-        if (err) {
-          reject(err);
-        }
-        if (!result) {
-          reject(null);
-        }
-        if (result.affectedRows === 1) {
-          resolve(true);
-        } else {
-          resolve(false);
-        }
-      });
     });
   });
 }
@@ -152,19 +155,20 @@ export function registerUser(email, username, password) {
     pool.getConnection((connErr, connection) => {
       if (connErr) {
         reject(connErr);
+      } else {
+        const t = getTimestamp();
+        const salt = createSalt();
+        connection.query({
+          sql: `INSERT INTO user ${userRegisterField} VALUES (?,?,?,?,FROM_UNIXTIME(?),FROM_UNIXTIME(?))`,
+          values: [email, username, hashPassword(password, salt), salt, t, t],
+        }, (err, result) => {
+          connection.release();
+          if (err) {
+            return reject(err);
+          }
+          return resolve(result.insertId);
+        });
       }
-      const t = getTimestamp();
-      const salt = createSalt();
-      connection.query({
-        sql: `INSERT INTO user ${userRegisterField} VALUES (?,?,?,?,FROM_UNIXTIME(?),FROM_UNIXTIME(?))`,
-        values: [email, username, hashPassword(password, salt), salt, t, t],
-      }, (err, result) => {
-        connection.release();
-        if (err) {
-          reject(err);
-        }
-        resolve(result.insertId);
-      });
     });
   });
 }
@@ -181,21 +185,22 @@ export function registerUserToken(id) {
     pool.getConnection((connErr, connection) => {
       if (connErr) {
         reject(connErr);
+      } else {
+        const token = createToken({
+          id,
+        });
+        const expiredAt = getTokenTimestamp();
+        connection.query({
+          sql: `INSERT INTO user_token ${userTokenField} VALUES (?,?,FROM_UNIXTIME(?))`,
+          values: [hashToken(token), id, expiredAt],
+        }, (err) => {
+          connection.release();
+          if (err) {
+            return reject(err);
+          }
+          return resolve(token);
+        });
       }
-      const token = createToken({
-        id,
-      });
-      const expiredAt = getTokenTimestamp();
-      connection.query({
-        sql: `INSERT INTO user_token ${userTokenField} VALUES (?,?,FROM_UNIXTIME(?))`,
-        values: [hashToken(token), id, expiredAt],
-      }, (err) => {
-        connection.release();
-        if (err) {
-          reject(err);
-        }
-        resolve(token);
-      });
     });
   });
 }
