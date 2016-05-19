@@ -1,10 +1,10 @@
 import influx from 'influx';
 
-const influxHost = 'host';
-const influxPort = 8086;
+const influxHost = process.env.GONI_INFLUX_HOST || 'influxHost';
+const influxPort = process.env.GONI_INFLUX_PORT || 8086;
 const influxProtocol = 'http';
-const influxUser = 'user';
-const influxPass = 'pass';
+const influxUser = process.env.GONI_INFLUX_USER || 'influxUser';
+const influxPass = process.env.GONI_INFLUX_PASS || 'influxPass';
 
 const influxGoniClient = influx({
   host: influxHost,
