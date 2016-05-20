@@ -128,6 +128,7 @@ func enqueue(data *[]byte) (bool, error) {
 }
 
 func initQueue() {
+	rabbit = &rabbitConnection{}
 	rabbit.err = make(chan *amqp.Error)
 	go connectQueue()
 	rabbit.err <- amqp.ErrClosed
