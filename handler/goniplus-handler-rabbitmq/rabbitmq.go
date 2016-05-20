@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/streadway/amqp"
 	"log"
+	"time"
 )
 
 // exchangeName is the name of exchange
@@ -17,20 +18,15 @@ const pushQueueName = "goniplus_queue_push"
 type rabbitConnection struct {
 	conn *amqp.Connection
 	ch   *amqp.Channel
+	err  chan *amqp.Error
 }
 
-var rabbit rabbitConnection
+var rabbit *rabbitConnection
 
-func connectMQ() error {
-	// Get connection
-	conn, err := amqp.Dial("amqp://id:pw@host:port/")
+func createChannel() (*amqp.Channel, error) {
+	ch, err := rabbit.conn.Channel()
 	if err != nil {
-		return err
-	}
-	// Create channel from connection
-	ch, err := conn.Channel()
-	if err != nil {
-		return err
+		return nil, err
 	}
 	// Declare exchange for multiple works
 	err = ch.ExchangeDeclare(
@@ -52,7 +48,7 @@ func connectMQ() error {
 		nil,           // arguments
 	)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	err = ch.QueueBind(
 		push.Name,
@@ -62,7 +58,7 @@ func connectMQ() error {
 		nil,
 	)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	// Declare & bind queue for insert metrics to database
 	db, err := ch.QueueDeclare(
@@ -74,7 +70,7 @@ func connectMQ() error {
 		nil,         // arguments
 	)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	err = ch.QueueBind(
 		db.Name,
@@ -84,13 +80,39 @@ func connectMQ() error {
 		nil,
 	)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	rabbit = rabbitConnection{
-		conn,
-		ch,
+	return ch, nil
+}
+
+func createConnection() {
+	for {
+		conn, err := amqp.Dial("amqp://id:pw@host:port/")
+		if err == nil {
+			rabbit.conn = conn
+			rabbit.err = make(chan *amqp.Error)
+			rabbit.conn.NotifyClose(rabbit.err)
+			ch, err := createChannel()
+			if err != nil {
+				log.Println(err)
+				continue
+			}
+			rabbit.ch = ch
+			return
+		}
+		log.Println(err)
+		time.Sleep(1 * time.Second)
 	}
-	return nil
+}
+
+func connectQueue() {
+	var rabbitErr *amqp.Error
+	for {
+		rabbitErr = <-rabbit.err
+		if rabbitErr != nil {
+			createConnection()
+		}
+	}
 }
 
 func enqueue(data *[]byte) (bool, error) {
@@ -103,4 +125,10 @@ func enqueue(data *[]byte) (bool, error) {
 		return false, err
 	}
 	return true, nil
+}
+
+func initQueue() {
+	rabbit.err = make(chan *amqp.Error)
+	go connectQueue()
+	rabbit.err <- amqp.ErrClosed
 }

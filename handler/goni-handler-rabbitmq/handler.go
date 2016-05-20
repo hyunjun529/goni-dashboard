@@ -32,11 +32,7 @@ func main() {
 		log.Fatalln(err)
 		return
 	}
-	err = connectMQ()
-	if err != nil {
-		log.Fatalln(err)
-		return
-	}
+	initQueue()
 	defer ln.Close()
 	for {
 		conn, err := ln.Accept()
