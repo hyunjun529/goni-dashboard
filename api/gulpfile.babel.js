@@ -7,7 +7,6 @@ import uglify from 'gulp-uglify';
 import {
   resolve,
 } from 'path';
-import runSequence from 'run-sequence';
 import buffer from 'vinyl-buffer';
 import source from 'vinyl-source-stream';
 
@@ -19,7 +18,7 @@ const buildSrcPath = `${ROOT}/build/src`;
 const modulePath = `${ROOT}/node_modules`;
 const srcPath = `${ROOT}/src`;
 
-gulp.task('server', () => {
+gulp.task('server', ['client-replace-apikey'], () => {
   gulp.src(['!build/src/client.jsx', 'build/src/**/*.+(js|json|jsx)'])
     .pipe(babel({
       presets: babelPreset,
@@ -28,7 +27,7 @@ gulp.task('server', () => {
     .pipe(gulp.dest(`${ROOT}/build/dist`));
 });
 
-gulp.task('client-dev', () => {
+gulp.task('client-dev', ['client-replace-apikey'], () => {
   return browserify({
     debug: true,
     entries: [
@@ -47,7 +46,7 @@ gulp.task('client-dev', () => {
   .pipe(gulp.dest(`${buildPath}/public`));
 });
 
-gulp.task('client', () => {
+gulp.task('client', ['client-replace-apikey'], () => {
   return browserify({
     entries: [
       `${buildSrcPath}/client.jsx`,
@@ -66,7 +65,7 @@ gulp.task('client', () => {
   .pipe(gulp.dest(`${buildPath}/public`));
 });
 
-gulp.task('client-replace-apikey', () => {
+gulp.task('client-replace-apikey', ['client-pre-build'], () => {
   const slackAPIkey = process.env.GONI_SLACK_CLIENT || 'null';
   return gulp.src([`${buildSrcPath}/constants/auth/index.js`])
     .pipe(replace('process.env.GONI_SLACK_CLIENT', slackAPIkey))
@@ -75,26 +74,13 @@ gulp.task('client-replace-apikey', () => {
 
 gulp.task('client-pre-build', () => {
   return gulp.src([`${srcPath}/**/*`])
-           .pipe(gulp.dest(`${buildSrcPath}`));
+    .pipe(gulp.dest(`${buildSrcPath}`));
 });
 
 gulp.task('production', () => {
   process.env.NODE_ENV = 'production';
 });
 
-gulp.task('build-dev',
-  runSequence(
-      'client-pre-build',
-      'client-replace-apikey',
-      ['client-dev', 'server'],
-  )
-);
+gulp.task('build-dev', ['client-pre-build', 'client-replace-apikey', 'client-dev', 'server']);
 
-gulp.task('build',
-  runSequence(
-      'production',
-      'client-pre-build',
-      'client-replace-apikey',
-      ['client', 'server'],
-  )
-);
+gulp.task('build', ['production', 'client-pre-build', 'client-replace-apikey', 'client', 'server']);
