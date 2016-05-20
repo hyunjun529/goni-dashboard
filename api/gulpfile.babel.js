@@ -15,15 +15,15 @@ const babelPreset = ['es2015', 'react', 'stage-0', 'stage-1', 'stage-2', 'stage-
 
 const ROOT = resolve(__dirname);
 const buildPath = `${ROOT}/build`;
-const buildClientSrcPath = `${ROOT}/build/client`;
+const buildSrcPath = `${ROOT}/build/src`;
 const modulePath = `${ROOT}/node_modules`;
 const srcPath = `${ROOT}/src`;
 
 gulp.task('server', () => {
-  gulp.src(['!src/client.jsx', 'src/**/*.+(js|json|jsx)'])
+  gulp.src(['!build/src/client.jsx', 'build/src/**/*.+(js|json|jsx)'])
     .pipe(babel({
       presets: babelPreset,
-      resolveModuleSource: resolveRelativeModule(srcPath),
+      resolveModuleSource: resolveRelativeModule(buildSrcPath),
     }))
     .pipe(gulp.dest(`${ROOT}/build/dist`));
 });
@@ -32,10 +32,10 @@ gulp.task('client-dev', () => {
   return browserify({
     debug: true,
     entries: [
-      `${buildClientSrcPath}/client.jsx`,
+      `${buildSrcPath}/client.jsx`,
     ],
     extensions: ['', '.js', '.json', '.jsx'],
-    paths: [modulePath, buildClientSrcPath],
+    paths: [modulePath, buildSrcPath],
   })
   .transform('babelify', {
     plugins: ['transform-runtime'],
@@ -50,10 +50,10 @@ gulp.task('client-dev', () => {
 gulp.task('client', () => {
   return browserify({
     entries: [
-      `${buildClientSrcPath}/client.jsx`,
+      `${buildSrcPath}/client.jsx`,
     ],
     extensions: ['', '.js', '.json', '.jsx'],
-    paths: [modulePath, buildClientSrcPath],
+    paths: [modulePath, buildSrcPath],
   })
   .transform('babelify', {
     plugins: ['transform-runtime'],
@@ -68,14 +68,14 @@ gulp.task('client', () => {
 
 gulp.task('client-replace-apikey', () => {
   const slackAPIkey = process.env.GONI_SLACK_CLIENT || 'null';
-  return gulp.src([`${buildClientSrcPath}/constants/auth/index.js`])
+  return gulp.src([`${buildSrcPath}/constants/auth/index.js`])
     .pipe(replace('process.env.GONI_SLACK_CLIENT', slackAPIkey))
-    .pipe(gulp.dest(`${buildClientSrcPath}/constants/auth/`));
+    .pipe(gulp.dest(`${buildSrcPath}/constants/auth/`));
 });
 
 gulp.task('client-pre-build', () => {
   return gulp.src([`${srcPath}/**/*`])
-           .pipe(gulp.dest(`${buildClientSrcPath}`));
+           .pipe(gulp.dest(`${buildSrcPath}`));
 });
 
 gulp.task('production', () => {
