@@ -5,4 +5,4 @@ export const AUTH_ERROR = 'AUTH_ERROR';
 export const AUTH_LOGIN = 'AUTH_LOGIN';
 export const AUTH_LOGGEDOUT = 'AUTH_LOGGEDOUT';
 
-export const SLACK_CLIENT_ID = process.env.GONI_SLACK_CLIENT || 'client_id';
+export const SLACK_CLIENT_ID = process.env.GONI_SLACK_CLIENT;
