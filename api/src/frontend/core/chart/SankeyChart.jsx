@@ -6,6 +6,7 @@ import d3 from './sankey';
 class SankeyChart extends React.Component {
   constructor() {
     super();
+    this.handler = this.fitToParentSize.bind(this);
     this.state = {
       size: { w: 0, h: 0 },
     };
@@ -23,16 +24,16 @@ class SankeyChart extends React.Component {
   }
 
   componentDidMount() {
-    window.addEventListener('resize', ::this.fitToParentSize);
+    window.addEventListener('resize', this.handler);
     this.fitToParentSize();
   }
 
   componentWillUnmount() {
-    window.removeEventListener('resize', ::this.fitToParentSize);
+    window.removeEventListener('resize', this.handler);
   }
 
   render() {
-    const { data, margin } = this.props;
+    const { data, duration, margin } = this.props;
     let { width, height } = this.props;
     width = this.state.size.w || 100;
     height = this.state.size.h || 100;
@@ -84,7 +85,7 @@ class SankeyChart extends React.Component {
       .attr('x', 6 + san.nodeWidth())
       .attr('text-anchor', 'start');
     return (
-      <div className="chart-wrapper" ref="wrapper">
+      <div key={duration} className="chart-wrapper" ref="wrapper">
         {svgNode.toReact()}
       </div>
     );
@@ -103,6 +104,7 @@ SankeyChart.defaultProps = {
 SankeyChart.propTypes = {
   clickFunc: React.PropTypes.func.isRequired,
   data: React.PropTypes.object.isRequired,
+  duration: React.PropTypes.string,
   height: React.PropTypes.number,
   margin: React.PropTypes.object,
   width: React.PropTypes.number,

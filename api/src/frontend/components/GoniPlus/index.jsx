@@ -2,6 +2,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
+// Actions
+import { Metrics as MetricAction, Project as ProjectAction } from 'frontend/actions';
+
 // Components
 import {
   APIResponseMetrics,
@@ -14,9 +17,6 @@ import {
 } from 'frontend/components';
 
 import {
-  PROJECT_CHANGE_DASHBOARD,
-  PROJECT_CHANGE_TIME,
-  PROJECT_ENTER_GONIPLUS,
   GONIPLUS_SIDEBAR,
 } from 'constants/project';
 
@@ -35,41 +35,32 @@ const keyToObject = (key) => {
 class GoniPlus extends React.Component {
   componentDidMount() {
     const { dispatch, location } = this.props;
-    dispatch({
-      type: PROJECT_ENTER_GONIPLUS,
-    });
-    let dashboard = location.query && location.query.dashboard ? location.query.dashboard : null;
-    dashboard = keyToObject(dashboard);
+    dispatch(ProjectAction.enterProject());
+    const dashboard = location.query && location.query.dashboard ? keyToObject(location.query.dashboard) : null;
     if (dashboard) {
-      dispatch({
-        type: PROJECT_CHANGE_DASHBOARD,
-        selected: dashboard,
-      });
+      dispatch(ProjectAction.changeDashboard(dashboard));
     }
   }
 
-  _timeBtn(t, more) {
-    const { currentDuration } = this.props;
-    const prefix = more ? 'tag-tab-more' : 'tag-tab';
-    if (t === currentDuration) {
+  _updateTimeBtn(t) {
+    const { duration } = this.props;
+    const prefix = t !== '30m' ? 'tag-tab-more' : 'tag-tab';
+    if (t === duration) {
       return `${prefix} tag-selected`;
     }
     return prefix;
   }
 
   _changeTime(t) {
-    const { currentDuration, dispatch } = this.props;
-    if (t !== currentDuration) {
-      dispatch({
-        type: PROJECT_CHANGE_TIME,
-        time: t,
-      });
+    const { dispatch, duration } = this.props;
+    if (t !== duration) {
+      dispatch(MetricAction.changeTime(t));
     }
   }
 
   _renderGraphs() {
-    const { currentDashboard } = this.props;
-    switch (currentDashboard.key) {
+    const { dashboard } = this.props;
+    switch (dashboard.key) {
       case 'metrics_expvar':
         return <Metrics type="expvar" />;
       case 'metrics_runtime':
@@ -88,30 +79,30 @@ class GoniPlus extends React.Component {
   }
 
   _renderLayout() {
-    const { currentProject, fetching, isMetricPage } = this.props;
+    const { fetching, isMetricDashboard, project } = this.props;
     return (
       <div className="child">
         <Sidebar menu={GONIPLUS_SIDEBAR} />
         <div className="dashboard-sidebar">
           <div className="dashboard-header">
-            <h1>{ currentProject.name }
+            <h1>{ project.name }
               { fetching ?
                 <i className="fa fa-circle-o-notch fa-spin" aria-hidden="true" /> :
                 null
               }
             </h1>
-            { isMetricPage ?
+            { isMetricDashboard ?
               <div className="tag-tab-wrap">
-                <div className={this._timeBtn('30m', false)} onClick={() => this._changeTime('30m')}>
+                <div className={this._updateTimeBtn('30m')} onClick={() => this._changeTime('30m')}>
                   <a>30 MINUTES</a>
                 </div>
-                <div className={this._timeBtn('1h', true)} onClick={() => this._changeTime('1h')}>
+                <div className={this._updateTimeBtn('1h')} onClick={() => this._changeTime('1h')}>
                   <a>1 HOUR</a>
                 </div>
-                <div className={this._timeBtn('3h', true)} onClick={() => this._changeTime('3h')}>
+                <div className={this._updateTimeBtn('3h')} onClick={() => this._changeTime('3h')}>
                   <a>3 HOURS</a>
                 </div>
-                <div className={this._timeBtn('6h', true)} onClick={() => this._changeTime('6h')}>
+                <div className={this._updateTimeBtn('6h')} onClick={() => this._changeTime('6h')}>
                   <a>6 HOURS</a>
                 </div>
               </div> :
@@ -125,8 +116,8 @@ class GoniPlus extends React.Component {
   }
 
   render() {
-    const { currentProject } = this.props;
-    if (!currentProject) {
+    const { project } = this.props;
+    if (!project) {
       return false;
     }
     return (
@@ -139,21 +130,21 @@ class GoniPlus extends React.Component {
 }
 
 GoniPlus.propTypes = {
-  currentDashboard: React.PropTypes.object,
-  currentDuration: React.PropTypes.string,
-  currentProject: React.PropTypes.object,
+  dashboard: React.PropTypes.object,
   dispatch: React.PropTypes.func.isRequired,
+  duration: React.PropTypes.string,
   fetching: React.PropTypes.bool,
-  isMetricPage: React.PropTypes.bool,
+  isMetricDashboard: React.PropTypes.bool,
   location: React.PropTypes.object,
+  project: React.PropTypes.object,
 };
 
 const mapStateToProps = (state) => ({
-  currentDashboard: state.project.currentDashboard,
-  currentDuration: state.project.currentDuration,
-  currentProject: state.project.currentProject,
-  fetching: state.project.fetching,
-  isMetricPage: state.project.isMetricPage,
+  dashboard: state.project.dashboard,
+  duration: state.metrics.filter.time,
+  project: state.project.project.data,
+  fetching: state.project.project.fetching,
+  isMetricDashboard: state.project.dashboard.isMetricDashboard,
 });
 
 export default connect(mapStateToProps)(GoniPlus);

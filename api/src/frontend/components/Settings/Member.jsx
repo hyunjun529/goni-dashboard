@@ -13,14 +13,14 @@ import { settingsModalStyle } from 'constants/settings';
 
 class Member extends React.Component {
   componentDidMount() {
-    const { currentProject, dispatch } = this.props;
+    const { project, dispatch } = this.props;
     dispatch(MemberSettings.enterDashboard());
-    dispatch(MemberSettings.getMemberList(currentProject.id));
+    dispatch(MemberSettings.getMemberList(project.id));
   }
 
   _addUser(e) {
     e.preventDefault();
-    const { currentProject, dispatch } = this.props;
+    const { project, dispatch } = this.props;
     let { member } = this.props;
     const data = {
       email: this.refs.email.value,
@@ -28,7 +28,7 @@ class Member extends React.Component {
     if (member === null) {
       member = [];
     }
-    dispatch(MemberSettings.addMember(currentProject.id, data, member));
+    dispatch(MemberSettings.addMember(project.id, data, member));
   }
 
   _closeModal() {
@@ -48,8 +48,8 @@ class Member extends React.Component {
 
   _removeUser(e) {
     e.preventDefault();
-    const { currentProject, dispatch, member, modalData } = this.props;
-    dispatch(MemberSettings.removeMember(currentProject.id, modalData, member));
+    const { dispatch, member, modalData, project } = this.props;
+    dispatch(MemberSettings.removeMember(project.id, modalData, member));
   }
 
   _renderAddMember() {
@@ -141,11 +141,11 @@ class Member extends React.Component {
   }
 
   render() {
-    const { fetching } = this.props;
+    const { memberFetching } = this.props;
     return (
       <div>
         {this._renderModal()}
-        <div className="chart-wrapper-header">Member { fetching ? <i className="fa fa-circle-o-notch fa-spin" aria-hidden="true" /> : null } </div>
+        <div className="chart-wrapper-header">Member { memberFetching ? <i className="fa fa-circle-o-notch fa-spin" aria-hidden="true" /> : null } </div>
         <div className="row">
           {this._renderMembers()}
           {this._renderAddMember()}
@@ -156,26 +156,26 @@ class Member extends React.Component {
 }
 
 Member.propTypes = {
-  currentProject: React.PropTypes.object,
   dispatch: React.PropTypes.func.isRequired,
   isModalOpen: React.PropTypes.bool,
-  fetching: React.PropTypes.bool,
   member: React.PropTypes.array,
+  memberFetching: React.PropTypes.bool,
   modalData: React.PropTypes.any,
   modalError: React.PropTypes.string,
   modalFetching: React.PropTypes.bool,
   modalType: React.PropTypes.string,
+  project: React.PropTypes.object,
 };
 
 const mapStateToProps = (state) => ({
-  currentProject: state.project.currentProject,
-  fetching: state.settings.member.fetching,
   isModalOpen: state.settings.member.modal.isOpened,
   member: state.settings.member.data,
+  memberFetching: state.settings.member.fetching,
   modalData: state.settings.member.modal.data,
   modalError: state.settings.member.modal.error,
   modalFetching: state.settings.member.modal.fetching,
   modalType: state.settings.member.modal.type,
+  project: state.project.project.data,
 });
 
 export default connect(mapStateToProps)(Member);

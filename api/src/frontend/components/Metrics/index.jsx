@@ -6,93 +6,121 @@ import { connect } from 'react-redux';
 import { Metrics as MetricAction } from 'frontend/actions';
 
 // Components
-import { Empty, Error, Loading, getDuration, tickInterval, tooltipFormat } from './Common';
-import { ResponsiveLineChart } from 'frontend/core/chart';
+import { Empty, Error, Loading } from './Common';
+import ReactEcharts from 'react-echarts-component';
 import Select from 'react-select';
-
-// Constants
-import { METRIC_CHANGE_INSTANCE } from 'constants/metric';
-import { PROJECT_ENTER_METRIC_PAGE } from 'constants/project';
 
 class Metrics extends React.Component {
   componentWillMount() {
     const { dispatch } = this.props;
-    dispatch({
-      type: PROJECT_ENTER_METRIC_PAGE,
-    });
+    dispatch(MetricAction.enterDashboard());
   }
 
   componentDidMount() {
-    const { currentProject, dispatch, type } = this.props;
-    dispatch(MetricAction.getInstances(currentProject.apikey, type));
+    const { dispatch, project, type } = this.props;
+    dispatch(MetricAction.getInstances(project.apikey, type));
   }
 
   componentWillReceiveProps(nextProps) {
-    const { currentDuration, currentInstance, currentProject, dispatch, type } = this.props;
+    const { dispatch, duration, instance, project, type } = this.props;
     if (nextProps.type !== type) {
-      dispatch(MetricAction.getInstances(currentProject.apikey, type));
+      dispatch(MetricAction.getInstances(project.apikey, type));
     }
-    if (nextProps.currentDuration !== currentDuration) {
-      dispatch(MetricAction.getCommonMetric(currentProject.apikey, type,
-        currentInstance, nextProps.currentDuration));
+    if (nextProps.duration !== duration) {
+      if (instance) {
+        dispatch(MetricAction.getMetric(project.apikey, type,
+          instance, nextProps.duration));
+      }
     }
   }
 
   _changeInstance(v) {
-    const { currentDuration, currentProject } = this.props;
-    const { dispatch, type } = this.props;
-    dispatch({
-      type: METRIC_CHANGE_INSTANCE,
-      instance: v,
-    });
-    dispatch(MetricAction.getCommonMetric(currentProject.apikey, type,
-      v, currentDuration));
+    const { dispatch, duration, project, type } = this.props;
+    dispatch(MetricAction.changeInstance(v));
+    dispatch(MetricAction.getMetric(project.apikey, type, v, duration));
   }
 
   _renderChart(title, unit, mod) {
-    const { currentDuration, currentInstance, currentProject } = this.props;
-    const { dispatch, errored, fetchedData, fetching, type } = this.props;
-    if (!currentInstance) {
+    const { instance, metric, metricError, metricFetching } = this.props;
+    if (!instance) {
       return (
         <Error title={title} msg="인스턴스를 선택해주세요" />
       );
     }
-    if (!fetchedData) {
-      if (!fetching && !errored) {
-        dispatch(MetricAction.getCommonMetric(currentProject.apikey, type,
-          currentInstance, currentDuration));
+    if (metricFetching) {
+      return (
+        <Loading title={title} fetching={metricFetching} />
+      );
+    }
+    if (!metric) {
+      if (metricError) {
+        return (
+          <Error title={title} msg={metricError} />
+        );
       }
       return (
-        <Loading title={title} fetching={fetching} />
+        <Error title={title} msg="Unknown Error" />
       );
     }
-    if (!(title in fetchedData)) {
+    if (!(title in metric) || metric[title].length === 0) {
       return (
         <Empty title={title} />
       );
     }
-    const dataLen = fetchedData[title].length;
-    if (dataLen === 0) {
-      return (
-        <Empty title={title} />
-      );
-    }
-    const chartData = [];
-    const parsed = {
+    const dataLen = metric[title].length;
+    const axisLine = {
+      lineStyle: {
+        color: '#4d5256',
+      },
+    };
+    const axisLabel = {
+      textStyle: {
+        color: '#4d5256',
+      },
+    };
+    const chartData = {
+      color: ['#4c80f1'],
+      tooltip: {
+        trigger: 'axis',
+      },
+      grid: {
+        top: '5%',
+        left: '5%',
+        right: '5%',
+        bottom: '15%',
+      },
+      xAxis: {
+        type: 'time',
+        axisLabel,
+        axisLine,
+      },
+      yAxis: {
+        type: 'value',
+        axisLabel,
+        axisLine,
+      },
+      series: [],
+    };
+    const data = {
       name: title,
-      values: [],
+      type: 'line',
+      data: [],
     };
     for (let i = 0; i < dataLen; i++) {
-      parsed.values.push({
-        x: new Date(fetchedData[title][i].time),
-        y: fetchedData[title][i][title] / mod,
-      });
+      const time = new Date(metric[title][i].time);
+      const d = {
+        name: time.toString(),
+        value: [time, [metric[title][i][title] / mod]],
+      };
+      data.data.push(d);
     }
-    chartData.push(parsed);
+    chartData.series.push(data);
     return (
       <div>
         <div className="chart-wrapper-header">{title}</div>
-        <ResponsiveLineChart data={chartData} duration={getDuration(currentDuration)} xAxisTickInterval={tickInterval(currentDuration)} tooltipFormat={(v) => tooltipFormat(v, unit)} />
+        <div className="chart-wrapper">
+          <ReactEcharts option={chartData} height={300} />
+        </div>
       </div>
     );
   }
@@ -126,10 +154,10 @@ class Metrics extends React.Component {
   }
 
   render() {
-    const { currentInstance, fetchedInstances, instanceFetching } = this.props;
+    const { instance, instanceList, instanceFetching } = this.props;
     return (
       <div>
-        <Select name="instance" options={fetchedInstances} onChange={::this._changeInstance} isLoading={instanceFetching} value={currentInstance} placeholder="Instance" />
+        <Select name="instance" options={instanceList} onChange={::this._changeInstance} isLoading={instanceFetching} value={instance} placeholder="Instance" />
         {this._renderData()}
       </div>
     );
@@ -137,27 +165,29 @@ class Metrics extends React.Component {
 }
 
 Metrics.propTypes = {
-  currentDuration: React.PropTypes.string,
-  currentInstance: React.PropTypes.string,
-  currentProject: React.PropTypes.object,
+  duration: React.PropTypes.string,
   dispatch: React.PropTypes.func.isRequired,
-  errored: React.PropTypes.bool,
-  fetchedData: React.PropTypes.object,
-  fetchedInstances: React.PropTypes.array,
-  fetching: React.PropTypes.bool,
+  instance: React.PropTypes.string,
+  instanceList: React.PropTypes.array,
+  instanceError: React.PropTypes.string,
   instanceFetching: React.PropTypes.bool,
+  metric: React.PropTypes.object,
+  metricError: React.PropTypes.string,
+  metricFetching: React.PropTypes.bool,
+  project: React.PropTypes.object,
   type: React.PropTypes.string.isRequired,
 };
 
 const mapStateToProps = (state) => ({
-  currentDuration: state.project.currentDuration,
-  currentInstance: state.metrics.currentInstance,
-  currentProject: state.project.currentProject,
-  errored: state.metrics.errored,
-  fetchedData: state.metrics.fetchedData,
-  fetchedInstances: state.metrics.fetchedInstances,
-  fetching: state.metrics.fetching,
-  instanceFetching: state.metrics.instanceFetching,
+  duration: state.metrics.filter.time,
+  instance: state.metrics.filter.selected,
+  instanceList: state.metrics.filter.data,
+  instanceError: state.metrics.filter.error,
+  instanceFetching: state.metrics.filter.fetching,
+  metric: state.metrics.metric.data,
+  metricError: state.metrics.metric.error,
+  metricFetching: state.metrics.metric.fetching,
+  project: state.project.project.data,
 });
 
 export default connect(mapStateToProps)(Metrics);

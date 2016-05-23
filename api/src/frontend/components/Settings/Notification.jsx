@@ -14,9 +14,9 @@ import { settingsModalStyle } from 'constants/settings';
 
 class Notification extends React.Component {
   componentDidMount() {
-    const { currentProject, dispatch } = this.props;
+    const { project, dispatch } = this.props;
     dispatch(NotificationSettings.enterDashboard());
-    dispatch(NotificationSettings.getSlackIntegrationData(currentProject.id));
+    dispatch(NotificationSettings.getSlackIntegrationData(project.id));
   }
 
   _closeModal() {
@@ -63,13 +63,13 @@ class Notification extends React.Component {
   }
 
   _renderSlackBtn() {
-    const { currentProject, fetching } = this.props;
+    const { fetching, project } = this.props;
     if (fetching) {
       return false;
     }
     const token = localStorage.getItem('token');
     return (
-      <a href={`https://slack.com/oauth/authorize?scope=incoming-webhook&client_id=${SLACK_CLIENT_ID}&state=${token}|${currentProject.id}`}>
+      <a href={`https://slack.com/oauth/authorize?scope=incoming-webhook&client_id=${SLACK_CLIENT_ID}&state=${token}|${project.id}`}>
         <img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcSet="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x" />
       </a>
     );
@@ -90,8 +90,8 @@ class Notification extends React.Component {
 
   _removeSlackIntegeration(e) {
     e.preventDefault();
-    const { currentProject, dispatch } = this.props;
-    dispatch(NotificationSettings.removeSlackIntegeration(currentProject.id));
+    const { dispatch, project } = this.props;
+    dispatch(NotificationSettings.removeSlackIntegeration(project.id));
   }
 
   render() {
@@ -107,21 +107,21 @@ class Notification extends React.Component {
 }
 
 Notification.propTypes = {
-  currentProject: React.PropTypes.object,
   dispatch: React.PropTypes.func.isRequired,
   fetching: React.PropTypes.bool,
   isModalOpen: React.PropTypes.bool,
   modalError: React.PropTypes.string,
   modalFetching: React.PropTypes.bool,
+  project: React.PropTypes.object,
   slackData: React.PropTypes.object,
 };
 
 const mapStateToProps = (state) => ({
-  currentProject: state.project.currentProject,
   fetching: state.settings.notification.fetching,
   isModalOpen: state.settings.notification.modal.isOpened,
   modalError: state.settings.notification.modal.error,
   modalFetching: state.settings.notification.modal.fetching,
+  project: state.project.project.data,
   slackData: state.settings.notification.data,
 });
 

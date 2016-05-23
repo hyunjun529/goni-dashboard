@@ -10,73 +10,69 @@ import { Empty, Error, Loading } from '../Common';
 import { ResponsivePieChart } from 'frontend/core/chart';
 import Select from 'react-select';
 
-// Constants
-import { METRIC_CHANGE_PATH } from 'constants/metric';
-import { PROJECT_ENTER_METRIC_PAGE } from 'constants/project';
-
 const type = 'response/statistics';
 
 class Statistics extends React.Component {
   componentWillMount() {
     const { dispatch } = this.props;
-    dispatch({
-      type: PROJECT_ENTER_METRIC_PAGE,
-    });
-  }
-
-  componentWillReceiveProps(nextProps) {
-    const { currentDuration, currentPath, currentProject, dispatch } = this.props;
-    if (nextProps.currentDuration !== currentDuration) {
-      dispatch(MetricAction.getResponseMetric(currentProject.apikey, type,
-        currentPath, nextProps.currentDuration));
-    }
+    dispatch(MetricAction.enterDashboard());
   }
 
   componentDidMount() {
-    const { currentProject, dispatch } = this.props;
-    dispatch(MetricAction.getPaths(currentProject.apikey, 'response'));
+    const { dispatch, project } = this.props;
+    dispatch(MetricAction.getPaths(project.apikey, 'response'));
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { dispatch, duration, path, project } = this.props;
+    if (nextProps.duration !== duration) {
+      dispatch(MetricAction.getResponseMetric(project.apikey, type, path, nextProps.duration));
+    }
+  }
+
+  componentWillUpdate() {
   }
 
   _changePath(v) {
-    const { currentDuration, currentProject } = this.props;
-    const { dispatch } = this.props;
-    dispatch({
-      type: METRIC_CHANGE_PATH,
-      path: v,
-    });
-    dispatch(MetricAction.getResponseMetric(currentProject.apikey, type,
-      v, currentDuration));
+    const { dispatch, duration, project } = this.props;
+    dispatch(MetricAction.changePath(v));
+    dispatch(MetricAction.getResponseMetric(project.apikey, type, v, duration));
   }
 
   _renderResponseStatusPie() {
     const title = 'responsestatus';
-    const { currentDuration, currentPath, currentProject } = this.props;
-    const { dispatch, errored, fetchedData, fetching } = this.props;
-    if (!currentPath) {
+    const { metric, metricError, metricFetching, path } = this.props;
+    if (!path) {
       return (
         <Error title={title} msg="Path를 선택해주세요" />
       );
     }
-    if (!fetchedData) {
-      if (!fetching && !errored) {
-        dispatch(MetricAction.getResponseMetric(currentProject.apikey, type,
-          currentPath, currentDuration));
-      }
+    if (metricFetching) {
       return (
-        <Loading title={title} fetching={fetching} />
+        <Loading title={title} fetching={metricFetching} />
       );
     }
-    const dataLen = fetchedData[title].length;
-    if (dataLen === 0) {
+    if (!metric) {
+      if (metricError) {
+        return (
+          <Error title={title} msg={metricError} />
+        );
+      }
+      return (
+        <Error title={title} msg="Unknown Error" />
+      );
+    }
+    if (!(title in metric) || metric[title].length === 0) {
       return (
         <Empty title={title} />
       );
     }
+    const dataLen = metric[title].length;
     const chartData = [];
     for (let i = 0; i < dataLen; i++) {
       chartData.push({
-        label: fetchedData[title][i].status,
-        value: fetchedData[title][i].count,
+        label: metric[title][i].status,
+        value: metric[title][i].count,
       });
     }
     return (
@@ -88,10 +84,10 @@ class Statistics extends React.Component {
   }
 
   render() {
-    const { currentPath, fetchedPaths, pathFetching } = this.props;
+    const { path, pathList, pathFetching } = this.props;
     return (
       <div>
-        <Select name="path" options={fetchedPaths} onChange={::this._changePath} isLoading={pathFetching} value={currentPath} placeholder="API Path" />
+        <Select name="path" options={pathList} onChange={::this._changePath} isLoading={pathFetching} value={path} placeholder="API Path" />
         {this._renderResponseStatusPie()}
       </div>
     );
@@ -99,26 +95,28 @@ class Statistics extends React.Component {
 }
 
 Statistics.propTypes = {
-  currentDuration: React.PropTypes.string,
-  currentPath: React.PropTypes.string,
-  currentProject: React.PropTypes.object,
+  duration: React.PropTypes.string,
   dispatch: React.PropTypes.func.isRequired,
-  errored: React.PropTypes.bool,
-  fetchedData: React.PropTypes.object,
-  fetchedPaths: React.PropTypes.array,
-  fetching: React.PropTypes.bool,
+  metric: React.PropTypes.object,
+  metricError: React.PropTypes.string,
+  metricFetching: React.PropTypes.bool,
+  path: React.PropTypes.string,
+  pathList: React.PropTypes.array,
+  pathError: React.PropTypes.string,
   pathFetching: React.PropTypes.bool,
+  project: React.PropTypes.object,
 };
 
 const mapStateToProps = (state) => ({
-  currentDuration: state.project.currentDuration,
-  currentPath: state.apimetric.currentPath,
-  currentProject: state.project.currentProject,
-  errored: state.apimetric.errored,
-  fetchedData: state.apimetric.fetchedData,
-  fetchedPaths: state.apimetric.fetchedPaths,
-  fetching: state.apimetric.fetching,
-  pathFetching: state.apimetric.pathFetching,
+  duration: state.metrics.filter.time,
+  metric: state.metrics.metric.data,
+  metricError: state.metrics.metric.error,
+  metricFetching: state.metrics.metric.fetching,
+  path: state.metrics.filter.selected,
+  pathList: state.metrics.filter.data,
+  pathError: state.metrics.filter.error,
+  pathFetching: state.metrics.filter.fetching,
+  project: state.project.project.data,
 });
 
 export default connect(mapStateToProps)(Statistics);

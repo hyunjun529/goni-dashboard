@@ -1,92 +1,117 @@
 import {
-  METRIC_CHANGE_INSTANCE,
-  METRIC_CLEAR,
-  METRIC_CLEAR_ALL,
-  METRIC_FETCH_ERROR,
-  METRIC_FETCHED,
-  METRIC_FETCHING,
-  METRIC_INSTANCE_FETCHED,
-  METRIC_INSTANCE_FETCHING,
-  METRIC_INSTANCE_FETCH_ERROR,
+  METRIC_DATA_FETCH_ERROR,
+  METRIC_DATA_FETCHED,
+  METRIC_DATA_FETCHING,
+  METRIC_INIT,
+  METRIC_FILTER_CHANGED,
+  METRIC_FILTER_FETCH_ERROR,
+  METRIC_FILTER_FETCHED,
+  METRIC_FILTER_FETCHING,
+  METRIC_TIME_CHANGED,
 } from 'constants/metric';
 
 const initialState = {
-  currentInstance: null,
-  errored: false,
-  fetchedData: null,
-  fetchedInstances: null,
-  fetching: false,
-  instanceFetching: false,
+  filter: {
+    data: [],
+    error: null,
+    fetching: false,
+    selected: null,
+    time: '6h',
+  },
+  metric: {
+    data: {},
+    error: null,
+    fetching: false,
+  },
 };
 
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
-    case METRIC_CHANGE_INSTANCE:
+    case METRIC_DATA_FETCH_ERROR:
       return {
         ...state,
-        currentInstance: action.instance,
+        metric: {
+          data: {},
+          error: action.error,
+          fetching: false,
+        },
       };
-
-    case METRIC_CLEAR:
+    case METRIC_DATA_FETCHED:
       return {
         ...state,
-        errored: false,
-        fetchedData: null,
+        metric: {
+          data: action.data,
+          error: null,
+          fetching: false,
+        },
       };
-
-    case METRIC_CLEAR_ALL:
+    case METRIC_DATA_FETCHING:
       return {
         ...state,
-        currentInstance: null,
-        errored: false,
-        fetchedData: null,
-        fetchedInstances: null,
+        metric: {
+          ...state.metric,
+          error: null,
+          fetching: true,
+        },
       };
-
-    case METRIC_FETCH_ERROR:
+    case METRIC_INIT:
       return {
         ...state,
-        errored: true,
-        fetchedData: null,
-        fetching: false,
+        filter: {
+          ...state.filter,
+          data: [],
+          error: null,
+          fetching: false,
+          selected: null,
+        },
+        metric: initialState.metric,
       };
-
-    case METRIC_FETCHED:
+    case METRIC_FILTER_CHANGED:
       return {
         ...state,
-        fetchedData: action.fetchedData,
-        fetching: false,
+        filter: {
+          ...state.filter,
+          selected: action.selected,
+        },
       };
-
-    case METRIC_FETCHING:
+    case METRIC_FILTER_FETCH_ERROR:
       return {
         ...state,
-        errored: false,
-        fetchedData: null,
-        fetching: true,
+        filter: {
+          ...state.filter,
+          data: [],
+          error: action.error,
+          fetching: false,
+        },
       };
-
-    case METRIC_INSTANCE_FETCH_ERROR:
+    case METRIC_FILTER_FETCHED:
       return {
         ...state,
-        errored: true,
-        fetchedInstances: null,
-        instanceFetching: false,
+        filter: {
+          ...state.filter,
+          data: action.data,
+          error: null,
+          fetching: false,
+        },
       };
-
-    case METRIC_INSTANCE_FETCHED:
+    case METRIC_FILTER_FETCHING:
       return {
         ...state,
-        fetchedInstances: action.instances,
-        instanceFetching: false,
+        filter: {
+          ...state.filter,
+          data: [],
+          error: null,
+          fetching: true,
+          selected: null,
+        },
       };
-
-    case METRIC_INSTANCE_FETCHING:
+    case METRIC_TIME_CHANGED:
       return {
         ...state,
-        errored: false,
-        fetchedInstances: null,
-        instanceFetching: true,
+        filter: {
+          ...state.filter,
+          time: action.time,
+        },
       };
 
     default:

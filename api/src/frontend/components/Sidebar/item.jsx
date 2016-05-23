@@ -1,9 +1,6 @@
 import {
   PROJECT_CHANGE_DASHBOARD,
 } from 'constants/project';
-import {
-  METRIC_CLEAR_ALL,
-} from 'constants/metric';
 
 import React from 'react';
 import { connect } from 'react-redux';
@@ -11,19 +8,16 @@ import { connect } from 'react-redux';
 const SidebarItem = (props) => {
   const changeDashboard = item => {
     const { dispatch } = props;
-    if (item !== props.currentDashboard) {
-      dispatch({
-        type: METRIC_CLEAR_ALL,
-      });
+    if (item.key !== props.dashboard.key) {
       dispatch({
         type: PROJECT_CHANGE_DASHBOARD,
-        selected: item,
+        dashboard: item,
       });
     }
   };
 
   const menu = item => (
-    item.key === props.currentDashboard.key ? (
+    item.key === props.dashboard.key ? (
       <a className="selected">{item.title}</a>
     )
     : (
@@ -51,13 +45,13 @@ const SidebarItem = (props) => {
 };
 
 SidebarItem.propTypes = {
-  currentDashboard: React.PropTypes.object.isRequired,
+  dashboard: React.PropTypes.object.isRequired,
   dispatch: React.PropTypes.func.isRequired,
   menu: React.PropTypes.object.isRequired,
 };
 
 const mapStateToProps = (state) => ({
-  currentDashboard: state.project.currentDashboard,
+  dashboard: state.project.dashboard,
 });
 
 export default connect(mapStateToProps)(SidebarItem);

@@ -8,6 +8,7 @@ function getMinute(duration) {
       return 60;
     case '3h':
       return 180;
+    case '6h':
     default: // 6h
       return 360;
   }

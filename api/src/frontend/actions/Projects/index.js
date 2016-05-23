@@ -1,8 +1,8 @@
 import {
-  PROJECT_CLEAR,
   PROJECT_ENTER,
   PROJECT_ENTER_GONI,
   PROJECT_ENTER_GONIPLUS,
+  PROJECT_INIT,
 } from 'constants/project';
 import {
   PROJECTS_FETCH_ERROR,
@@ -64,7 +64,7 @@ const Actions = {
     return async dispatch => {
       try {
         dispatch({
-          type: PROJECT_CLEAR,
+          type: PROJECT_INIT,
         });
         dispatch({
           type: PROJECTS_FETCHING,
@@ -76,7 +76,6 @@ const Actions = {
           projects: res,
         });
       } catch (error) {
-        // TODO : change alert to modal
         alert('프로젝트 리스트를 받아오는도중 에러가 발생했습니다.'); // eslint-disable-line
         dispatch({
           type: PROJECTS_FETCH_ERROR,

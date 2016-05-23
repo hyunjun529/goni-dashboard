@@ -1,57 +1,93 @@
 import {
-  METRIC_FETCHED,
-  METRIC_FETCHING,
-  METRIC_FETCH_ERROR,
-  METRIC_INSTANCE_FETCHED,
-  METRIC_INSTANCE_FETCHING,
-  METRIC_INSTANCE_FETCH_ERROR,
-  METRIC_PATH_FETCHED,
-  METRIC_PATH_FETCHING,
-  METRIC_PATH_FETCH_ERROR,
+  METRIC_DATA_FETCH_ERROR,
+  METRIC_DATA_FETCHED,
+  METRIC_DATA_FETCHING,
+  METRIC_INIT,
+  METRIC_FILTER_CHANGED,
+  METRIC_FILTER_FETCH_ERROR,
+  METRIC_FILTER_FETCHED,
+  METRIC_FILTER_FETCHING,
+  METRIC_TIME_CHANGED,
 } from 'constants/metric';
+import {
+  PROJECT_ENTER_METRIC_PAGE,
+} from 'constants/project';
 import {
   httpGet,
   httpPost,
 } from 'frontend/util/fetch';
 
 const Actions = {
-  getCommonMetric: (apikey, metric, instance, duration) => {
+  changeInstance: (instance) => {
     return async dispatch => {
-      try {
-        dispatch({
-          type: METRIC_FETCHING,
-        });
-        const token = localStorage.getItem('token');
-        const res = await httpGet(
-          `/api/goniplus/${apikey}/${metric}/${instance}/${duration}`,
-          token
-        );
-        dispatch({
-          type: METRIC_FETCHED,
-          fetchedData: res,
-        });
-      } catch (error) {
-        dispatch({
-          type: METRIC_FETCH_ERROR,
-        });
-      }
+      dispatch({
+        type: METRIC_FILTER_CHANGED,
+        selected: instance,
+      });
+    };
+  },
+  changePath: (path) => {
+    return async dispatch => {
+      dispatch({
+        type: METRIC_FILTER_CHANGED,
+        selected: path,
+      });
+    };
+  },
+  changeTime: (time) => {
+    return async dispatch => {
+      dispatch({
+        type: METRIC_TIME_CHANGED,
+        time,
+      });
+    };
+  },
+  enterDashboard: () => {
+    return async dispatch => {
+      dispatch({
+        type: PROJECT_ENTER_METRIC_PAGE,
+      });
+      dispatch({
+        type: METRIC_INIT,
+      });
     };
   },
   getInstances: (apikey, metric) => {
     return async dispatch => {
       try {
         dispatch({
-          type: METRIC_INSTANCE_FETCHING,
+          type: METRIC_FILTER_FETCHING,
         });
         const token = localStorage.getItem('token');
-        const res = await httpGet(`/api/goniplus/${apikey}/${metric}/instances`, token);
+        const data = await httpGet(`/api/goniplus/${apikey}/${metric}/instances`, token);
         dispatch({
-          type: METRIC_INSTANCE_FETCHED,
-          instances: res,
+          type: METRIC_FILTER_FETCHED,
+          data,
         });
       } catch (error) {
         dispatch({
-          type: METRIC_INSTANCE_FETCH_ERROR,
+          type: METRIC_FILTER_FETCH_ERROR,
+          error: error.statusText,
+        });
+      }
+    };
+  },
+  getMetric: (apikey, metric, instance, duration) => {
+    return async dispatch => {
+      try {
+        dispatch({
+          type: METRIC_DATA_FETCHING,
+        });
+        const token = localStorage.getItem('token');
+        const data = await httpGet(`/api/goniplus/${apikey}/${metric}/${instance}/${duration}`, token);
+        dispatch({
+          type: METRIC_DATA_FETCHED,
+          data,
+        });
+      } catch (error) {
+        dispatch({
+          type: METRIC_DATA_FETCH_ERROR,
+          error: error.statusText,
         });
       }
     };
@@ -60,40 +96,43 @@ const Actions = {
     return async dispatch => {
       try {
         dispatch({
-          type: METRIC_PATH_FETCHING,
+          type: METRIC_FILTER_FETCHING,
         });
         const token = localStorage.getItem('token');
-        const res = await httpGet(`/api/goniplus/${apikey}/${metric}/paths`, token);
+        const data = await httpGet(`/api/goniplus/${apikey}/${metric}/paths`, token);
         dispatch({
-          type: METRIC_PATH_FETCHED,
-          paths: res,
+          type: METRIC_FILTER_FETCHED,
+          data,
         });
       } catch (error) {
         dispatch({
-          type: METRIC_PATH_FETCH_ERROR,
+          type: METRIC_FILTER_FETCH_ERROR,
+          error: error.statusText,
         });
       }
     };
   },
-  getResponseMetric: (apikey, type, path, duration) => {
+  getResponseMetric: (apikey, metric, path, duration) => {
     return async dispatch => {
       try {
         dispatch({
-          type: METRIC_FETCHING,
+          type: METRIC_DATA_FETCHING,
         });
         const token = localStorage.getItem('token');
-        const res = await httpPost(
-          `/api/goniplus/${apikey}/${type}/${duration}`,
-          token,
-          { path }
+        const data = await httpPost(
+          `/api/goniplus/${apikey}/${metric}/${duration}`,
+          token, {
+            path,
+          }
         );
         dispatch({
-          type: METRIC_FETCHED,
-          fetchedData: res,
+          type: METRIC_DATA_FETCHED,
+          data,
         });
       } catch (error) {
         dispatch({
-          type: METRIC_FETCH_ERROR,
+          type: METRIC_DATA_FETCH_ERROR,
+          error: error.statusText,
         });
       }
     };
