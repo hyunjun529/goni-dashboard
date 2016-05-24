@@ -196,7 +196,7 @@ body {
   font-size: 20px;
 }
 .login-button:hover {
-  background-color: rgba(76, 128, 241, 0.1);
+  background-color: #4c80f1;
 }
 .login-title {
   color: #4c80f1;
