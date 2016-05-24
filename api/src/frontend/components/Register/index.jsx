@@ -51,6 +51,7 @@ class Register extends React.Component {
                 <form role="form" onSubmit={::this._registerUser}>
                   <div className="form-group">
                     {::this._renderError()}
+                    <img className="login-goni-logo" width="200" height="200" src="src/img/goniLogo.png" />
                     <p className="login-title">회원가입</p>
                     <div className="login-input-wrapper">
                       <input ref="email" className="login-input-email" placeholder="Email" type="text" required />
@@ -62,9 +63,11 @@ class Register extends React.Component {
                       <input ref="password" className="login-input-password" placeholder="Password" type="password" required />
                     </div>
                   </div>
-                  <button className="login-button" type="submit">REGISTER</button>
                   <div className="login-help-parent">
                     <a className="login-help">이용약관</a>
+                  </div>
+                  <div className="login-button-wrapper">
+                    <button className="login-button" type="submit">REGISTER</button>
                   </div>
                 </form>
               </div>
