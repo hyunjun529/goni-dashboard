@@ -50,6 +50,7 @@ class Login extends React.Component {
                 <form role="form" onSubmit={::this._login}>
                   <div className="form-group">
                     {::this._renderError()}
+                    <img className="login-goni-logo" width="200" height="200" src="src/img/goniLogo.png" />
                     <p className="login-title">GONI DASHBOARD</p>
                     <div className="login-input-wrapper">
                       <input ref="email" className="login-input-email" placeholder="Email" type="text" required />
@@ -58,9 +59,11 @@ class Login extends React.Component {
                       <input ref="password" className="login-input-password" placeholder="Password" type="password" required />
                     </div>
                   </div>
-                  <button className="login-button" type="submit">LOGIN</button>
                   <div className="login-help-parent">
                     <a className="login-help">비밀번호를 잊으셨나요?</a>
+                  </div>
+                  <div className="login-button-wrapper">
+                    <button className="login-button" type="submit">LOGIN</button>
                   </div>
                 </form>
               </div>
