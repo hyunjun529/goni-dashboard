@@ -50,7 +50,6 @@ class Login extends React.Component {
                 <form role="form" onSubmit={::this._login}>
                   <div className="form-group">
                     {::this._renderError()}
-                    <img className="login-goni-logo" width="200" height="200" src="src/img/goniLogo.png" />
                     <p className="login-title">GONI DASHBOARD</p>
                     <div className="login-input-wrapper">
                       <input ref="email" className="login-input-email" placeholder="Email" type="text" required />

@@ -51,7 +51,6 @@ class Register extends React.Component {
                 <form role="form" onSubmit={::this._registerUser}>
                   <div className="form-group">
                     {::this._renderError()}
-                    <img className="login-goni-logo" width="200" height="200" src="src/img/goniLogo.png" />
                     <p className="login-title">회원가입</p>
                     <div className="login-input-wrapper">
                       <input ref="email" className="login-input-email" placeholder="Email" type="text" required />
