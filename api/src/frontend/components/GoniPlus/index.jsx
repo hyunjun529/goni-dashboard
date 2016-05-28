@@ -9,6 +9,7 @@ import { Metrics as MetricAction, Project as ProjectAction } from 'frontend/acti
 import {
   APIResponseMetrics,
   APIStatisticsMetrics,
+  DashboardOverview,
   Header,
   MemberSettings,
   Metrics,
@@ -61,6 +62,8 @@ class GoniPlus extends React.Component {
   _renderGraphs() {
     const { dashboard } = this.props;
     switch (dashboard.key) {
+      case 'overview_dashboard':
+        return <DashboardOverview />;
       case 'metrics_expvar':
         return <Metrics type="expvar" />;
       case 'metrics_runtime':
@@ -78,8 +81,40 @@ class GoniPlus extends React.Component {
     }
   }
 
+  _renderTab() {
+    const { isOverviewDashboard, isMetricDashboard } = this.props;
+    if (isOverviewDashboard) {
+      return (
+        <div className="tag-tab-wrap">
+          <div className="tag-tab tag-selected">
+            <a>CPU</a>
+          </div>
+        </div>
+      );
+    }
+    if (isMetricDashboard) {
+      return (
+        <div className="tag-tab-wrap">
+          <div className={this._updateTimeBtn('30m')} onClick={() => this._changeTime('30m')}>
+            <a>30 MINUTES</a>
+          </div>
+          <div className={this._updateTimeBtn('1h')} onClick={() => this._changeTime('1h')}>
+            <a>1 HOUR</a>
+          </div>
+          <div className={this._updateTimeBtn('3h')} onClick={() => this._changeTime('3h')}>
+            <a>3 HOURS</a>
+          </div>
+          <div className={this._updateTimeBtn('6h')} onClick={() => this._changeTime('6h')}>
+            <a>6 HOURS</a>
+          </div>
+        </div>
+      );
+    }
+    return false;
+  }
+
   _renderLayout() {
-    const { fetching, isMetricDashboard, project } = this.props;
+    const { fetching, project } = this.props;
     return (
       <div className="child">
         <Sidebar menu={GONIPLUS_SIDEBAR} />
@@ -91,23 +126,7 @@ class GoniPlus extends React.Component {
                 null
               }
             </h1>
-            { isMetricDashboard ?
-              <div className="tag-tab-wrap">
-                <div className={this._updateTimeBtn('30m')} onClick={() => this._changeTime('30m')}>
-                  <a>30 MINUTES</a>
-                </div>
-                <div className={this._updateTimeBtn('1h')} onClick={() => this._changeTime('1h')}>
-                  <a>1 HOUR</a>
-                </div>
-                <div className={this._updateTimeBtn('3h')} onClick={() => this._changeTime('3h')}>
-                  <a>3 HOURS</a>
-                </div>
-                <div className={this._updateTimeBtn('6h')} onClick={() => this._changeTime('6h')}>
-                  <a>6 HOURS</a>
-                </div>
-              </div> :
-              null
-            }
+            {this._renderTab()}
           </div>
           {this._renderGraphs()}
         </div>
@@ -135,6 +154,7 @@ GoniPlus.propTypes = {
   duration: React.PropTypes.string,
   fetching: React.PropTypes.bool,
   isMetricDashboard: React.PropTypes.bool,
+  isOverviewDashboard: React.PropTypes.bool,
   location: React.PropTypes.object,
   project: React.PropTypes.object,
 };
@@ -145,6 +165,7 @@ const mapStateToProps = (state) => ({
   project: state.project.project.data,
   fetching: state.project.project.fetching,
   isMetricDashboard: state.project.dashboard.isMetricDashboard,
+  isOverviewDashboard: state.project.dashboard.isOverviewDashboard,
 });
 
 export default connect(mapStateToProps)(GoniPlus);
