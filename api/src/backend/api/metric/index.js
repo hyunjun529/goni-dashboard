@@ -6,6 +6,8 @@ import {
 import {
   getAPIMetrics,
   getAPIStatistics,
+  getAPIStatisticsByTime,
+  getDashboardCPU,
   getExpvar,
   getInstances,
   getPaths,
@@ -22,6 +24,43 @@ const validAPIMetric = ['response'];
 const validTime = ['30m', '1h', '3h', '6h'];
 
 // GoniPlus
+// Overview
+router
+  .route('/goniplus/:key/overview/dashboard/cpu')
+  .get(
+    // passport.authenticate('bearer'),
+    // projectAccessCheckByKey,
+    async(req, res) => {
+      try {
+        const results = await getDashboardCPU(req.params.key);
+        const processed = {};
+        _.forEach(results, (v) => {
+          if (v.max) {
+            processed[new Date(v.time) / 1000] = Math.floor(v.max * 100);
+          }
+        });
+        return res.send(processed);
+      } catch (error) {
+        return res.sendStatus(500);
+      }
+    }
+  );
+
+router
+  .route('/goniplus/:key/overview/dashboard/cpu/:time')
+  .get(
+    passport.authenticate('bearer'),
+    projectAccessCheckByKey,
+    async(req, res) => {
+      try {
+        const results = await getAPIStatisticsByTime(req.params.key, req.params.time);
+        return res.send(results);
+      } catch (error) {
+        return res.sendStatus(500);
+      }
+    }
+  );
+
 // Common metric
 // Instances
 router
@@ -99,13 +138,7 @@ router
           return res.sendStatus(400);
         }
         const results = await getPaths(req.params.key);
-        const processed = _.map(results, (v) => {
-          return {
-            value: v,
-            label: v,
-          };
-        });
-        return res.send(processed);
+        return res.send(results);
       } catch (error) {
         return res.sendStatus(500);
       }

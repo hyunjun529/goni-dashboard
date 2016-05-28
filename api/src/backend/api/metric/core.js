@@ -76,6 +76,50 @@ export function getAPIStatistics(apikey, path, duration) {
 }
 
 /**
+ * getAPIStatisticsByTime(apikey, time) returns api statistics
+ */
+export function getAPIStatisticsByTime(apikey, time) {
+  return new Promise((resolve, reject) => {
+    const start = parseInt(time, 10);
+    goniPlus.query(
+      `SELECT count(res), mean(res) FROM http WHERE apikey = '${apikey}' and time >= ${start}s and time < ${start + 300}s GROUP BY path;
+      SELECT count(res) FROM http WHERE apikey = '${apikey}' and time >= ${start}s and time < ${start + 300}s GROUP BY path, status;`,
+      (err, results) => {
+        if (err) {
+          return reject(err);
+        }
+        if (results && results[0].length !== 0) {
+          const data = [];
+          const tProcessed = [];
+          const dProcessed = [];
+          _.forEach(results[0], (v) => {
+            if (v.count !== 0) {
+              tProcessed.push({
+                path: v.path,
+                mean: v.mean,
+                count: v.count,
+              });
+            }
+          });
+          _.forEach(results[1], (v) => {
+            if (v.count !== 0) {
+              dProcessed.push({
+                path: v.path,
+                status: v.status,
+                count: v.count,
+              });
+            }
+          });
+          data.push(tProcessed);
+          data.push(dProcessed);
+          return resolve(data);
+        }
+        return resolve([]);
+      });
+  });
+}
+
+/**
  * getExpvar(apikey, duration) returns expvar metrics
  */
 export function getExpvar(apikey, instance, duration) {
@@ -124,18 +168,47 @@ export function getInstances(apikey, metric) {
 }
 
 /**
- * getPaths(apikey) returns api paths
+ * getDashboardCPU(apikey) returns cpu data for render calendar
  */
-export function getPaths(apikey) {
+export function getDashboardCPU(apikey) {
   return new Promise((resolve, reject) => {
     goniPlus.query(
-      `SELECT DISTINCT(path) FROM http WHERE apikey='${apikey}' and time > now() - 6h;`,
+      `SELECT MAX(cpu) FROM resource WHERE apikey='${apikey}' and time > now() - 6h GROUP BY time(5m);`,
       (err, results) => {
         if (err) {
           return reject(err);
         }
         if (results && results[0].length !== 0) {
-          resolve(results[0][0].distinct);
+          return resolve(results[0]);
+        }
+        return resolve([]);
+      });
+  });
+}
+
+
+/**
+ * getPaths(apikey) returns api paths
+ */
+export function getPaths(apikey) {
+  return new Promise((resolve, reject) => {
+    goniPlus.query(
+      `SELECT COUNT(res) FROM http WHERE apikey='${apikey}' and time > now() - 6h GROUP BY path;`,
+      (err, results) => {
+        if (err) {
+          return reject(err);
+        }
+        if (results && results[0].length !== 0) {
+          const processed = [];
+          _.forEach(results[0], (v) => {
+            if (v.count !== 0) {
+              processed.push({
+                value: v.path,
+                label: v.path,
+              });
+            }
+          });
+          return resolve(processed);
         }
         return resolve([]);
       });
