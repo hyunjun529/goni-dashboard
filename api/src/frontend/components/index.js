@@ -2,6 +2,7 @@ import APIResponseMetrics from './Metrics/API/Response';
 import APIStatisticsMetrics from './Metrics/API/Statistics';
 import App from './App';
 import AuthContainer from './AuthContainer';
+import DashboardOverview from './Metrics/Dashboard';
 import GoniPlus from './GoniPlus';
 import Header from './Header';
 import Login from './Login';
@@ -17,6 +18,7 @@ export {
   APIStatisticsMetrics,
   App,
   AuthContainer,
+  DashboardOverview,
   GoniPlus,
   Header,
   Login,
