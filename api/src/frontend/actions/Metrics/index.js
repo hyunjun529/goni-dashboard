@@ -7,10 +7,18 @@ import {
   METRIC_FILTER_FETCH_ERROR,
   METRIC_FILTER_FETCHED,
   METRIC_FILTER_FETCHING,
+  METRIC_OVERVIEW_API_FETCH_ERROR,
+  METRIC_OVERVIEW_API_FETCHED,
+  METRIC_OVERVIEW_API_FETCHING,
+  METRIC_OVERVIEW_CPU_FETCH_ERROR,
+  METRIC_OVERVIEW_CPU_FETCHED,
+  METRIC_OVERVIEW_CPU_FETCHING,
+  METRIC_OVERVIEW_CPU_SELECTED,
   METRIC_TIME_CHANGED,
 } from 'constants/metric';
 import {
   PROJECT_ENTER_METRIC_PAGE,
+  PROJECT_ENTER_OVERVIEW_PAGE,
 } from 'constants/project';
 import {
   httpGet,
@@ -52,6 +60,16 @@ const Actions = {
       });
     };
   },
+  enterOverviewDashboard: () => {
+    return async dispatch => {
+      dispatch({
+        type: PROJECT_ENTER_OVERVIEW_PAGE,
+      });
+      dispatch({
+        type: METRIC_INIT,
+      });
+    };
+  },
   getInstances: (apikey, metric) => {
     return async dispatch => {
       try {
@@ -87,6 +105,50 @@ const Actions = {
       } catch (error) {
         dispatch({
           type: METRIC_DATA_FETCH_ERROR,
+          error: error.statusText,
+        });
+      }
+    };
+  },
+  getOverviewAPIByTime: (apikey, time) => {
+    return async dispatch => {
+      try {
+        dispatch({
+          type: METRIC_OVERVIEW_CPU_SELECTED,
+          selected: time,
+        });
+        dispatch({
+          type: METRIC_OVERVIEW_API_FETCHING,
+        });
+        const token = localStorage.getItem('token');
+        const data = await httpGet(`/api/goniplus/${apikey}/overview/dashboard/cpu/${time}`, token);
+        dispatch({
+          type: METRIC_OVERVIEW_API_FETCHED,
+          data,
+        });
+      } catch (error) {
+        dispatch({
+          type: METRIC_OVERVIEW_API_FETCH_ERROR,
+          error: error.statusText,
+        });
+      }
+    };
+  },
+  getOverviewCPU: (apikey) => {
+    return async dispatch => {
+      try {
+        dispatch({
+          type: METRIC_OVERVIEW_CPU_FETCHING,
+        });
+        const token = localStorage.getItem('token');
+        const data = await httpGet(`/api/goniplus/${apikey}/overview/dashboard/cpu`, token);
+        dispatch({
+          type: METRIC_OVERVIEW_CPU_FETCHED,
+          data,
+        });
+      } catch (error) {
+        dispatch({
+          type: METRIC_OVERVIEW_CPU_FETCH_ERROR,
           error: error.statusText,
         });
       }

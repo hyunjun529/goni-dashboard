@@ -4,6 +4,7 @@ import {
   PROJECT_ENTER_GONIPLUS,
   PROJECT_ENTER_METRIC_PAGE,
   PROJECT_ENTER_NON_METRIC_PAGE,
+  PROJECT_ENTER_OVERVIEW_PAGE,
   PROJECT_FETCH_ERROR,
   PROJECT_FETCHED,
   PROJECT_FETCHING,
@@ -13,8 +14,9 @@ import {
 const initialState = {
   dashboard: {
     isMetricDashboard: false,
-    key: 'metrics_runtime',
-    title: 'Runtime',
+    isOverviewDashboard: false,
+    key: 'overview_dashboard',
+    title: 'Dashboard',
   },
   project: {
     data: null,
@@ -53,6 +55,7 @@ export default function reducer(state = initialState, action = {}) {
         dashboard: {
           ...state.dashboard,
           isMetricDashboard: true,
+          isOverviewDashboard: false,
         },
       };
     case PROJECT_ENTER_NON_METRIC_PAGE:
@@ -61,6 +64,16 @@ export default function reducer(state = initialState, action = {}) {
         dashboard: {
           ...state.dashboard,
           isMetricDashboard: false,
+          isOverviewDashboard: false,
+        },
+      };
+    case PROJECT_ENTER_OVERVIEW_PAGE:
+      return {
+        ...state,
+        dashboard: {
+          ...state.dashboard,
+          isMetricDashboard: true,
+          isOverviewDashboard: true,
         },
       };
     case PROJECT_FETCH_ERROR:

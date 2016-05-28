@@ -7,6 +7,13 @@ import {
   METRIC_FILTER_FETCH_ERROR,
   METRIC_FILTER_FETCHED,
   METRIC_FILTER_FETCHING,
+  METRIC_OVERVIEW_API_FETCH_ERROR,
+  METRIC_OVERVIEW_API_FETCHED,
+  METRIC_OVERVIEW_API_FETCHING,
+  METRIC_OVERVIEW_CPU_FETCH_ERROR,
+  METRIC_OVERVIEW_CPU_FETCHED,
+  METRIC_OVERVIEW_CPU_FETCHING,
+  METRIC_OVERVIEW_CPU_SELECTED,
   METRIC_TIME_CHANGED,
 } from 'constants/metric';
 
@@ -22,6 +29,20 @@ const initialState = {
     data: {},
     error: null,
     fetching: false,
+  },
+  overview: {
+    api: {
+      data: [],
+      error: null,
+      fetching: false,
+      selected: null,
+    },
+    cpu: {
+      data: {},
+      error: null,
+      fetching: false,
+      selected: null,
+    },
   },
 };
 
@@ -56,7 +77,6 @@ export default function reducer(state = initialState, action = {}) {
       };
     case METRIC_INIT:
       return {
-        ...state,
         filter: {
           ...state.filter,
           data: [],
@@ -65,6 +85,7 @@ export default function reducer(state = initialState, action = {}) {
           selected: null,
         },
         metric: initialState.metric,
+        overview: initialState.overview,
       };
     case METRIC_FILTER_CHANGED:
       return {
@@ -103,6 +124,95 @@ export default function reducer(state = initialState, action = {}) {
           error: null,
           fetching: true,
           selected: null,
+        },
+      };
+    case METRIC_OVERVIEW_API_FETCH_ERROR:
+      return {
+        ...state,
+        overview: {
+          ...state.overview,
+          api: {
+            data: [],
+            error: action.error,
+            fetching: false,
+            selected: null,
+          },
+        },
+      };
+    case METRIC_OVERVIEW_API_FETCHED:
+      return {
+        ...state,
+        overview: {
+          ...state.overview,
+          api: {
+            data: action.data,
+            error: null,
+            fetching: false,
+            selected: null,
+          },
+        },
+      };
+    case METRIC_OVERVIEW_API_FETCHING:
+      return {
+        ...state,
+        overview: {
+          ...state.overview,
+          api: {
+            data: [],
+            error: null,
+            fetching: true,
+            selected: null,
+          },
+        },
+      };
+    case METRIC_OVERVIEW_CPU_FETCH_ERROR:
+      return {
+        ...state,
+        overview: {
+          ...state.overview,
+          cpu: {
+            data: {},
+            error: action.error,
+            fetching: false,
+            selected: null,
+          },
+        },
+      };
+    case METRIC_OVERVIEW_CPU_FETCHED:
+      return {
+        ...state,
+        overview: {
+          ...state.overview,
+          cpu: {
+            data: action.data,
+            error: null,
+            fetching: false,
+            selected: null,
+          },
+        },
+      };
+    case METRIC_OVERVIEW_CPU_FETCHING:
+      return {
+        ...state,
+        overview: {
+          ...state.overview,
+          cpu: {
+            data: {},
+            error: null,
+            fetching: true,
+            selected: null,
+          },
+        },
+      };
+    case METRIC_OVERVIEW_CPU_SELECTED:
+      return {
+        ...state,
+        overview: {
+          ...state.overview,
+          cpu: {
+            ...state.overview.cpu,
+            selected: action.selected,
+          },
         },
       };
     case METRIC_TIME_CHANGED:
