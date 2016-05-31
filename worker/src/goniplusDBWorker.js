@@ -59,7 +59,6 @@ amqp.connect(`amqp://${queueUser}:${queuePass}@${queueHost}:${queuePort}`, (conn
         const data = JSON.parse(msg.content);
         const r = {
           time: getTimestamp(data.time),
-          cpu: data.sys.resource.cpu,
           instance: data.instance,
         };
         if (data.sys.resource.cpu) {
