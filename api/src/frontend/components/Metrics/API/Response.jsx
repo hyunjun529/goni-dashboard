@@ -9,11 +9,22 @@ import { Metrics as MetricAction } from 'frontend/actions';
 
 // Components
 import { Empty, Error, Loading } from '../Common';
-import { ResponsiveScatterChart } from 'frontend/core/chart';
 import SankeyChart from 'frontend/core/chart/SankeyChart';
+import ReactEcharts from 'react-echarts-component';
 import Select from 'react-select';
 
 const type = 'response';
+
+const responseColorAccessor = (s) => {
+  const status = parseInt(s, 10);
+  if (status < 400) {
+    return '#4c80f1';
+  }
+  if (status < 500) {
+    return '#ffda00';
+  }
+  return '#ff7595';
+};
 
 class Response extends React.Component {
   componentWillMount() {
@@ -39,7 +50,7 @@ class Response extends React.Component {
     dispatch(MetricAction.getResponseMetric(project.apikey, type, v, duration));
   }
 
-  _renderData(title) {
+  _renderData(dataId, title) {
     const { metric, metricError, metricFetching, path } = this.props;
     if (!path) {
       return (
@@ -61,12 +72,12 @@ class Response extends React.Component {
         <Error title={title} msg="Unknown Error" />
       );
     }
-    if (!(title in metric) || metric[title].length === 0) {
+    if (!(dataId in metric) || metric[dataId].length === 0) {
       return (
         <Empty title={title} />
       );
     }
-    switch (title) {
+    switch (dataId) {
       case 'overview':
         return this._renderOverview();
       case 'responsegraph':
@@ -79,7 +90,8 @@ class Response extends React.Component {
   }
 
   _renderOverview() {
-    const title = 'overview';
+    const dataId = 'overview';
+    const title = 'Overview';
     const { metric } = this.props;
     return (
       <div>
@@ -88,25 +100,25 @@ class Response extends React.Component {
           <div className="col-xs-12 col-sm-6 col-md-3 col-lg-3">
             <div className="overview-card">
               <p className="overview-card-header">min</p>
-              <p className="overview-card-data">{metric[title].min}</p>
+              <p className="overview-card-data">{metric[dataId].min}</p>
             </div>
           </div>
           <div className="col-xs-12 col-sm-6 col-md-3 col-lg-3">
             <div className="overview-card">
               <p className="overview-card-header">average</p>
-              <p className="overview-card-data">{metric[title].mean}</p>
+              <p className="overview-card-data">{metric[dataId].mean}</p>
             </div>
           </div>
           <div className="col-xs-12 col-sm-6 col-md-3 col-lg-3">
             <div className="overview-card">
               <p className="overview-card-header">max</p>
-              <p className="overview-card-data">{metric[title].max}</p>
+              <p className="overview-card-data">{metric[dataId].max}</p>
             </div>
           </div>
           <div className="col-xs-12 col-sm-6 col-md-3 col-lg-3">
             <div className="overview-card">
               <p className="overview-card-header">panic</p>
-              <p className="overview-card-data">{metric[title].panic}</p>
+              <p className="overview-card-data">{metric[dataId].panic}</p>
             </div>
           </div>
         </div>
@@ -115,9 +127,10 @@ class Response extends React.Component {
   }
 
   _renderResponseGraph() {
-    const title = 'responsegraph';
+    const dataId = 'responsegraph';
+    const title = 'Response Trace';
     const { duration, metric } = this.props;
-    const dataLen = metric[title].length;
+    const dataLen = metric[dataId].length;
     const chartData = {
       nodes: [
         { name: 'Request' },
@@ -128,12 +141,12 @@ class Response extends React.Component {
     for (let i = 0; i < dataLen; i++) {
       let breadcrumb = [];
       try {
-        breadcrumb = JSON.parse(metric[title][i].breadcrumb);
+        breadcrumb = JSON.parse(metric[dataId][i].breadcrumb);
       } catch (err) { // eslint-disable-line no-empty-block
       }
       const breadcrumbLen = breadcrumb.length;
-      const count = metric[title][i].count;
-      const status = metric[title][i].status;
+      const count = metric[dataId][i].count;
+      const status = metric[dataId][i].status;
       if (_.indexOf(targetIndex, status) === -1) {
         chartData.nodes.push({
           name: status,
@@ -204,26 +217,73 @@ class Response extends React.Component {
   }
 
   _renderResponseScatter() {
-    const title = 'responsemap';
+    const dataId = 'responsemap';
+    const title = 'Response Status / Time';
     const { metric } = this.props;
-    const dataLen = metric[title].length;
-    const chartData = [];
-    const parsed = {
-      name: title,
-      values: [],
+    const dataLen = metric[dataId].length;
+    const option = {
+      tooltip: {
+        formatter: (params) => {
+          return `Status ${params.seriesName}<br/>${params.value[0]}<br/>${params.value[1]}ms`;
+        },
+      },
+      legend: {
+        data: [],
+        left: 'right',
+      },
+      xAxis: [
+        {
+          type: 'time',
+          scale: true,
+          splitLine: {
+            show: false,
+          },
+        },
+      ],
+      yAxis: [
+        {
+          type: 'value',
+          scale: true,
+          axisLabel: {
+            formatter: '{value}ms',
+          },
+          splitLine: {
+            lineStyle: {
+              type: 'dotted',
+            },
+          },
+        },
+      ],
+      series: [],
     };
+    const tempData = {};
     for (let i = 0; i < dataLen; i++) {
-      parsed.values.push({
-        x: new Date(metric[title][i].time),
-        y: metric[title][i].res,
-        status: metric[title][i].status,
-      });
+      const status = metric[dataId][i].status;
+      if (!tempData[status]) {
+        tempData[status] = {
+          name: status,
+          type: 'scatter',
+          itemStyle: {
+            normal: {
+              color: responseColorAccessor(status),
+            },
+          },
+          data: [],
+        };
+        option.legend.data.push(status);
+      }
+      tempData[status].data.push([new Date(metric[dataId][i].time), metric[dataId][i].res]);
     }
-    chartData.push(parsed);
+    _.forEach(tempData, (v) => {
+      option.series.push(v);
+    });
+    option.legend.data = _.sortBy(option.legend.data);
     return (
       <div>
         <div className="chart-wrapper-header">{title}</div>
-        <ResponsiveScatterChart data={chartData} />
+        <div className="chart-wrapper">
+          <ReactEcharts option={option} height={300} />
+        </div>
       </div>
     );
   }
@@ -233,9 +293,9 @@ class Response extends React.Component {
     return (
       <div>
         <Select name="path" options={pathList} onChange={::this._changePath} isLoading={pathFetching} value={path} placeholder="API Path" />
-        {this._renderData('overview')}
-        {this._renderData('responsemap')}
-        {this._renderData('responsegraph')}
+        {this._renderData('overview', 'Overview')}
+        {this._renderData('responsemap', 'Response Time')}
+        {this._renderData('responsegraph', 'Response Trace')}
       </div>
     );
   }
