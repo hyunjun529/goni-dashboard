@@ -10,6 +10,10 @@ import {
   METRIC_OVERVIEW_API_FETCH_ERROR,
   METRIC_OVERVIEW_API_FETCHED,
   METRIC_OVERVIEW_API_FETCHING,
+  METRIC_OVERVIEW_API_SELECTED,
+  METRIC_OVERVIEW_API_DETAIL_FETCH_ERROR,
+  METRIC_OVERVIEW_API_DETAIL_FETCHED,
+  METRIC_OVERVIEW_API_DETAIL_FETCHING,
   METRIC_OVERVIEW_CPU_FETCH_ERROR,
   METRIC_OVERVIEW_CPU_FETCHED,
   METRIC_OVERVIEW_CPU_FETCHING,
@@ -36,6 +40,11 @@ const initialState = {
       error: null,
       fetching: false,
       selected: null,
+    },
+    apiDetail: {
+      data: [],
+      error: null,
+      fetching: false,
     },
     cpu: {
       data: {},
@@ -158,6 +167,56 @@ export default function reducer(state = initialState, action = {}) {
         overview: {
           ...state.overview,
           api: {
+            data: [],
+            error: null,
+            fetching: true,
+            selected: null,
+          },
+        },
+      };
+    case METRIC_OVERVIEW_API_SELECTED:
+      return {
+        ...state,
+        overview: {
+          ...state.overview,
+          api: {
+            ...state.overview.api,
+            selected: action.selected,
+          },
+        },
+      };
+    case METRIC_OVERVIEW_API_DETAIL_FETCH_ERROR:
+      return {
+        ...state,
+        overview: {
+          ...state.overview,
+          apiDetail: {
+            data: [],
+            error: action.error,
+            fetching: false,
+            selected: null,
+          },
+        },
+      };
+    case METRIC_OVERVIEW_API_DETAIL_FETCHED:
+      return {
+        ...state,
+        overview: {
+          ...state.overview,
+          apiDetail: {
+            data: action.data,
+            error: null,
+            fetching: false,
+            selected: null,
+          },
+        },
+      };
+    case METRIC_OVERVIEW_API_DETAIL_FETCHING:
+      return {
+        ...state,
+        overview: {
+          ...state.overview,
+          apiDetail: {
             data: [],
             error: null,
             fetching: true,

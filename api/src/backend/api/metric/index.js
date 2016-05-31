@@ -4,6 +4,7 @@ import {
   projectAccessCheckByKey,
 } from 'backend/util/project';
 import {
+  getAPIDetailByTime,
   getAPIMetrics,
   getAPIStatistics,
   getAPIStatisticsByTime,
@@ -28,8 +29,8 @@ const validTime = ['30m', '1h', '3h', '6h'];
 router
   .route('/goniplus/:key/overview/dashboard/cpu')
   .get(
-    // passport.authenticate('bearer'),
-    // projectAccessCheckByKey,
+    passport.authenticate('bearer'),
+    projectAccessCheckByKey,
     async(req, res) => {
       try {
         const results = await getDashboardCPU(req.params.key);
@@ -54,6 +55,19 @@ router
     async(req, res) => {
       try {
         const results = await getAPIStatisticsByTime(req.params.key, req.params.time);
+        return res.send(results);
+      } catch (error) {
+        return res.sendStatus(500);
+      }
+    }
+  );
+
+router
+  .route('/goniplus/:key/overview/dashboard/cpu/:time/apidetail')
+  .post(
+    async(req, res) => {
+      try {
+        const results = await getAPIDetailByTime(req.params.key, req.body.path, req.params.time);
         return res.send(results);
       } catch (error) {
         return res.sendStatus(500);

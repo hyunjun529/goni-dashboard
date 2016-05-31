@@ -10,6 +10,10 @@ import {
   METRIC_OVERVIEW_API_FETCH_ERROR,
   METRIC_OVERVIEW_API_FETCHED,
   METRIC_OVERVIEW_API_FETCHING,
+  METRIC_OVERVIEW_API_SELECTED,
+  METRIC_OVERVIEW_API_DETAIL_FETCH_ERROR,
+  METRIC_OVERVIEW_API_DETAIL_FETCHED,
+  METRIC_OVERVIEW_API_DETAIL_FETCHING,
   METRIC_OVERVIEW_CPU_FETCH_ERROR,
   METRIC_OVERVIEW_CPU_FETCHED,
   METRIC_OVERVIEW_CPU_FETCHING,
@@ -129,6 +133,35 @@ const Actions = {
       } catch (error) {
         dispatch({
           type: METRIC_OVERVIEW_API_FETCH_ERROR,
+          error: error.statusText,
+        });
+      }
+    };
+  },
+  getOverviewAPIDetail: (apikey, path, time) => {
+    return async dispatch => {
+      try {
+        dispatch({
+          type: METRIC_OVERVIEW_API_SELECTED,
+          selected: path,
+        });
+        dispatch({
+          type: METRIC_OVERVIEW_API_DETAIL_FETCHING,
+        });
+        const token = localStorage.getItem('token');
+        const data = await httpPost(
+          `/api/goniplus/${apikey}/overview/dashboard/cpu/${time}/apidetail`,
+          token, {
+            path,
+          }
+        );
+        dispatch({
+          type: METRIC_OVERVIEW_API_DETAIL_FETCHED,
+          data,
+        });
+      } catch (error) {
+        dispatch({
+          type: METRIC_OVERVIEW_API_DETAIL_FETCH_ERROR,
           error: error.statusText,
         });
       }

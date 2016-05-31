@@ -4,6 +4,32 @@ import {
 } from 'backend/core/influx';
 
 /**
+ * getAPIDetailByTime(apikey, path, time) returns api detail
+ */
+export function getAPIDetailByTime(apikey, path, time) {
+  return new Promise((resolve, reject) => {
+    const start = parseInt(time, 10);
+    goniPlus.query(
+      `SELECT count(res) FROM http WHERE apikey = '${apikey}' and path = '${path}' and time >= ${start}s and time < ${start + 300}s GROUP BY breadcrumb, status;`,
+      (err, results) => {
+        if (err) {
+          return reject(err);
+        }
+        if (results && results[0].length !== 0) {
+          const processed = [];
+          _.forEach(results[0], (o) => {
+            if (o.count !== 0) {
+              processed.push(o);
+            }
+          });
+          return resolve(processed);
+        }
+        return resolve([]);
+      });
+  });
+}
+
+/**
  * getAPIMetrics(apikey, path, duration) returns api metrics
  */
 export function getAPIMetrics(apikey, path, duration) {
