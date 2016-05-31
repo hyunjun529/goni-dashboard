@@ -8,23 +8,12 @@ import { connect } from 'react-redux';
 import { Metrics as MetricAction } from 'frontend/actions';
 
 // Components
-import { Empty, Error, Loading } from '../Common';
+import { Empty, Error, Loading, responseColorAccessor } from '../Common';
 import SankeyChart from 'frontend/core/chart/SankeyChart';
 import ReactEcharts from 'react-echarts-component';
 import Select from 'react-select';
 
 const type = 'response';
-
-const responseColorAccessor = (s) => {
-  const status = parseInt(s, 10);
-  if (status < 400) {
-    return '#4c80f1';
-  }
-  if (status < 500) {
-    return '#ffda00';
-  }
-  return '#ff7595';
-};
 
 class Response extends React.Component {
   componentWillMount() {

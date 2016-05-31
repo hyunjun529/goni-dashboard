@@ -20,6 +20,17 @@ export const getDuration = (duration) => {
   return [from, now];
 };
 
+export const responseColorAccessor = (s) => {
+  const status = parseInt(s, 10);
+  if (status < 400) {
+    return '#4c80f1';
+  }
+  if (status < 500) {
+    return '#ffda00';
+  }
+  return '#ff7595';
+};
+
 export const tickInterval = (duration) => {
   switch (duration) {
     case '30m':
