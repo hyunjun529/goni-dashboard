@@ -7,7 +7,7 @@ import {
   queuePort,
   queueUser,
   queuePass,
-  queueName,
+  dbQueueName,
   influxHost,
   influxPort,
   influxProtocol,
@@ -51,10 +51,10 @@ amqp.connect(`amqp://${queueUser}:${queuePass}@${queueHost}:${queuePort}`, (conn
       console.error(err);
       process.exit(1);
     }
-    ch.assertQueue(queueName, {
+    ch.assertQueue(dbQueueName, {
       durable: true,
     });
-    ch.consume(queueName, async(msg) => {
+    ch.consume(dbQueueName, async(msg) => {
       try {
         const data = JSON.parse(msg.content);
         const r = {
