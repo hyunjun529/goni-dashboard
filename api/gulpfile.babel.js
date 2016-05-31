@@ -77,10 +77,15 @@ gulp.task('client-pre-build', () => {
     .pipe(gulp.dest(`${buildSrcPath}`));
 });
 
+gulp.task('dev-css', () => {
+  return gulp.src([`${srcPath}/style.css`])
+    .pipe(gulp.dest(`${buildPath}`));
+});
+
 gulp.task('production', () => {
   process.env.NODE_ENV = 'production';
 });
 
-gulp.task('build-dev', ['client-pre-build', 'client-replace-apikey', 'client-dev', 'server']);
+gulp.task('build-dev', ['dev-css', 'client-pre-build', 'client-replace-apikey', 'client-dev', 'server']);
 
-gulp.task('build', ['production', 'client-pre-build', 'client-replace-apikey', 'client', 'server']);
+gulp.task('build', ['production', 'dev-css', 'client-pre-build', 'client-replace-apikey', 'client', 'server']);
