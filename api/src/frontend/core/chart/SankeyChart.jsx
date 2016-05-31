@@ -33,7 +33,7 @@ class SankeyChart extends React.Component {
   }
 
   render() {
-    const { data, duration, margin } = this.props;
+    const { data, margin } = this.props;
     let { width, height } = this.props;
     width = this.state.size.w || 100;
     height = this.state.size.h || 100;
@@ -85,7 +85,7 @@ class SankeyChart extends React.Component {
       .attr('x', 6 + san.nodeWidth())
       .attr('text-anchor', 'start');
     return (
-      <div key={duration} className="chart-wrapper" ref="wrapper">
+      <div className="chart-wrapper" ref="wrapper">
         {svgNode.toReact()}
       </div>
     );
@@ -104,7 +104,6 @@ SankeyChart.defaultProps = {
 SankeyChart.propTypes = {
   clickFunc: React.PropTypes.func.isRequired,
   data: React.PropTypes.object.isRequired,
-  duration: React.PropTypes.string,
   height: React.PropTypes.number,
   margin: React.PropTypes.object,
   width: React.PropTypes.number,

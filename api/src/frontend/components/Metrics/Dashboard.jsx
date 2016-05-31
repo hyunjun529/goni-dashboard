@@ -134,7 +134,7 @@ class Transaction extends React.Component {
     return (
       <div>
         <div className="chart-wrapper-header">{title}</div>
-        <SankeyChart clickFunc={(e) => e} data={chartData} duration={'30m'} />
+        <SankeyChart clickFunc={(e) => e} data={chartData} />
       </div>
     );
   }
@@ -215,7 +215,9 @@ class Transaction extends React.Component {
     return (
       <div>
         <div className="chart-wrapper-header">{title}</div>
-        <ReactEcharts onClick={(e) => this._handleAPIClick(e)} option={option} height={300} />
+        <div className="chart-wrapper">
+          <ReactEcharts onClick={(e) => this._handleAPIClick(e)} option={option} height={300} />
+        </div>
       </div>
     );
   }
