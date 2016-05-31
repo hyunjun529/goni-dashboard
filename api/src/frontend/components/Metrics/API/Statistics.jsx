@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 // React
 import React from 'react';
 import { connect } from 'react-redux';
@@ -6,8 +8,8 @@ import { connect } from 'react-redux';
 import { Metrics as MetricAction } from 'frontend/actions';
 
 // Components
-import { Empty, Error, Loading } from '../Common';
-import { ResponsivePieChart } from 'frontend/core/chart';
+import { Empty, Error, Loading, responseColorAccessor } from '../Common';
+import ReactEcharts from 'react-echarts-component';
 import Select from 'react-select';
 
 const type = 'response/statistics';
@@ -30,9 +32,6 @@ class Statistics extends React.Component {
     }
   }
 
-  componentWillUpdate() {
-  }
-
   _changePath(v) {
     const { dispatch, duration, project } = this.props;
     dispatch(MetricAction.changePath(v));
@@ -40,7 +39,8 @@ class Statistics extends React.Component {
   }
 
   _renderResponseStatusPie() {
-    const title = 'responsestatus';
+    const dataId = 'responsestatus';
+    const title = 'Status Graph';
     const { metric, metricError, metricFetching, path } = this.props;
     if (!path) {
       return (
@@ -62,23 +62,64 @@ class Statistics extends React.Component {
         <Error title={title} msg="Unknown Error" />
       );
     }
-    if (!(title in metric) || metric[title].length === 0) {
+    if (!(dataId in metric) || metric[dataId].length === 0) {
       return (
         <Empty title={title} />
       );
     }
-    const dataLen = metric[title].length;
-    const chartData = [];
+    const dataLen = metric[dataId].length;
+    const option = {
+      tooltip: {
+        trigger: 'item',
+        formatter: 'Status {b}<br/>{c} ({d}%)',
+      },
+      legend: {
+        orient: 'vertical',
+        x: 'right',
+        data: [],
+      },
+      series: [],
+    };
+    const tempData = {
+      type: 'pie',
+      radius: ['50%', '70%'],
+      avoidLabelOverlap: false,
+      label: {
+        normal: {
+          show: false,
+        },
+        emphasis: {
+          show: false,
+        },
+      },
+      labelLine: {
+        normal: {
+          show: false,
+        },
+      },
+      data: [],
+    };
     for (let i = 0; i < dataLen; i++) {
-      chartData.push({
-        label: metric[title][i].status,
-        value: metric[title][i].count,
+      const status = metric[dataId][i].status;
+      option.legend.data.push(status);
+      tempData.data.push({
+        name: status,
+        value: metric[dataId][i].count,
+        itemStyle: {
+          normal: {
+            color: responseColorAccessor(status),
+          },
+        },
       });
     }
+    option.series.push(tempData);
+    option.legend.data = _.sortBy(option.legend.data);
     return (
       <div>
         <div className="chart-wrapper-header">{title}</div>
-        <ResponsivePieChart data={chartData} radius={100} innerRadius={20} valueTextFormatter={(val) => `${val}`} />
+        <div className="chart-wrapper">
+          <ReactEcharts option={option} height={300} />
+        </div>
       </div>
     );
   }
