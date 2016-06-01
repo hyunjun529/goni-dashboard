@@ -38,9 +38,8 @@ class Statistics extends React.Component {
     dispatch(MetricAction.getResponseMetric(project.apikey, type, v, duration));
   }
 
-  _renderResponseStatusPie() {
-    const dataId = 'responsestatus';
-    const title = 'Status Graph';
+
+  _renderData(dataId, title) {
     const { metric, metricError, metricFetching, path } = this.props;
     if (!path) {
       return (
@@ -67,6 +66,18 @@ class Statistics extends React.Component {
         <Empty title={title} />
       );
     }
+    switch (dataId) {
+      case 'responsestatus':
+        return this._renderResponseStatusPie(dataId, title);
+      case 'responsebrowser':
+        return this._renderResponseBrowserPie(dataId, title);
+      default:
+        return false;
+    }
+  }
+
+  _renderResponseStatusPie(dataId, title) {
+    const { metric } = this.props;
     const dataLen = metric[dataId].length;
     const option = {
       tooltip: {
@@ -124,12 +135,67 @@ class Statistics extends React.Component {
     );
   }
 
+  _renderResponseBrowserPie(dataId, title) {
+    const { metric } = this.props;
+    const dataLen = metric[dataId].length;
+    const option = {
+      tooltip: {
+        trigger: 'item',
+        formatter: '{b}<br/>{c} ({d}%)',
+      },
+      legend: {
+        orient: 'vertical',
+        x: 'right',
+        data: [],
+      },
+      series: [],
+    };
+    const tempData = {
+      type: 'pie',
+      radius: ['50%', '70%'],
+      avoidLabelOverlap: false,
+      label: {
+        normal: {
+          show: false,
+        },
+        emphasis: {
+          show: false,
+        },
+      },
+      labelLine: {
+        normal: {
+          show: false,
+        },
+      },
+      data: [],
+    };
+    for (let i = 0; i < dataLen; i++) {
+      const browser = metric[dataId][i].browser;
+      option.legend.data.push(browser);
+      tempData.data.push({
+        name: browser,
+        value: metric[dataId][i].count,
+      });
+    }
+    option.series.push(tempData);
+    option.legend.data = _.sortBy(option.legend.data);
+    return (
+      <div>
+        <div className="chart-wrapper-header">{title}</div>
+        <div className="chart-wrapper">
+          <ReactEcharts option={option} height={300} />
+        </div>
+      </div>
+    );
+  }
+
   render() {
     const { path, pathList, pathFetching } = this.props;
     return (
       <div>
         <Select name="path" options={pathList} onChange={::this._changePath} isLoading={pathFetching} value={path} placeholder="API Path" />
-        {this._renderResponseStatusPie()}
+        {this._renderData('responsestatus', 'Status')}
+        {this._renderData('responsebrowser', 'Browser Statistics')}
       </div>
     );
   }
