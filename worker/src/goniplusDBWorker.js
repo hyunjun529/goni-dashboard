@@ -112,13 +112,13 @@ amqp.connect(`amqp://${queueUser}:${queuePass}@${queueHost}:${queuePort}`, (conn
                 _.forEach(res, (v) => {
                   const d = {
                     time: new Date(+v.time * 1000),
-                    browser,
                     method,
                     instance: data.instance,
                     res: v.res,
                   };
                   const t = {
                     apikey: data.apikey,
+                    browser,
                     path,
                     status: codeParsed,
                   };
