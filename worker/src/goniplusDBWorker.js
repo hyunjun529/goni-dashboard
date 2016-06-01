@@ -124,6 +124,7 @@ amqp.connect(`amqp://${queueUser}:${queuePass}@${queueHost}:${queuePort}`, (conn
                   };
                   if (v.crumb) {
                     t.breadcrumb = JSON.stringify(v.crumb);
+                    d.breadcrumbT = JSON.stringify(v.crumbT);
                   }
                   if (v.panic) {
                     d.panic = true;
