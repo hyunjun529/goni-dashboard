@@ -76,7 +76,8 @@ export function getAPIStatistics(apikey, path, duration) {
   return new Promise((resolve, reject) => {
     goniPlus.query(
       `SELECT count(res) FROM http WHERE apikey = '${apikey}' and path = '${path}' and time > now() - ${duration};
-      SELECT count(res) FROM http WHERE apikey = '${apikey}' and path = '${path}' and time > now() - ${duration} GROUP BY status;`,
+      SELECT count(res) FROM http WHERE apikey = '${apikey}' and path = '${path}' and time > now() - ${duration} GROUP BY status;
+      SELECT count(res) FROM http WHERE apikey = '${apikey}' and path = '${path}' and time > now() - ${duration} GROUP BY browser;`,
       (err, results) => {
         if (err) {
           return reject(err);
@@ -86,15 +87,22 @@ export function getAPIStatistics(apikey, path, duration) {
           exists = true;
         }
         const respStatus = [];
+        const respBrowser = [];
         if (exists) {
-          _.map(results[1], (v) => {
+          _.forEach(results[1], (v) => {
             if (v.count !== 0) {
               respStatus.push(v);
+            }
+          });
+          _.forEach(results[2], (v) => {
+            if (v.count !== 0) {
+              respBrowser.push(v);
             }
           });
         }
         const processed = {
           responsestatus: exists ? respStatus : [],
+          responsebrowser: exists ? respBrowser : [],
         };
         return resolve(processed);
       });
