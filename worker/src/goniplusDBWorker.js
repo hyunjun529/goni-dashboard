@@ -59,7 +59,6 @@ amqp.connect(`amqp://${queueUser}:${queuePass}@${queueHost}:${queuePort}`, (conn
         const data = JSON.parse(msg.content);
         const r = {
           time: getTimestamp(data.time),
-          instance: data.instance,
         };
         if (data.sys.resource.cpu) {
           r.cpu = data.sys.resource.cpu;
@@ -67,6 +66,7 @@ amqp.connect(`amqp://${queueUser}:${queuePass}@${queueHost}:${queuePort}`, (conn
         const resource = [
           [r, {
             apikey: data.apikey,
+            instance: data.instance,
           }],
         ];
         await writeSeries({
@@ -138,6 +138,21 @@ amqp.connect(`amqp://${queueUser}:${queuePass}@${queueHost}:${queuePort}`, (conn
         await writeSeries({
           http,
         });
+        if (data.app.user) {
+          const httpUser = [];
+          const d = {
+            time: getTimestamp(data.time),
+            count: data.app.user.length,
+            instance: data.instance,
+          };
+          const t = {
+            apikey: data.apikey,
+          };
+          httpUser.push([d, t]);
+          await writeSeries({
+            httpUser,
+          });
+        }
         ch.ack(msg);
       } catch (error) {
         console.log(error);
