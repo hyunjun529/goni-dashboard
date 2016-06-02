@@ -38,7 +38,6 @@ class Statistics extends React.Component {
     dispatch(MetricAction.getResponseMetric(project.apikey, type, v, duration));
   }
 
-
   _renderData(dataId, title) {
     const { metric, metricError, metricFetching, path } = this.props;
     if (!path) {
