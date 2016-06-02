@@ -82,7 +82,7 @@
     "rd3": "https://github.com/goniapm/rd3/tarball/ba2ab9f61e1c4bcb9fe8cc849a4f5751d97bd758",
     "react": "^15.1.0",
     "react-dom": "^15.1.0",
-    "react-echarts-component": "^0.1.1",
+    "react-echarts-component": "^0.1.2",
     "react-faux-dom": "^2.4.0",
     "react-flexbox-grid": "^0.9.6",
     "react-linked-input": "^1.0.1",
