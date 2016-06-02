@@ -16,20 +16,8 @@ export const GONIPLUS_SIDEBAR = [{
     title: 'Dashboard',
     key: 'overview_dashboard',
   }, {
-    title: 'Transaction',
-    key: 'overview_transaction',
-  }, {
     title: 'Resource',
     key: 'overview_resource',
-  }],
-}, {
-  header: 'metrics',
-  item: [{
-    title: 'Expvar',
-    key: 'metrics_expvar',
-  }, {
-    title: 'Runtime',
-    key: 'metrics_runtime',
   }],
 }, {
   header: 'API',
@@ -39,6 +27,15 @@ export const GONIPLUS_SIDEBAR = [{
   }, {
     title: 'Statistics',
     key: 'api_statistics',
+  }],
+}, {
+  header: 'metrics',
+  item: [{
+    title: 'Expvar',
+    key: 'metrics_expvar',
+  }, {
+    title: 'Runtime',
+    key: 'metrics_runtime',
   }],
 }, {
   header: 'Function',
