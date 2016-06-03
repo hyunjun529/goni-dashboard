@@ -10,19 +10,61 @@ export function getAPIDetailByTime(apikey, path, time) {
   return new Promise((resolve, reject) => {
     const start = parseInt(time, 10);
     goniPlus.query(
-      `SELECT count(res) FROM http WHERE apikey = '${apikey}' and path = '${path}' and time >= ${start}s and time < ${start + 300}s GROUP BY breadcrumb, status;`,
+      `SELECT count(res) FROM http WHERE apikey = '${apikey}' and path = '${path}' and time >= ${start}s and time < ${start + 300}s GROUP BY breadcrumb, status;
+      SELECT count(res) FROM http WHERE apikey = '${apikey}' and path = '${path}' and time >= ${start}s and time < ${start + 300}s GROUP BY time(20s) fill(0);
+      SELECT max(cpu) FROM resource where apikey = '${apikey}' and time >= ${start}s and time < ${start + 300}s GROUP BY instance, time(20s) fill(0)`,
       (err, results) => {
         if (err) {
           return reject(err);
         }
         if (results && results[0].length !== 0) {
-          const processed = [];
-          _.forEach(results[0], (o) => {
-            if (o.count !== 0) {
-              processed.push(o);
+          const data = {};
+          const transactionTrace = [];
+          const transactionCount = [];
+          let systemStatus = [];
+          // Transaction Trace
+          _.forEach(results[0], (v) => {
+            if (v.count !== 0) {
+              transactionTrace.push(v);
             }
           });
-          return resolve(processed);
+          data.transactionTrace = transactionTrace;
+          // Transaction Count
+          _.forEach(results[1], (v) => {
+            transactionCount.push({
+              time: v.time,
+              value: v.count,
+            });
+          });
+          data.transactionCount = transactionCount;
+          // systemStatus
+          const statusTemp = {};
+          const statusTempByInstance = [];
+          const statusByInstance = [];
+          _.forEach(results[2], (v) => {
+            if (!statusTemp[v.instance]) {
+              statusTemp[v.instance] = [];
+            }
+            statusTemp[v.instance].push(v);
+          });
+          _.forEach(statusTemp, (v) => {
+            statusTempByInstance.push(v);
+          });
+          _.forEach(statusTempByInstance, (v) => {
+            const sorted = _.sortBy(v, (o) => {
+              return new Date(o.time);
+            });
+            statusByInstance.push(sorted);
+          });
+          systemStatus = _.sortBy(statusByInstance, (v) => {
+            const length = v.length;
+            return new Date(v[length - 1].time);
+          });
+          if (systemStatus.length > 5) {
+            systemStatus = _.slice(systemStatus, systemStatus.length - 5);
+          }
+          data.systemStatus = systemStatus;
+          return resolve(data);
         }
         return resolve([]);
       });
@@ -110,22 +152,24 @@ export function getAPIStatistics(apikey, path, duration) {
 }
 
 /**
- * getAPIStatisticsByTime(apikey, time) returns api statistics
+ * getAPIStatisticsByTime(apikey, time) returns api statistics for dashboard
  */
 export function getAPIStatisticsByTime(apikey, time) {
   return new Promise((resolve, reject) => {
     const start = parseInt(time, 10);
     goniPlus.query(
       `SELECT count(res), mean(res) FROM http WHERE apikey = '${apikey}' and time >= ${start}s and time < ${start + 300}s GROUP BY path;
-      SELECT count(res) FROM http WHERE apikey = '${apikey}' and time >= ${start}s and time < ${start + 300}s GROUP BY path, status;`,
+      SELECT count(res) FROM http WHERE apikey = '${apikey}' and time >= ${start}s and time < ${start + 300}s GROUP BY path, status;
+      SELECT sum(count) from httpUser where apikey='${apikey}' and time >= ${start}s and time < ${start + 300}s group by time(20s) fill(0)`,
       (err, results) => {
         if (err) {
           return reject(err);
         }
         if (results && results[0].length !== 0) {
-          const data = [];
+          const data = {};
           const tProcessed = [];
           const dProcessed = [];
+          const uProcessed = [];
           _.forEach(results[0], (v) => {
             if (v.count !== 0) {
               tProcessed.push({
@@ -144,8 +188,15 @@ export function getAPIStatisticsByTime(apikey, time) {
               });
             }
           });
-          data.push(tProcessed);
-          data.push(dProcessed);
+          _.forEach(results[2], (v) => {
+            uProcessed.push({
+              time: v.time,
+              value: v.sum,
+            });
+          });
+          data.transaction = tProcessed;
+          data.transactionStatus = dProcessed;
+          data.user = uProcessed;
           return resolve(data);
         }
         return resolve([]);
@@ -207,7 +258,7 @@ export function getInstances(apikey, metric) {
 export function getDashboardCPU(apikey) {
   return new Promise((resolve, reject) => {
     goniPlus.query(
-      `SELECT MAX(cpu) FROM resource WHERE apikey='${apikey}' and time > now() - 6h GROUP BY time(5m);`,
+      `SELECT MAX(cpu) FROM resource WHERE apikey='${apikey}' and time > now() - 24h GROUP BY time(5m);`,
       (err, results) => {
         if (err) {
           return reject(err);
