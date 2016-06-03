@@ -57,21 +57,21 @@ amqp.connect(`amqp://${queueUser}:${queuePass}@${queueHost}:${queuePort}`, (conn
     ch.consume(dbQueueName, async(msg) => {
       try {
         const data = JSON.parse(msg.content);
-        const r = {
-          time: getTimestamp(data.time),
-        };
         if (data.sys.resource.cpu) {
+          const r = {
+            time: getTimestamp(data.time),
+          };
           r.cpu = data.sys.resource.cpu;
+          const resource = [
+            [r, {
+              apikey: data.apikey,
+              instance: data.instance,
+            }],
+          ];
+          await writeSeries({
+            resource,
+          });
         }
-        const resource = [
-          [r, {
-            apikey: data.apikey,
-            instance: data.instance,
-          }],
-        ];
-        await writeSeries({
-          resource,
-        });
         const runtime = [
           [{
             time: getTimestamp(data.time),
