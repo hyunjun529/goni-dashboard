@@ -36,13 +36,13 @@ const initialState = {
   },
   overview: {
     api: {
-      data: [],
+      data: {},
       error: null,
       fetching: false,
       selected: null,
     },
     apiDetail: {
-      data: [],
+      data: {},
       error: null,
       fetching: false,
     },
@@ -141,7 +141,7 @@ export default function reducer(state = initialState, action = {}) {
         overview: {
           ...state.overview,
           api: {
-            data: [],
+            data: {},
             error: action.error,
             fetching: false,
             selected: null,
@@ -167,7 +167,7 @@ export default function reducer(state = initialState, action = {}) {
         overview: {
           ...state.overview,
           api: {
-            data: [],
+            data: {},
             error: null,
             fetching: true,
             selected: null,
@@ -191,7 +191,7 @@ export default function reducer(state = initialState, action = {}) {
         overview: {
           ...state.overview,
           apiDetail: {
-            data: [],
+            data: {},
             error: action.error,
             fetching: false,
             selected: null,
@@ -217,7 +217,7 @@ export default function reducer(state = initialState, action = {}) {
         overview: {
           ...state.overview,
           apiDetail: {
-            data: [],
+            data: {},
             error: null,
             fetching: true,
             selected: null,
