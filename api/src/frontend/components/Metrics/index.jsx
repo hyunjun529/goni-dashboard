@@ -84,10 +84,7 @@ class Metrics extends React.Component {
         trigger: 'axis',
       },
       grid: {
-        top: '5%',
-        left: '5%',
-        right: '5%',
-        bottom: '15%',
+        containLabel: true,
       },
       xAxis: {
         type: 'time',
