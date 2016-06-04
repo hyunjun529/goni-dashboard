@@ -15,9 +15,6 @@ export const GONIPLUS_SIDEBAR = [{
   item: [{
     title: 'Dashboard',
     key: 'overview_dashboard',
-  }, {
-    title: 'Resource',
-    key: 'overview_resource',
   }],
 }, {
   header: 'API',
@@ -36,15 +33,6 @@ export const GONIPLUS_SIDEBAR = [{
   }, {
     title: 'Runtime',
     key: 'metrics_runtime',
-  }],
-}, {
-  header: 'Function',
-  item: [{
-    title: 'Error',
-    key: 'function_error',
-  }, {
-    title: 'Trace',
-    key: 'function_trace',
   }],
 }, {
   header: 'SETTINGS',
