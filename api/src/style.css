@@ -184,22 +184,16 @@ body {
   width: 270px;
 }
 .login-button {
-  background-color: #f1f5f5;
-  border-top: 1px solid #ced3d6;
-  border-left: 1px solid #eaeeef;
-  border-right: 1px solid #eaeeef;
-  border-bottom: 1px solid #eaeeef;
-  color: #4d5256;
-  height: 80px;
-  width: 100%;
+  background-color: #ffffff;
+  border: 1px solid #4c80f1;
+  border-radius: 5px;
+  color: #2c5ae9;
+  height: 50px;
+  width: 270px;
   margin-top: 25px;
-  font-size: 15px;
 }
 .login-button:hover {
-  border-top: 1px solid #4c80f1;
-  color: #2c5ae9;
   background-color: rgba(76, 128, 241, 0.1);
-  -webkit-font-smoothing: subpixel-antialiased;
 }
 .login-title {
   color: #4c80f1;
@@ -320,6 +314,12 @@ h3 {
 }
 .tag-selected a {
   color: #2c5ae9 !important;
+}
+.tag-alert {
+  border: 1px solid #ff7595;
+}
+.tag-alert a {
+  color: #ff7595 !important;
 }
 .tab-header {
   border-bottom: 1px solid #eaeeef;
