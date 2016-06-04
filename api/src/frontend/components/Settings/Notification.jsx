@@ -81,9 +81,14 @@ class Notification extends React.Component {
       <div>
         <p>Send notification to {slackData.team_name}{slackData.channel}</p>
         <p>Integrated @ {slackData.created_at}</p>
-        <a href={slackData.configuration_url}>Configure</a>
-        <br />
-        <a onClick={::this._openModal}>Remove</a>
+        <div className="tag-tab-wrap">
+          <div className="tag-tab">
+            <a href={slackData.configuration_url}>CONFIGURE</a>
+          </div>
+          <div className="tag-tab-more tag-alert" onClick={::this._openModal}>
+            <a>REMOVE</a>
+          </div>
+        </div>
       </div>
     );
   }
