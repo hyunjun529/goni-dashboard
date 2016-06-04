@@ -5,7 +5,7 @@ import {
   queuePort,
   queueUser,
   queuePass,
-  queueName,
+  dbQueueName,
 } from './auth';
 
 amqp.connect(`amqp://${queueUser}:${queuePass}@${queueHost}:${queuePort}`, (connErr, conn) => {
@@ -18,12 +18,13 @@ amqp.connect(`amqp://${queueUser}:${queuePass}@${queueHost}:${queuePort}`, (conn
       console.error(err);
       process.exit(1);
     }
-    ch.assertQueue(queueName, {
+    ch.assertQueue(dbQueueName, {
       durable: true,
     });
-    ch.consume(queueName, async(msg) => {
+    ch.consume(dbQueueName, async(msg) => {
       try {
         console.log(msg.content.toString());
+        // ch.ack(msg);
       } catch (error) {
         console.log(error);
       }
