@@ -10,7 +10,7 @@ export function getAPIDetailByTime(apikey, path, time) {
   return new Promise((resolve, reject) => {
     const start = parseInt(time, 10);
     goniPlus.query(
-      `SELECT count(res) FROM http WHERE apikey = '${apikey}' and path = '${path}' and time >= ${start}s and time < ${start + 300}s GROUP BY breadcrumb, status;
+      `SELECT breadcrumbT, res FROM http WHERE apikey = '${apikey}' and path = '${path}' and time >= ${start}s and time < ${start + 300}s GROUP BY breadcrumb, status;
       SELECT count(res) FROM http WHERE apikey = '${apikey}' and path = '${path}' and time >= ${start}s and time < ${start + 300}s GROUP BY time(20s) fill(0);
       SELECT max(cpu) FROM resource where apikey = '${apikey}' and time >= ${start}s and time < ${start + 300}s GROUP BY instance, time(20s) fill(0)`,
       (err, results) => {
@@ -19,16 +19,10 @@ export function getAPIDetailByTime(apikey, path, time) {
         }
         if (results && results[0].length !== 0) {
           const data = {};
-          const transactionTrace = [];
           const transactionCount = [];
           let systemStatus = [];
           // Transaction Trace
-          _.forEach(results[0], (v) => {
-            if (v.count !== 0) {
-              transactionTrace.push(v);
-            }
-          });
-          data.transactionTrace = transactionTrace;
+          data.transactionTrace = results[0];
           // Transaction Count
           _.forEach(results[1], (v) => {
             transactionCount.push({
@@ -79,7 +73,7 @@ export function getAPIMetrics(apikey, path, duration) {
     goniPlus.query(
       `SELECT min(res),mean(res),max(res),count(panic) FROM http WHERE apikey = '${apikey}' and path = '${path}' and time > now() - ${duration};
        SELECT time, res, status FROM http WHERE apikey = '${apikey}' and path = '${path}' and time > now() - ${duration};
-       SELECT count(res) FROM http WHERE apikey = '${apikey}' and path = '${path}' and time > now() - ${duration} GROUP BY breadcrumb, status;`,
+       SELECT breadcrumbT FROM http WHERE apikey = '${apikey}' and path = '${path}' and time > now() - ${duration} GROUP BY breadcrumb, status;`,
       (err, results) => {
         if (err) {
           return reject(err);
@@ -87,14 +81,6 @@ export function getAPIMetrics(apikey, path, duration) {
         let exists = false;
         if (results && results[0].length !== 0 && results[0][0].min !== null) {
           exists = true;
-        }
-        const respGraph = [];
-        if (exists) {
-          _.map(results[2], (v) => {
-            if (v.count !== 0) {
-              respGraph.push(v);
-            }
-          });
         }
         const processed = {
           overview: {
@@ -104,7 +90,7 @@ export function getAPIMetrics(apikey, path, duration) {
             panic: exists ? results[0][0].count : 'no data',
           },
           responsemap: results[1],
-          responsegraph: exists ? respGraph : [],
+          responsegraph: results[2],
         };
         return resolve(processed);
       });

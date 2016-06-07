@@ -7,6 +7,8 @@ import {
   METRIC_FILTER_FETCH_ERROR,
   METRIC_FILTER_FETCHED,
   METRIC_FILTER_FETCHING,
+  METRIC_MODAL_CLOSE,
+  METRIC_MODAL_OPEN,
   METRIC_OVERVIEW_API_FETCH_ERROR,
   METRIC_OVERVIEW_API_FETCHED,
   METRIC_OVERVIEW_API_FETCHING,
@@ -18,6 +20,7 @@ import {
   METRIC_OVERVIEW_CPU_FETCHED,
   METRIC_OVERVIEW_CPU_FETCHING,
   METRIC_OVERVIEW_CPU_SELECTED,
+  METRIC_OVERVIEW_CRUMB_SELECTED,
   METRIC_TIME_CHANGED,
 } from 'constants/metric';
 
@@ -33,6 +36,9 @@ const initialState = {
     data: {},
     error: null,
     fetching: false,
+    modal: {
+      isOpened: false,
+    },
   },
   overview: {
     api: {
@@ -52,6 +58,9 @@ const initialState = {
       fetching: false,
       selected: null,
     },
+    crumb: {
+      selected: null,
+    },
   },
 };
 
@@ -61,6 +70,7 @@ export default function reducer(state = initialState, action = {}) {
       return {
         ...state,
         metric: {
+          ...state.metric,
           data: {},
           error: action.error,
           fetching: false,
@@ -70,6 +80,7 @@ export default function reducer(state = initialState, action = {}) {
       return {
         ...state,
         metric: {
+          ...state.metric,
           data: action.data,
           error: null,
           fetching: false,
@@ -133,6 +144,26 @@ export default function reducer(state = initialState, action = {}) {
           error: null,
           fetching: true,
           selected: null,
+        },
+      };
+    case METRIC_MODAL_CLOSE:
+      return {
+        ...state,
+        metric: {
+          ...state.metric,
+          modal: {
+            isOpened: false,
+          },
+        },
+      };
+    case METRIC_MODAL_OPEN:
+      return {
+        ...state,
+        metric: {
+          ...state.metric,
+          modal: {
+            isOpened: true,
+          },
         },
       };
     case METRIC_OVERVIEW_API_FETCH_ERROR:
@@ -270,6 +301,16 @@ export default function reducer(state = initialState, action = {}) {
           ...state.overview,
           cpu: {
             ...state.overview.cpu,
+            selected: action.selected,
+          },
+        },
+      };
+    case METRIC_OVERVIEW_CRUMB_SELECTED:
+      return {
+        ...state,
+        overview: {
+          ...state.overview,
+          crumb: {
             selected: action.selected,
           },
         },

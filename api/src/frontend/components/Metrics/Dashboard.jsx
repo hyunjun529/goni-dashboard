@@ -12,8 +12,13 @@ import CalHeatMap from 'cal-heatmap';
 import { Empty, Error, Loading, responseColorAccessor } from './Common';
 import SankeyChart from 'frontend/core/chart/SankeyChart';
 import ReactEcharts from 'react-echarts-component';
+import Modal from 'react-modal';
+
+// Constants
+import { metricModalStyle } from 'constants/metric';
 
 class Transaction extends React.Component {
+  breadcrumbCalculated: null;
   cal: null;
 
   componentWillMount() {
@@ -36,6 +41,48 @@ class Transaction extends React.Component {
   }
 
   _handleAPIDetailClick(e) {
+    const { dispatch } = this.props;
+    if (e.source && e.target) {
+      dispatch(MetricAction.openCrumbModal(`${e.source.name} > ${e.target.name}`,
+        this.breadcrumbCalculated[e.source.name][e.target.name].time));
+    }
+  }
+
+  _closeModal() {
+    const { dispatch } = this.props;
+    dispatch(MetricAction.closeModal());
+  }
+
+  _renderModal() {
+    const { isModalOpen, selectedCrumb } = this.props;
+    if (!selectedCrumb) {
+      return false;
+    }
+    return (
+      <Modal isOpen={isModalOpen} onRequestClose={::this._closeModal} style={metricModalStyle} >
+        <div className="chart-wrapper-header">{selectedCrumb.title}</div>
+        <div className="row">
+          <div className="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+            <div className="overview-card">
+              <p className="overview-card-header">min</p>
+              <p className="overview-card-data">{selectedCrumb.min}ms</p>
+            </div>
+          </div>
+          <div className="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+            <div className="overview-card">
+              <p className="overview-card-header">mean</p>
+              <p className="overview-card-data">{selectedCrumb.mean}ms</p>
+            </div>
+          </div>
+          <div className="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+            <div className="overview-card">
+              <p className="overview-card-header">max</p>
+              <p className="overview-card-data">{selectedCrumb.max}ms</p>
+            </div>
+          </div>
+        </div>
+      </Modal>
+    );
   }
 
   _renderBaseData(dataId, title) {
@@ -98,82 +145,96 @@ class Transaction extends React.Component {
     const { apiDetailData, selectedAPI } = this.props;
     const title = selectedAPI;
     const dataLen = apiDetailData[dataId].length;
-    const chartData = {
-      nodes: [
-        { name: 'Request' },
-      ],
-      links: [],
-    };
-    const targetIndex = [];
+    // Process Data
+    const processedData = {};
     for (let i = 0; i < dataLen; i++) {
+      const data = apiDetailData[dataId][i];
       let breadcrumb = [];
+      let breadcrumbT = [];
       try {
-        breadcrumb = JSON.parse(apiDetailData[dataId][i].breadcrumb);
+        breadcrumb = JSON.parse(data.breadcrumb);
+        breadcrumbT = JSON.parse(data.breadcrumbT);
       } catch (err) { // eslint-disable-line no-empty-block
       }
       const breadcrumbLen = breadcrumb.length;
-      const count = apiDetailData[dataId][i].count;
-      const status = apiDetailData[dataId][i].status;
-      if (_.indexOf(targetIndex, status) === -1) {
-        chartData.nodes.push({
-          name: status,
-        });
-        targetIndex.push(status);
-      }
       if (breadcrumbLen === 0) {
-        chartData.links.push({
-          source: 0,
-          target: _.indexOf(targetIndex, status) + 1,
-          value: count,
-        });
+        if (!processedData.Request) {
+          processedData.Request = {};
+        }
+        if (!processedData.Request[data.status]) {
+          processedData.Request[data.status] = {};
+          processedData.Request[data.status].count = 0;
+          processedData.Request[data.status].time = [];
+        }
+        processedData.Request[data.status].count++;
+        processedData.Request[data.status].time.push(data.res);
         continue;
       }
       for (let j = 0; j < breadcrumbLen; j++) {
-        const target = breadcrumb[j];
+        if (j === 0) {
+          if (!processedData.Request) {
+            processedData.Request = {};
+          }
+          if (!processedData.Request[breadcrumb[j]]) {
+            processedData.Request[breadcrumb[j]] = {};
+            processedData.Request[breadcrumb[j]].count = 0;
+            processedData.Request[breadcrumb[j]].time = [];
+          }
+          processedData.Request[breadcrumb[j]].count++;
+          processedData.Request[breadcrumb[j]].time.push(breadcrumbT[j]);
+        }
+        if (j === breadcrumb.length - 1) {
+          if (!processedData[breadcrumb[j]]) {
+            processedData[breadcrumb[j]] = {};
+          }
+          if (!processedData[breadcrumb[j]][data.status]) {
+            processedData[breadcrumb[j]][data.status] = {};
+            processedData[breadcrumb[j]][data.status].count = 0;
+            processedData[breadcrumb[j]][data.status].time = [];
+          }
+          processedData[breadcrumb[j]][data.status].count++;
+          processedData[breadcrumb[j]][data.status].time.push(breadcrumbT[j]);
+          continue;
+        }
+        if (!processedData[breadcrumb[j]]) {
+          processedData[breadcrumb[j]] = {};
+        }
+        if (!processedData[breadcrumb[j]][breadcrumb[j + 1]]) {
+          processedData[breadcrumb[j]][breadcrumb[j + 1]] = {};
+          processedData[breadcrumb[j]][breadcrumb[j + 1]].count = 0;
+          processedData[breadcrumb[j]][breadcrumb[j + 1]].time = [];
+        }
+        processedData[breadcrumb[j]][breadcrumb[j + 1]].count++;
+        processedData[breadcrumb[j]][breadcrumb[j + 1]].time.push(breadcrumbT[j]);
+      }
+    }
+    this.breadcrumbCalculated = processedData;
+    const chartData = {
+      nodes: [],
+      links: [],
+    };
+    const targetIndex = [];
+    _.forEach(processedData, (targetData, source) => {
+      _.forEach(targetData, (data, target) => {
+        if (_.indexOf(targetIndex, source) === -1) {
+          chartData.nodes.push({
+            name: source,
+          });
+          targetIndex.push(source);
+        }
         if (_.indexOf(targetIndex, target) === -1) {
           chartData.nodes.push({
             name: target,
           });
           targetIndex.push(target);
         }
-        const statusIdx = _.indexOf(targetIndex, status) + 1;
-        const targetIdx = _.indexOf(targetIndex, target) + 1;
-        if (breadcrumbLen === 1) {
-          chartData.links.push({
-            source: 0,
-            target: targetIdx,
-            value: count,
-          });
-          chartData.links.push({
-            source: targetIdx,
-            target: statusIdx,
-            value: count,
-          });
-          continue;
-        }
-        if (j === 0) {
-          chartData.links.push({
-            source: 0,
-            target: targetIdx,
-            value: count,
-          });
-          continue;
-        }
         chartData.links.push({
-          source: _.indexOf(targetIndex, breadcrumb[j - 1]) + 1,
-          target: targetIdx,
-          value: count,
+          source: _.indexOf(targetIndex, source),
+          target: _.indexOf(targetIndex, target),
+          value: data.count,
         });
-        if (j === breadcrumbLen - 1) {
-          chartData.links.push({
-            source: targetIdx,
-            target: statusIdx,
-            value: count,
-          });
-          continue;
-        }
-      }
-    }
+      });
+    });
     return (
       <div>
         <div className="chart-wrapper-header">{title}</div>
@@ -482,23 +543,26 @@ class Transaction extends React.Component {
   render() {
     return (
       <div>
-        <div className="chart-wrapper-header">System Status</div>
-        <div id="cal-heatmap" />
-        <div className="row">
-          <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-            {this._renderBaseData('user', 'Active User')}
-          </div>
-          <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-            {this._renderBaseData('transaction', 'Top 5 Transactions')}
-          </div>
-          <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-            {this._renderAPIData('transactionCount', 'Transaction Count')}
-          </div>
-          <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-            {this._renderAPIData('systemStatus', 'Top 5 Instances')}
-          </div>
-          <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-            {this._renderAPIData('transactionTrace', 'Transaction Trace')}
+        {this._renderModal()}
+        <div>
+          <div className="chart-wrapper-header">System Status</div>
+          <div id="cal-heatmap" />
+          <div className="row">
+            <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+              {this._renderBaseData('user', 'Active User')}
+            </div>
+            <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+              {this._renderBaseData('transaction', 'Top 5 Transactions')}
+            </div>
+            <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+              {this._renderAPIData('transactionCount', 'Transaction Count')}
+            </div>
+            <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+              {this._renderAPIData('systemStatus', 'Top 5 Instances')}
+            </div>
+            <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+              {this._renderAPIData('transactionTrace', 'Transaction Trace')}
+            </div>
           </div>
         </div>
       </div>
@@ -513,9 +577,11 @@ Transaction.propTypes = {
   apiDetailFetching: React.PropTypes.bool,
   cpuData: React.PropTypes.object,
   dispatch: React.PropTypes.func.isRequired,
+  isModalOpen: React.PropTypes.bool,
   project: React.PropTypes.object,
   selectedAPI: React.PropTypes.string,
   selectedCPU: React.PropTypes.number,
+  selectedCrumb: React.PropTypes.object,
 };
 
 const mapStateToProps = (state) => ({
@@ -524,9 +590,11 @@ const mapStateToProps = (state) => ({
   apiDetailData: state.metrics.overview.apiDetail.data,
   apiDetailFetching: state.metrics.overview.apiDetail.fetching,
   cpuData: state.metrics.overview.cpu.data,
+  isModalOpen: state.metrics.metric.modal.isOpened,
   project: state.project.project.data,
   selectedAPI: state.metrics.overview.api.selected,
   selectedCPU: state.metrics.overview.cpu.selected,
+  selectedCrumb: state.metrics.overview.crumb.selected,
 });
 
 export default connect(mapStateToProps)(Transaction);

@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import {
   METRIC_DATA_FETCH_ERROR,
   METRIC_DATA_FETCHED,
@@ -7,6 +8,8 @@ import {
   METRIC_FILTER_FETCH_ERROR,
   METRIC_FILTER_FETCHED,
   METRIC_FILTER_FETCHING,
+  METRIC_MODAL_CLOSE,
+  METRIC_MODAL_OPEN,
   METRIC_OVERVIEW_API_FETCH_ERROR,
   METRIC_OVERVIEW_API_FETCHED,
   METRIC_OVERVIEW_API_FETCHING,
@@ -18,6 +21,7 @@ import {
   METRIC_OVERVIEW_CPU_FETCHED,
   METRIC_OVERVIEW_CPU_FETCHING,
   METRIC_OVERVIEW_CPU_SELECTED,
+  METRIC_OVERVIEW_CRUMB_SELECTED,
   METRIC_TIME_CHANGED,
 } from 'constants/metric';
 import {
@@ -51,6 +55,13 @@ const Actions = {
       dispatch({
         type: METRIC_TIME_CHANGED,
         time,
+      });
+    };
+  },
+  closeModal: () => {
+    return async dispatch => {
+      dispatch({
+        type: METRIC_MODAL_CLOSE,
       });
     };
   },
@@ -230,6 +241,29 @@ const Actions = {
           error: error.statusText,
         });
       }
+    };
+  },
+  openCrumbModal: (title, data) => {
+    return async dispatch => {
+      dispatch({
+        type: METRIC_OVERVIEW_CRUMB_SELECTED,
+        selected: {
+          title,
+          min: _.min(data),
+          mean: _.mean(data),
+          max: _.max(data),
+        },
+      });
+      dispatch({
+        type: METRIC_MODAL_OPEN,
+      });
+    };
+  },
+  openModal: () => {
+    return async dispatch => {
+      dispatch({
+        type: METRIC_MODAL_OPEN,
+      });
     };
   },
 };

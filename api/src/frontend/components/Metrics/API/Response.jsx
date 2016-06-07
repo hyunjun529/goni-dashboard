@@ -11,11 +11,17 @@ import { Metrics as MetricAction } from 'frontend/actions';
 import { Empty, Error, Loading, responseColorAccessor } from '../Common';
 import SankeyChart from 'frontend/core/chart/SankeyChart';
 import ReactEcharts from 'react-echarts-component';
+import Modal from 'react-modal';
 import Select from 'react-select';
+
+// Constants
+import { metricModalStyle } from 'constants/metric';
 
 const type = 'response';
 
 class Response extends React.Component {
+  breadcrumbCalculated: null;
+
   componentWillMount() {
     const { dispatch } = this.props;
     dispatch(MetricAction.enterDashboard());
@@ -37,6 +43,52 @@ class Response extends React.Component {
     const { dispatch, duration, project } = this.props;
     dispatch(MetricAction.changePath(v));
     dispatch(MetricAction.getResponseMetric(project.apikey, type, v, duration));
+  }
+
+  _closeModal() {
+    const { dispatch } = this.props;
+    dispatch(MetricAction.closeModal());
+  }
+
+  _handleAPIDetailClick(e) {
+    const { dispatch } = this.props;
+    if (e.source && e.target) {
+      console.log(this.breadcrumbCalculated);
+      dispatch(MetricAction.openCrumbModal(`${e.source.name} > ${e.target.name}`,
+        this.breadcrumbCalculated[e.source.name][e.target.name].time));
+    }
+  }
+
+  _renderModal() {
+    const { isModalOpen, selectedCrumb } = this.props;
+    if (!selectedCrumb) {
+      return false;
+    }
+    return (
+      <Modal isOpen={isModalOpen} onRequestClose={::this._closeModal} style={metricModalStyle} >
+        <div className="chart-wrapper-header">{selectedCrumb.title}</div>
+        <div className="row">
+          <div className="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+            <div className="overview-card">
+              <p className="overview-card-header">min</p>
+              <p className="overview-card-data">{selectedCrumb.min}ms</p>
+            </div>
+          </div>
+          <div className="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+            <div className="overview-card">
+              <p className="overview-card-header">mean</p>
+              <p className="overview-card-data">{selectedCrumb.mean}ms</p>
+            </div>
+          </div>
+          <div className="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+            <div className="overview-card">
+              <p className="overview-card-header">max</p>
+              <p className="overview-card-data">{selectedCrumb.max}ms</p>
+            </div>
+          </div>
+        </div>
+      </Modal>
+    );
   }
 
   _renderData(dataId, title) {
@@ -118,89 +170,102 @@ class Response extends React.Component {
   _renderResponseGraph() {
     const dataId = 'responsegraph';
     const title = 'Response Trace';
-    const { duration, metric } = this.props;
+    const { metric } = this.props;
     const dataLen = metric[dataId].length;
-    const chartData = {
-      nodes: [
-        { name: 'Request' },
-      ],
-      links: [],
-    };
-    const targetIndex = [];
+    // Process Data
+    const processedData = {};
     for (let i = 0; i < dataLen; i++) {
+      const data = metric[dataId][i];
       let breadcrumb = [];
+      let breadcrumbT = [];
       try {
-        breadcrumb = JSON.parse(metric[dataId][i].breadcrumb);
+        breadcrumb = JSON.parse(data.breadcrumb);
+        breadcrumbT = JSON.parse(data.breadcrumbT);
       } catch (err) { // eslint-disable-line no-empty-block
       }
       const breadcrumbLen = breadcrumb.length;
-      const count = metric[dataId][i].count;
-      const status = metric[dataId][i].status;
-      if (_.indexOf(targetIndex, status) === -1) {
-        chartData.nodes.push({
-          name: status,
-        });
-        targetIndex.push(status);
-      }
       if (breadcrumbLen === 0) {
-        chartData.links.push({
-          source: 0,
-          target: _.indexOf(targetIndex, status) + 1,
-          value: count,
-        });
+        if (!processedData.Request) {
+          processedData.Request = {};
+        }
+        if (!processedData.Request[data.status]) {
+          processedData.Request[data.status] = {};
+          processedData.Request[data.status].count = 0;
+          processedData.Request[data.status].time = [];
+        }
+        processedData.Request[data.status].count++;
+        processedData.Request[data.status].time.push(data.res);
         continue;
       }
       for (let j = 0; j < breadcrumbLen; j++) {
-        const target = breadcrumb[j];
+        if (j === 0) {
+          if (!processedData.Request) {
+            processedData.Request = {};
+          }
+          if (!processedData.Request[breadcrumb[j]]) {
+            processedData.Request[breadcrumb[j]] = {};
+            processedData.Request[breadcrumb[j]].count = 0;
+            processedData.Request[breadcrumb[j]].time = [];
+          }
+          processedData.Request[breadcrumb[j]].count++;
+          processedData.Request[breadcrumb[j]].time.push(breadcrumbT[j]);
+        }
+        if (j === breadcrumb.length - 1) {
+          if (!processedData[breadcrumb[j]]) {
+            processedData[breadcrumb[j]] = {};
+          }
+          if (!processedData[breadcrumb[j]][data.status]) {
+            processedData[breadcrumb[j]][data.status] = {};
+            processedData[breadcrumb[j]][data.status].count = 0;
+            processedData[breadcrumb[j]][data.status].time = [];
+          }
+          processedData[breadcrumb[j]][data.status].count++;
+          processedData[breadcrumb[j]][data.status].time.push(breadcrumbT[j]);
+          continue;
+        }
+        if (!processedData[breadcrumb[j]]) {
+          processedData[breadcrumb[j]] = {};
+        }
+        if (!processedData[breadcrumb[j]][breadcrumb[j + 1]]) {
+          processedData[breadcrumb[j]][breadcrumb[j + 1]] = {};
+          processedData[breadcrumb[j]][breadcrumb[j + 1]].count = 0;
+          processedData[breadcrumb[j]][breadcrumb[j + 1]].time = [];
+        }
+        processedData[breadcrumb[j]][breadcrumb[j + 1]].count++;
+        processedData[breadcrumb[j]][breadcrumb[j + 1]].time.push(breadcrumbT[j]);
+      }
+    }
+    this.breadcrumbCalculated = processedData;
+    const chartData = {
+      nodes: [],
+      links: [],
+    };
+    const targetIndex = [];
+    _.forEach(processedData, (targetData, source) => {
+      _.forEach(targetData, (data, target) => {
+        if (_.indexOf(targetIndex, source) === -1) {
+          chartData.nodes.push({
+            name: source,
+          });
+          targetIndex.push(source);
+        }
         if (_.indexOf(targetIndex, target) === -1) {
           chartData.nodes.push({
             name: target,
           });
           targetIndex.push(target);
         }
-        const statusIdx = _.indexOf(targetIndex, status) + 1;
-        const targetIdx = _.indexOf(targetIndex, target) + 1;
-        if (breadcrumbLen === 1) {
-          chartData.links.push({
-            source: 0,
-            target: targetIdx,
-            value: count,
-          });
-          chartData.links.push({
-            source: targetIdx,
-            target: statusIdx,
-            value: count,
-          });
-          continue;
-        }
-        if (j === 0) {
-          chartData.links.push({
-            source: 0,
-            target: targetIdx,
-            value: count,
-          });
-          continue;
-        }
         chartData.links.push({
-          source: _.indexOf(targetIndex, breadcrumb[j - 1]) + 1,
-          target: targetIdx,
-          value: count,
+          source: _.indexOf(targetIndex, source),
+          target: _.indexOf(targetIndex, target),
+          value: data.count,
         });
-        if (j === breadcrumbLen - 1) {
-          chartData.links.push({
-            source: targetIdx,
-            target: statusIdx,
-            value: count,
-          });
-          continue;
-        }
-      }
-    }
-    // TODO : add modal when graph clicked
+      });
+    });
     return (
       <div>
         <div className="chart-wrapper-header">{title}</div>
-        <SankeyChart clickFunc={(e) => e} data={chartData} duration={duration} />
+        <SankeyChart clickFunc={(e) => this._handleAPIDetailClick(e)} data={chartData} />
       </div>
     );
   }
@@ -281,10 +346,13 @@ class Response extends React.Component {
     const { path, pathList, pathFetching } = this.props;
     return (
       <div>
-        <Select name="path" options={pathList} onChange={::this._changePath} isLoading={pathFetching} value={path} placeholder="API Path" />
-        {this._renderData('overview', 'Overview')}
-        {this._renderData('responsemap', 'Response Time')}
-        {this._renderData('responsegraph', 'Response Trace')}
+        {this._renderModal()}
+        <div>
+          <Select name="path" options={pathList} onChange={::this._changePath} isLoading={pathFetching} value={path} placeholder="API Path" />
+          {this._renderData('overview', 'Overview')}
+          {this._renderData('responsemap', 'Response Time')}
+          {this._renderData('responsegraph', 'Response Trace')}
+        </div>
       </div>
     );
   }
@@ -293,6 +361,7 @@ class Response extends React.Component {
 Response.propTypes = {
   duration: React.PropTypes.string,
   dispatch: React.PropTypes.func.isRequired,
+  isModalOpen: React.PropTypes.bool,
   metric: React.PropTypes.object,
   metricError: React.PropTypes.string,
   metricFetching: React.PropTypes.bool,
@@ -301,10 +370,12 @@ Response.propTypes = {
   pathError: React.PropTypes.string,
   pathFetching: React.PropTypes.bool,
   project: React.PropTypes.object,
+  selectedCrumb: React.PropTypes.object,
 };
 
 const mapStateToProps = (state) => ({
   duration: state.metrics.filter.time,
+  isModalOpen: state.metrics.metric.modal.isOpened,
   metric: state.metrics.metric.data,
   metricError: state.metrics.metric.error,
   metricFetching: state.metrics.metric.fetching,
@@ -313,6 +384,7 @@ const mapStateToProps = (state) => ({
   pathError: state.metrics.filter.error,
   pathFetching: state.metrics.filter.fetching,
   project: state.project.project.data,
+  selectedCrumb: state.metrics.overview.crumb.selected,
 });
 
 export default connect(mapStateToProps)(Response);
