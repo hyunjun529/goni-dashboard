@@ -17,7 +17,7 @@ export const GONIPLUS_SIDEBAR = [{
     key: 'overview_dashboard',
   }],
 }, {
-  header: 'API',
+  header: 'Transaction',
   item: [{
     title: 'Response',
     key: 'api_response',
