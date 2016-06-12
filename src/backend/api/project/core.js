@@ -12,8 +12,8 @@ import {
 const ROLE_ADMIN = 0;
 const ROLE_MEMBER = 1;
 
-const createProjectColumn = '(name,is_plus,apikey,admin_id,created_at)';
-const createProjectField = '(?,?,?,?,FROM_UNIXTIME(?))';
+const createProjectColumn = '(name,is_plus,apikey,admin_id,created_at,updated_at)';
+const createProjectField = '(?,?,?,?,FROM_UNIXTIME(?),FROM_UNIXTIME(?))';
 const projectRoleColumn = '(project_id,user_id,user_role)';
 const projectRoleField = '(?,?,?)';
 
@@ -135,7 +135,7 @@ export function createProject(name, isPlus, user) {
             const t = getTimestamp();
             connection.query({
               sql: `INSERT INTO project ${createProjectColumn} VALUES ${createProjectField}`,
-              values: [name, isPlus ? 1 : 0, createAPIKey(user), user, t],
+              values: [name, isPlus ? 1 : 0, createAPIKey(user), user, t, t],
             }, (pErr, projectResult) => {
               if (pErr) {
                 return connection.rollback(() => {
