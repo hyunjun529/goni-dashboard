@@ -1,4 +1,4 @@
-create database goni_saas;
+create database if not exists goni_saas;
 use goni_saas;
 
 # notification_slack.sql
