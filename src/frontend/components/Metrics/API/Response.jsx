@@ -70,19 +70,19 @@ class Response extends React.Component {
           <div className="col-xs-12 col-sm-12 col-md-4 col-lg-4">
             <div className="overview-card">
               <p className="overview-card-header">min</p>
-              <p className="overview-card-data">{selectedCrumb.min}ms</p>
+              <p className="overview-card-data">{~~selectedCrumb.min}ms</p>
             </div>
           </div>
           <div className="col-xs-12 col-sm-12 col-md-4 col-lg-4">
             <div className="overview-card">
               <p className="overview-card-header">mean</p>
-              <p className="overview-card-data">{selectedCrumb.mean}ms</p>
+              <p className="overview-card-data">{~~selectedCrumb.mean}ms</p>
             </div>
           </div>
           <div className="col-xs-12 col-sm-12 col-md-4 col-lg-4">
             <div className="overview-card">
               <p className="overview-card-header">max</p>
-              <p className="overview-card-data">{selectedCrumb.max}ms</p>
+              <p className="overview-card-data">{~~selectedCrumb.max}ms</p>
             </div>
           </div>
         </div>
@@ -140,19 +140,19 @@ class Response extends React.Component {
           <div className="col-xs-12 col-sm-6 col-md-3 col-lg-3">
             <div className="overview-card">
               <p className="overview-card-header">min</p>
-              <p className="overview-card-data">{~~metric[dataId].min}</p>
+              <p className="overview-card-data">{metric[dataId].min}</p>
             </div>
           </div>
           <div className="col-xs-12 col-sm-6 col-md-3 col-lg-3">
             <div className="overview-card">
               <p className="overview-card-header">average</p>
-              <p className="overview-card-data">{~~metric[dataId].mean}</p>
+              <p className="overview-card-data">{metric[dataId].mean}</p>
             </div>
           </div>
           <div className="col-xs-12 col-sm-6 col-md-3 col-lg-3">
             <div className="overview-card">
               <p className="overview-card-header">max</p>
-              <p className="overview-card-data">{~~metric[dataId].max}</p>
+              <p className="overview-card-data">{metric[dataId].max}</p>
             </div>
           </div>
           <div className="col-xs-12 col-sm-6 col-md-3 col-lg-3">
