@@ -36,7 +36,7 @@ router
         const results = await getDashboardCPU(req.params.key);
         const processed = {};
         _.forEach(results, (v) => {
-          if (v.max) {
+          if (v.max !== null) {
             processed[new Date(v.time) / 1000] = Math.floor(v.max * 100);
           }
         });
