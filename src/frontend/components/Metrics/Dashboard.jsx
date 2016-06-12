@@ -65,19 +65,19 @@ class Transaction extends React.Component {
           <div className="col-xs-12 col-sm-12 col-md-4 col-lg-4">
             <div className="overview-card">
               <p className="overview-card-header">min</p>
-              <p className="overview-card-data">{selectedCrumb.min}ms</p>
+              <p className="overview-card-data">{~~selectedCrumb.min}ms</p>
             </div>
           </div>
           <div className="col-xs-12 col-sm-12 col-md-4 col-lg-4">
             <div className="overview-card">
               <p className="overview-card-header">mean</p>
-              <p className="overview-card-data">{selectedCrumb.mean}ms</p>
+              <p className="overview-card-data">{~~selectedCrumb.mean}ms</p>
             </div>
           </div>
           <div className="col-xs-12 col-sm-12 col-md-4 col-lg-4">
             <div className="overview-card">
               <p className="overview-card-header">max</p>
-              <p className="overview-card-data">{selectedCrumb.max}ms</p>
+              <p className="overview-card-data">{~~selectedCrumb.max}ms</p>
             </div>
           </div>
         </div>
@@ -182,6 +182,29 @@ class Transaction extends React.Component {
           }
           processedData.Request[breadcrumb[j]].count++;
           processedData.Request[breadcrumb[j]].time.push(breadcrumbT[j]);
+          if (breadcrumbLen >= 2) {
+            if (!processedData[breadcrumb[j]]) {
+              processedData[breadcrumb[j]] = {};
+            }
+            if (!processedData[breadcrumb[j]][breadcrumb[j + 1]]) {
+              processedData[breadcrumb[j]][breadcrumb[j + 1]] = {};
+              processedData[breadcrumb[j]][breadcrumb[j + 1]].count = 0;
+              processedData[breadcrumb[j]][breadcrumb[j + 1]].time = [];
+            }
+            processedData[breadcrumb[j]][breadcrumb[j + 1]].count++;
+            processedData[breadcrumb[j]][breadcrumb[j + 1]].time.push(breadcrumbT[j + 1]);
+          }
+        } else if (j !== breadcrumbLen - 1) {
+          if (!processedData[breadcrumb[j]]) {
+            processedData[breadcrumb[j]] = {};
+          }
+          if (!processedData[breadcrumb[j]][breadcrumb[j + 1]]) {
+            processedData[breadcrumb[j]][breadcrumb[j + 1]] = {};
+            processedData[breadcrumb[j]][breadcrumb[j + 1]].count = 0;
+            processedData[breadcrumb[j]][breadcrumb[j + 1]].time = [];
+          }
+          processedData[breadcrumb[j]][breadcrumb[j + 1]].count++;
+          processedData[breadcrumb[j]][breadcrumb[j + 1]].time.push(breadcrumbT[j + 1]);
         }
         if (j === breadcrumb.length - 1) {
           if (!processedData[breadcrumb[j]]) {
@@ -193,19 +216,9 @@ class Transaction extends React.Component {
             processedData[breadcrumb[j]][data.status].time = [];
           }
           processedData[breadcrumb[j]][data.status].count++;
-          processedData[breadcrumb[j]][data.status].time.push(breadcrumbT[j]);
+          processedData[breadcrumb[j]][data.status].time.push(breadcrumbT[j + 1]);
           continue;
         }
-        if (!processedData[breadcrumb[j]]) {
-          processedData[breadcrumb[j]] = {};
-        }
-        if (!processedData[breadcrumb[j]][breadcrumb[j + 1]]) {
-          processedData[breadcrumb[j]][breadcrumb[j + 1]] = {};
-          processedData[breadcrumb[j]][breadcrumb[j + 1]].count = 0;
-          processedData[breadcrumb[j]][breadcrumb[j + 1]].time = [];
-        }
-        processedData[breadcrumb[j]][breadcrumb[j + 1]].count++;
-        processedData[breadcrumb[j]][breadcrumb[j + 1]].time.push(breadcrumbT[j]);
       }
     }
     this.breadcrumbCalculated = processedData;

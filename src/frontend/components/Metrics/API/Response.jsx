@@ -53,7 +53,6 @@ class Response extends React.Component {
   _handleAPIDetailClick(e) {
     const { dispatch } = this.props;
     if (e.source && e.target) {
-      console.log(this.breadcrumbCalculated);
       dispatch(MetricAction.openCrumbModal(`${e.source.name} > ${e.target.name}`,
         this.breadcrumbCalculated[e.source.name][e.target.name].time));
     }
@@ -141,19 +140,19 @@ class Response extends React.Component {
           <div className="col-xs-12 col-sm-6 col-md-3 col-lg-3">
             <div className="overview-card">
               <p className="overview-card-header">min</p>
-              <p className="overview-card-data">{metric[dataId].min}</p>
+              <p className="overview-card-data">{~~metric[dataId].min}</p>
             </div>
           </div>
           <div className="col-xs-12 col-sm-6 col-md-3 col-lg-3">
             <div className="overview-card">
               <p className="overview-card-header">average</p>
-              <p className="overview-card-data">{metric[dataId].mean}</p>
+              <p className="overview-card-data">{~~metric[dataId].mean}</p>
             </div>
           </div>
           <div className="col-xs-12 col-sm-6 col-md-3 col-lg-3">
             <div className="overview-card">
               <p className="overview-card-header">max</p>
-              <p className="overview-card-data">{metric[dataId].max}</p>
+              <p className="overview-card-data">{~~metric[dataId].max}</p>
             </div>
           </div>
           <div className="col-xs-12 col-sm-6 col-md-3 col-lg-3">
@@ -209,6 +208,29 @@ class Response extends React.Component {
           }
           processedData.Request[breadcrumb[j]].count++;
           processedData.Request[breadcrumb[j]].time.push(breadcrumbT[j]);
+          if (breadcrumbLen >= 2) {
+            if (!processedData[breadcrumb[j]]) {
+              processedData[breadcrumb[j]] = {};
+            }
+            if (!processedData[breadcrumb[j]][breadcrumb[j + 1]]) {
+              processedData[breadcrumb[j]][breadcrumb[j + 1]] = {};
+              processedData[breadcrumb[j]][breadcrumb[j + 1]].count = 0;
+              processedData[breadcrumb[j]][breadcrumb[j + 1]].time = [];
+            }
+            processedData[breadcrumb[j]][breadcrumb[j + 1]].count++;
+            processedData[breadcrumb[j]][breadcrumb[j + 1]].time.push(breadcrumbT[j + 1]);
+          }
+        } else if (j !== breadcrumbLen - 1) {
+          if (!processedData[breadcrumb[j]]) {
+            processedData[breadcrumb[j]] = {};
+          }
+          if (!processedData[breadcrumb[j]][breadcrumb[j + 1]]) {
+            processedData[breadcrumb[j]][breadcrumb[j + 1]] = {};
+            processedData[breadcrumb[j]][breadcrumb[j + 1]].count = 0;
+            processedData[breadcrumb[j]][breadcrumb[j + 1]].time = [];
+          }
+          processedData[breadcrumb[j]][breadcrumb[j + 1]].count++;
+          processedData[breadcrumb[j]][breadcrumb[j + 1]].time.push(breadcrumbT[j + 1]);
         }
         if (j === breadcrumb.length - 1) {
           if (!processedData[breadcrumb[j]]) {
@@ -220,19 +242,9 @@ class Response extends React.Component {
             processedData[breadcrumb[j]][data.status].time = [];
           }
           processedData[breadcrumb[j]][data.status].count++;
-          processedData[breadcrumb[j]][data.status].time.push(breadcrumbT[j]);
+          processedData[breadcrumb[j]][data.status].time.push(breadcrumbT[j + 1]);
           continue;
         }
-        if (!processedData[breadcrumb[j]]) {
-          processedData[breadcrumb[j]] = {};
-        }
-        if (!processedData[breadcrumb[j]][breadcrumb[j + 1]]) {
-          processedData[breadcrumb[j]][breadcrumb[j + 1]] = {};
-          processedData[breadcrumb[j]][breadcrumb[j + 1]].count = 0;
-          processedData[breadcrumb[j]][breadcrumb[j + 1]].time = [];
-        }
-        processedData[breadcrumb[j]][breadcrumb[j + 1]].count++;
-        processedData[breadcrumb[j]][breadcrumb[j + 1]].time.push(breadcrumbT[j]);
       }
     }
     this.breadcrumbCalculated = processedData;
