@@ -52,7 +52,7 @@ export function getAPIDetailByTime(apikey, path, time) {
           });
           systemStatus = _.sortBy(statusByInstance, (v) => {
             const length = v.length;
-            return new Date(v[length - 1].time);
+            return v[length - 1].max;
           });
           if (systemStatus.length > 5) {
             systemStatus = _.slice(systemStatus, systemStatus.length - 5);
