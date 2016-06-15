@@ -42,7 +42,13 @@ export function getAPIDetailByTime(apikey, path, time) {
             statusTemp[v.instance].push(v);
           });
           _.forEach(statusTemp, (v) => {
-            statusTempByInstance.push(v);
+            let max = 0;
+            _.forEach(v, (instance) => {
+              max += instance.max;
+            });
+            if (max !== 0) {
+              statusTempByInstance.push(v);
+            }
           });
           _.forEach(statusTempByInstance, (v) => {
             const sorted = _.sortBy(v, (o) => {
