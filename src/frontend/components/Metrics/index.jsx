@@ -93,6 +93,7 @@ class Metrics extends React.Component {
       },
       yAxis: {
         type: 'value',
+        minInterval: 1,
         axisLabel,
         axisLine,
       },
