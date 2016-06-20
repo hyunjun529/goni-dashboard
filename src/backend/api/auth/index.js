@@ -50,7 +50,6 @@ router
   .post(
     checkValidRegisterRequest,
     async(req, res) => {
-      let status = 500;
       try {
         const userExists = await getUser(req.body.email);
         if (userExists) {
@@ -60,14 +59,13 @@ router
         if (!userId) {
           return res.sendStatus(400);
         }
-        status = 200;
         const auth = await registerUserToken(userId);
         return res.send({
           token: auth,
           user: userId,
         });
       } catch (error) {
-        return res.sendStatus(status);
+        return res.sendStatus(500);
       }
     });
 
