@@ -210,7 +210,7 @@ const Actions = {
       }
     };
   },
-  getOverviewRealtime: (apikey, prev) => {
+  getOverviewRealtime: (apikey) => {
     return async dispatch => {
       try {
         const token = localStorage.getItem('token');
@@ -222,7 +222,7 @@ const Actions = {
       } catch (error) {
         dispatch({
           type: METRIC_OVERVIEW_REALTIME_FETCHED,
-          data: prev,
+          data: [[], []],
         });
       }
     };

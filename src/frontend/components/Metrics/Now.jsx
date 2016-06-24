@@ -19,11 +19,11 @@ class Now extends React.Component {
   }
 
   componentDidMount() {
-    const { dispatch, project, realtime } = this.props;
+    const { dispatch, project } = this.props;
     this.timer = setInterval(() => {
-      dispatch(MetricAction.getOverviewRealtime(project.apikey, realtime));
+      dispatch(MetricAction.getOverviewRealtime(project.apikey));
     }, 5000);
-    dispatch(MetricAction.getOverviewRealtime(project.apikey, realtime));
+    dispatch(MetricAction.getOverviewRealtime(project.apikey));
   }
 
   componentWillUnmount() {
