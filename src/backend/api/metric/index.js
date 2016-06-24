@@ -6,6 +6,7 @@ import {
 import {
   getAPIDetailByTime,
   getAPIMetrics,
+  getAPIRealtime,
   getAPIStatistics,
   getAPIStatisticsByTime,
   getDashboardCPU,
@@ -68,6 +69,21 @@ router
     async(req, res) => {
       try {
         const results = await getAPIDetailByTime(req.params.key, req.body.path, req.params.time);
+        return res.send(results);
+      } catch (error) {
+        return res.sendStatus(500);
+      }
+    }
+  );
+
+router
+  .route('/goniplus/:key/overview/dashboard/realtime')
+  .get(
+    passport.authenticate('bearer'),
+    projectAccessCheckByKey,
+    async(req, res) => {
+      try {
+        const results = await getAPIRealtime(req.params.key);
         return res.send(results);
       } catch (error) {
         return res.sendStatus(500);

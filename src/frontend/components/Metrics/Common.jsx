@@ -20,6 +20,27 @@ export const getDuration = (duration) => {
   return [from, now];
 };
 
+export const realtimeColorAccessor = (s) => {
+  const k = parseInt(s, 10);
+  if (k === 0) {
+    return '#4c80f1';
+  }
+  if (k === 1) {
+    return '#ffda00';
+  }
+  return '#ff7595';
+};
+
+export const realtimeColorAccessorByTime = (s) => {
+  if (s <= 12) {
+    return '#4c80f1';
+  }
+  if (s <= 32) {
+    return '#ffda00';
+  }
+  return '#ff7595';
+};
+
 export const responseColorAccessor = (s) => {
   const status = parseInt(s, 10);
   if (status < 400) {

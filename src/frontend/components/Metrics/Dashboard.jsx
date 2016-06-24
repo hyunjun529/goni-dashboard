@@ -546,7 +546,7 @@ class Transaction extends React.Component {
           empty: 'No cpu data on {date}',
           filled: 'Max {count}% @ {date}',
         },
-        tooltip: true,
+        tooltip: false,
       });
       return;
     }
@@ -559,7 +559,7 @@ class Transaction extends React.Component {
         {this._renderModal()}
         <div>
           <div className="chart-wrapper-header">System Status</div>
-          <div id="cal-heatmap" />
+          <div id="cal-heatmap" style={{ overflow: 'auto' }} />
           <div className="row">
             <div className="col-xs-12 col-sm-6 col-md-6 col-lg-6">
               {this._renderBaseData('user', 'Active User')}

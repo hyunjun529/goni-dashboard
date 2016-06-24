@@ -22,9 +22,11 @@ import {
   METRIC_OVERVIEW_CPU_FETCHING,
   METRIC_OVERVIEW_CPU_SELECTED,
   METRIC_OVERVIEW_CRUMB_SELECTED,
+  METRIC_OVERVIEW_REALTIME_FETCHED,
   METRIC_TIME_CHANGED,
 } from 'constants/metric';
 import {
+  PROJECT_ENTER_PAGE,
   PROJECT_ENTER_METRIC_PAGE,
   PROJECT_ENTER_OVERVIEW_PAGE,
 } from 'constants/project';
@@ -79,6 +81,16 @@ const Actions = {
     return async dispatch => {
       dispatch({
         type: PROJECT_ENTER_OVERVIEW_PAGE,
+      });
+      dispatch({
+        type: METRIC_INIT,
+      });
+    };
+  },
+  enterPage: () => {
+    return async dispatch => {
+      dispatch({
+        type: PROJECT_ENTER_PAGE,
       });
       dispatch({
         type: METRIC_INIT,
@@ -194,6 +206,23 @@ const Actions = {
         dispatch({
           type: METRIC_OVERVIEW_CPU_FETCH_ERROR,
           error: error.statusText,
+        });
+      }
+    };
+  },
+  getOverviewRealtime: (apikey, prev) => {
+    return async dispatch => {
+      try {
+        const token = localStorage.getItem('token');
+        const data = await httpGet(`/api/goniplus/${apikey}/overview/dashboard/realtime`, token);
+        dispatch({
+          type: METRIC_OVERVIEW_REALTIME_FETCHED,
+          data,
+        });
+      } catch (error) {
+        dispatch({
+          type: METRIC_OVERVIEW_REALTIME_FETCHED,
+          data: prev,
         });
       }
     };

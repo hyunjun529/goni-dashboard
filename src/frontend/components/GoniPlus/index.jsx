@@ -10,6 +10,7 @@ import {
   APIResponseMetrics,
   APIStatisticsMetrics,
   DashboardOverview,
+  DashboardOverviewNow,
   Header,
   MemberSettings,
   Metrics,
@@ -62,6 +63,8 @@ class GoniPlus extends React.Component {
   _renderGraphs() {
     const { dashboard } = this.props;
     switch (dashboard.key) {
+      case 'overview_now':
+        return <DashboardOverviewNow />;
       case 'overview_dashboard':
         return <DashboardOverview />;
       case 'metrics_expvar':

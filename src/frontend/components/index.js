@@ -3,6 +3,7 @@ import APIStatisticsMetrics from './Metrics/API/Statistics';
 import App from './App';
 import AuthContainer from './AuthContainer';
 import DashboardOverview from './Metrics/Dashboard';
+import DashboardOverviewNow from './Metrics/Now';
 import GoniPlus from './GoniPlus';
 import Header from './Header';
 import Login from './Login';
@@ -19,6 +20,7 @@ export {
   App,
   AuthContainer,
   DashboardOverview,
+  DashboardOverviewNow,
   GoniPlus,
   Header,
   Login,

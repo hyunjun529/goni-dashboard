@@ -21,6 +21,7 @@ import {
   METRIC_OVERVIEW_CPU_FETCHING,
   METRIC_OVERVIEW_CPU_SELECTED,
   METRIC_OVERVIEW_CRUMB_SELECTED,
+  METRIC_OVERVIEW_REALTIME_FETCHED,
   METRIC_TIME_CHANGED,
 } from 'constants/metric';
 
@@ -60,6 +61,9 @@ const initialState = {
     },
     crumb: {
       selected: null,
+    },
+    realtime: {
+      data: [[], []],
     },
   },
 };
@@ -312,6 +316,16 @@ export default function reducer(state = initialState, action = {}) {
           ...state.overview,
           crumb: {
             selected: action.selected,
+          },
+        },
+      };
+    case METRIC_OVERVIEW_REALTIME_FETCHED:
+      return {
+        ...state,
+        overview: {
+          ...state.overview,
+          realtime: {
+            data: action.data,
           },
         },
       };

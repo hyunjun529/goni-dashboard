@@ -104,6 +104,23 @@ export function getAPIMetrics(apikey, path, duration) {
 }
 
 /**
+ * getAPIRealtime(apikey) returns realtime metrics
+ */
+export function getAPIRealtime(apikey) {
+  return new Promise((resolve, reject) => {
+    goniPlus.query(
+      `SELECT sum(count) from realtime where apikey = '${apikey}' and time >= now() - 5s group by timegroup;
+      SELECT sum(count) from realtime where apikey = '${apikey}' and time >= now() - 5m group by time(5s), timegroup;`,
+      (err, results) => {
+        if (err) {
+          return reject(err);
+        }
+        return resolve(results);
+      });
+  });
+}
+
+/**
  * getAPIStatistics(apikey, path, duration) returns api statistics
  */
 export function getAPIStatistics(apikey, path, duration) {
