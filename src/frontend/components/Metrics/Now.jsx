@@ -171,34 +171,38 @@ class Now extends React.Component {
     };
     const grouped = {};
     for (let i = 0; i < dataLen; i++) {
-      const tg = parseInt(realtime[1][i].timegroup, 10);
-      if (realtime[1][i].sum === null) {
-        continue;
+      let tg = parseInt(realtime[1][i].res / 250, 10);
+      if (tg > 60) {
+        tg = 60;
       }
+      const d = realtime[1][i].time;
       if (!grouped[tg]) {
-        grouped[tg] = [];
+        grouped[tg] = {};
       }
-      grouped[tg].push(realtime[1][i]);
+      if (!grouped[tg][d]) {
+        grouped[tg][d] = 0;
+      }
+      grouped[tg][d]++;
     }
     const tempData = {};
-    _.forEach(grouped, (value, k) => {
-      const name = `${k * 250}ms`;
+    _.forEach(grouped, (data, tg) => {
+      const name = `${tg * 250}ms`;
       tempData[name] = {
         name,
         type: 'scatter',
         itemStyle: {
           normal: {
-            color: realtimeColorAccessorByTime(k),
+            color: realtimeColorAccessorByTime(tg),
           },
         },
         data: [],
       };
-      _.forEach(value, (d) => {
+      _.forEach(data, (v, date) => {
         tempData[name].data.push([
-          new Date(d.time),
-          k * 250,
-          d.sum,
-          `${((k === 0 ? 1 : k) - 1) * 250} ~ ${k * 250}ms`]);
+          new Date(date),
+          tg * 250,
+          v,
+          tg === '0' ? '< 0ms' : `${(tg - 1) * 250} ~ ${tg * 250}ms`]);
       });
     });
     _.forEach(tempData, (v) => {
