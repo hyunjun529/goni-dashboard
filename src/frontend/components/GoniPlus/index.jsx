@@ -89,6 +89,9 @@ class GoniPlus extends React.Component {
           <div className="tag-tab tag-selected">
             <a>CPU</a>
           </div>
+          <div className="tag-tab-more" onClick={() => alert('추후 제공될 기능입니다.')}>
+            <a>HEAP</a>
+          </div>
         </div>
       );
     }
