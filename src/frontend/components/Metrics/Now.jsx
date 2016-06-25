@@ -197,16 +197,22 @@ class Now extends React.Component {
         },
         data: [],
       };
+      const now = new Date().getTime();
       _.forEach(data, (v, date) => {
-        tempData[name].data.push([
-          new Date(date),
-          tg * 250,
-          v,
-          tg === '0' ? '< 0ms' : `${(tg - 1) * 250} ~ ${tg * 250}ms`]);
+        const ms = now - new Date(date).getTime();
+        if (ms <= 180000) {
+          tempData[name].data.push([
+            new Date(date),
+            tg * 250,
+            v,
+            tg === '0' ? '< 0ms' : `${(tg - 1) * 250} ~ ${tg * 250}ms`]);
+        }
       });
     });
     _.forEach(tempData, (v) => {
-      option.series.push(v);
+      if (v.data.length !== 0) {
+        option.series.push(v);
+      }
     });
     return (
       <div>
