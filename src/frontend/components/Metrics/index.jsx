@@ -108,7 +108,7 @@ class Metrics extends React.Component {
       const time = new Date(metric[title][i].time);
       const d = {
         name: time.toString(),
-        value: [time, [metric[title][i][title] / mod]],
+        value: [time, [metric[title][i].max / mod]],
       };
       data.data.push(d);
     }

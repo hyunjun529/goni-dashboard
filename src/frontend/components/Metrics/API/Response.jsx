@@ -170,45 +170,54 @@ class Response extends React.Component {
     const dataId = 'responsegraph';
     const title = 'Response Trace';
     const { metric } = this.props;
-    const dataLen = metric[dataId].length;
     // Process Data
     const processedData = {};
-    for (let i = 0; i < dataLen; i++) {
-      const data = metric[dataId][i];
-      let breadcrumb = [];
-      let breadcrumbT = [];
-      try {
-        breadcrumb = JSON.parse(data.breadcrumb);
-        breadcrumbT = JSON.parse(data.breadcrumbT);
-      } catch (err) { // eslint-disable-line no-empty-block
-      }
-      const breadcrumbLen = breadcrumb.length;
-      if (breadcrumbLen === 0) {
-        if (!processedData.Request) {
-          processedData.Request = {};
+    _.forEach(metric[dataId], (data, status) => {
+      _.forEach(data, (v, crumb) => {
+        let breadcrumb = [];
+        try {
+          breadcrumb = JSON.parse(crumb);
+        } catch (err) { // eslint-disable-line no-empty-block
         }
-        if (!processedData.Request[data.status]) {
-          processedData.Request[data.status] = {};
-          processedData.Request[data.status].count = 0;
-          processedData.Request[data.status].time = [];
-        }
-        processedData.Request[data.status].count++;
-        processedData.Request[data.status].time.push(data.res);
-        continue;
-      }
-      for (let j = 0; j < breadcrumbLen; j++) {
-        if (j === 0) {
+        const breadcrumbLen = breadcrumb.length;
+        if (breadcrumbLen === 0) {
           if (!processedData.Request) {
             processedData.Request = {};
           }
-          if (!processedData.Request[breadcrumb[j]]) {
-            processedData.Request[breadcrumb[j]] = {};
-            processedData.Request[breadcrumb[j]].count = 0;
-            processedData.Request[breadcrumb[j]].time = [];
+          if (!processedData.Request[status]) {
+            processedData.Request[status] = {};
+            processedData.Request[status].count = 0;
+            processedData.Request[status].time = [];
           }
-          processedData.Request[breadcrumb[j]].count++;
-          processedData.Request[breadcrumb[j]].time.push(breadcrumbT[j]);
-          if (breadcrumbLen >= 2) {
+          processedData.Request[status].count += v.count;
+          processedData.Request[status].time.push(v.time[0]);
+          return;
+        }
+        for (let j = 0; j < breadcrumbLen; j++) {
+          if (j === 0) {
+            if (!processedData.Request) {
+              processedData.Request = {};
+            }
+            if (!processedData.Request[breadcrumb[j]]) {
+              processedData.Request[breadcrumb[j]] = {};
+              processedData.Request[breadcrumb[j]].count = 0;
+              processedData.Request[breadcrumb[j]].time = [];
+            }
+            processedData.Request[breadcrumb[j]].count += v.count;
+            processedData.Request[breadcrumb[j]].time.push(v.time[j]);
+            if (breadcrumbLen >= 2) {
+              if (!processedData[breadcrumb[j]]) {
+                processedData[breadcrumb[j]] = {};
+              }
+              if (!processedData[breadcrumb[j]][breadcrumb[j + 1]]) {
+                processedData[breadcrumb[j]][breadcrumb[j + 1]] = {};
+                processedData[breadcrumb[j]][breadcrumb[j + 1]].count = 0;
+                processedData[breadcrumb[j]][breadcrumb[j + 1]].time = [];
+              }
+              processedData[breadcrumb[j]][breadcrumb[j + 1]].count += v.count;
+              processedData[breadcrumb[j]][breadcrumb[j + 1]].time.push(v.time[j + 1]);
+            }
+          } else if (j !== breadcrumbLen - 1) {
             if (!processedData[breadcrumb[j]]) {
               processedData[breadcrumb[j]] = {};
             }
@@ -217,36 +226,25 @@ class Response extends React.Component {
               processedData[breadcrumb[j]][breadcrumb[j + 1]].count = 0;
               processedData[breadcrumb[j]][breadcrumb[j + 1]].time = [];
             }
-            processedData[breadcrumb[j]][breadcrumb[j + 1]].count++;
-            processedData[breadcrumb[j]][breadcrumb[j + 1]].time.push(breadcrumbT[j + 1]);
+            processedData[breadcrumb[j]][breadcrumb[j + 1]].count += v.count;
+            processedData[breadcrumb[j]][breadcrumb[j + 1]].time.push(v.time[j + 1]);
           }
-        } else if (j !== breadcrumbLen - 1) {
-          if (!processedData[breadcrumb[j]]) {
-            processedData[breadcrumb[j]] = {};
+          if (j === breadcrumb.length - 1) {
+            if (!processedData[breadcrumb[j]]) {
+              processedData[breadcrumb[j]] = {};
+            }
+            if (!processedData[breadcrumb[j]][status]) {
+              processedData[breadcrumb[j]][status] = {};
+              processedData[breadcrumb[j]][status].count = 0;
+              processedData[breadcrumb[j]][status].time = [];
+            }
+            processedData[breadcrumb[j]][status].count += v.count;
+            processedData[breadcrumb[j]][status].time.push(v.time[j + 1]);
+            continue;
           }
-          if (!processedData[breadcrumb[j]][breadcrumb[j + 1]]) {
-            processedData[breadcrumb[j]][breadcrumb[j + 1]] = {};
-            processedData[breadcrumb[j]][breadcrumb[j + 1]].count = 0;
-            processedData[breadcrumb[j]][breadcrumb[j + 1]].time = [];
-          }
-          processedData[breadcrumb[j]][breadcrumb[j + 1]].count++;
-          processedData[breadcrumb[j]][breadcrumb[j + 1]].time.push(breadcrumbT[j + 1]);
         }
-        if (j === breadcrumb.length - 1) {
-          if (!processedData[breadcrumb[j]]) {
-            processedData[breadcrumb[j]] = {};
-          }
-          if (!processedData[breadcrumb[j]][data.status]) {
-            processedData[breadcrumb[j]][data.status] = {};
-            processedData[breadcrumb[j]][data.status].count = 0;
-            processedData[breadcrumb[j]][data.status].time = [];
-          }
-          processedData[breadcrumb[j]][data.status].count++;
-          processedData[breadcrumb[j]][data.status].time.push(breadcrumbT[j + 1]);
-          continue;
-        }
-      }
-    }
+      });
+    });
     this.breadcrumbCalculated = processedData;
     const chartData = {
       nodes: [],
@@ -286,11 +284,10 @@ class Response extends React.Component {
     const dataId = 'responsemap';
     const title = 'Response Status / Time';
     const { metric } = this.props;
-    const dataLen = metric[dataId].length;
     const option = {
       tooltip: {
         formatter: (params) => {
-          return `Status ${params.seriesName}<br/>${params.value[0]}<br/>${params.value[1]}ms`;
+          return `Status ${params.seriesName}<br/>${params.value[0]}<br/>${params.value[2]}<br/>${params.value[3]} transaction(s)`;
         },
       },
       legend: {
@@ -309,6 +306,8 @@ class Response extends React.Component {
       yAxis: [
         {
           type: 'value',
+          minInterval: 3000,
+          max: 15000,
           scale: true,
           axisLabel: {
             formatter: '{value}ms',
@@ -323,8 +322,7 @@ class Response extends React.Component {
       series: [],
     };
     const tempData = {};
-    for (let i = 0; i < dataLen; i++) {
-      const status = metric[dataId][i].status;
+    _.forEach(metric[dataId], (data, status) => {
       if (!tempData[status]) {
         tempData[status] = {
           name: status,
@@ -338,12 +336,27 @@ class Response extends React.Component {
         };
         option.legend.data.push(status);
       }
-      tempData[status].data.push([new Date(metric[dataId][i].time), metric[dataId][i].res]);
-    }
+      _.forEach(data, (v, tg) => {
+        _.forEach(v, (count, time) => {
+          let tooltipText = '';
+          if (tg === '0') {
+            tooltipText = '< 0ms';
+          } else if (tg === '60') {
+            tooltipText = '>= 15s';
+          } else {
+            tooltipText = `${(tg - 1) * 250} ~ ${tg * 250}ms`;
+          }
+          tempData[status].data.push([
+            new Date(Number(time)),
+            tg * 250,
+            tooltipText,
+            count]);
+        });
+      });
+    });
     _.forEach(tempData, (v) => {
       option.series.push(v);
     });
-    option.legend.data = _.sortBy(option.legend.data);
     return (
       <div>
         <div className="chart-wrapper-header">{title}</div>

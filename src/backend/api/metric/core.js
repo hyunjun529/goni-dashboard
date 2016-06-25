@@ -88,6 +88,75 @@ export function getAPIMetrics(apikey, path, duration) {
         if (results && results[0].length !== 0 && results[0][0].min !== null) {
           exists = true;
         }
+        const grouped = {};
+        const groupedGraph = {};
+        if (exists) {
+          // map
+          for (let i = 0; i < results[1].length; i++) {
+            const status = results[1][i].status;
+            let tg = parseInt(results[1][i].res / 250, 10);
+            if (tg > 60) {
+              tg = 60;
+            }
+            if (!grouped[status]) {
+              grouped[status] = {};
+            }
+            if (!grouped[status][tg]) {
+              grouped[status][tg] = {};
+            }
+            const t = new Date(results[1][i].time);
+            t.setSeconds(0);
+            if (duration === '6h' || duration === '3h') {
+              t.setMinutes(t.getMinutes() - t.getMinutes() % 5);
+            }
+            const ts = t.getTime();
+            if (!grouped[status][tg][ts]) {
+              grouped[status][tg][ts] = 0;
+            }
+            grouped[status][tg][ts]++;
+          }
+          // graph
+          for (let i = 0; i < results[2].length; i++) {
+            const status = results[2][i].status;
+            if (!groupedGraph[status]) {
+              groupedGraph[status] = {};
+            }
+            const raw = results[2][i].breadcrumb;
+            const crumb = JSON.parse(raw);
+            const crumbT = JSON.parse(results[2][i].breadcrumbT);
+            if (!groupedGraph[status][raw]) {
+              groupedGraph[status][raw] = {
+                count: 0,
+                time: [],
+              };
+              for (let j = 0; j <= crumb.length; j++) {
+                groupedGraph[status][raw].time.push([]);
+              }
+            }
+            groupedGraph[status][raw].count++;
+            for (let j = 0; j < crumbT.length; j++) {
+              groupedGraph[status][raw].time[j].push(crumbT[j]);
+            }
+          }
+        }
+        const graphData = {};
+        _.forEach(groupedGraph, (v, status) => {
+          graphData[status] = {};
+          _.forEach(v, (data, crumb) => {
+            graphData[status][crumb] = {
+              count: data.count,
+              time: [],
+            };
+            _.forEach(data.time, (t) => {
+              const r = {
+                min: ~~_.min(t),
+                mean: ~~_.mean(t),
+                max: ~~_.max(t),
+              };
+              graphData[status][crumb].time.push(r);
+            });
+          });
+        });
         const processed = {
           overview: {
             min: exists ? `${parseInt(results[0][0].min, 10)}ms` : 'no data',
@@ -95,8 +164,8 @@ export function getAPIMetrics(apikey, path, duration) {
             max: exists ? `${parseInt(results[0][0].max, 10)}ms` : 'no data',
             panic: exists ? results[0][0].count : 'no data',
           },
-          responsemap: results[1],
-          responsegraph: results[2],
+          responsemap: grouped,
+          responsegraph: graphData,
         };
         return resolve(processed);
       });
@@ -218,13 +287,19 @@ export function getAPIStatisticsByTime(apikey, time) {
  */
 export function getExpvar(apikey, instance, duration) {
   return new Promise((resolve, reject) => {
+    let groupby = '5m';
+    if (duration === '6h' || duration === '3h') {
+      groupby = '5m';
+    } else {
+      groupby = '1m';
+    }
     goniPlus.query(
-      `SELECT time, alloc FROM expvar WHERE apikey = '${apikey}' and instance = '${instance}' and time > now() - ${duration};
-       SELECT time, heapalloc FROM expvar WHERE apikey = '${apikey}' and instance = '${instance}' and time > now() - ${duration};
-       SELECT time, heapinuse FROM expvar WHERE apikey = '${apikey}' and instance = '${instance}' and time > now() - ${duration};
-       SELECT time, numgc FROM expvar WHERE apikey = '${apikey}' and instance = '${instance}' and time > now() - ${duration};
-       SELECT time, pausetotalns FROM expvar WHERE apikey = '${apikey}' and instance = '${instance}' and time > now() - ${duration};
-       SELECT time, sys FROM expvar WHERE apikey = '${apikey}' and instance = '${instance}' and time > now() - ${duration};`,
+      `SELECT max(alloc) FROM expvar WHERE apikey = '${apikey}' and instance = '${instance}' and time > now() - ${duration} group by time(${groupby}) fill(0);
+       SELECT max(heapalloc) FROM expvar WHERE apikey = '${apikey}' and instance = '${instance}' and time > now() - ${duration} group by time(${groupby}) fill(0);
+       SELECT max(heapinuse) FROM expvar WHERE apikey = '${apikey}' and instance = '${instance}' and time > now() - ${duration} group by time(${groupby}) fill(0);
+       SELECT max(numgc) FROM expvar WHERE apikey = '${apikey}' and instance = '${instance}' and time > now() - ${duration} group by time(${groupby}) fill(0);
+       SELECT max(pausetotalns) FROM expvar WHERE apikey = '${apikey}' and instance = '${instance}' and time > now() - ${duration} group by time(${groupby}) fill(0);
+       SELECT max(sys) FROM expvar WHERE apikey = '${apikey}' and instance = '${instance}' and time > now() - ${duration} group by time(${groupby}) fill(0);`,
       (err, results) => {
         if (err) {
           return reject(err);
@@ -314,9 +389,15 @@ export function getPaths(apikey) {
  */
 export function getRuntime(apikey, instance, duration) {
   return new Promise((resolve, reject) => {
+    let groupby = '5m';
+    if (duration === '6h' || duration === '3h') {
+      groupby = '5m';
+    } else {
+      groupby = '1m';
+    }
     goniPlus.query(
-      `SELECT time, cgo FROM runtime WHERE apikey = '${apikey}' and instance = '${instance}' and time > now() - ${duration};
-       SELECT time, goroutine FROM runtime WHERE apikey = '${apikey}' and instance = '${instance}' and time > now() - ${duration};`,
+      `SELECT max(cgo) FROM runtime WHERE apikey = '${apikey}' and instance = '${instance}' and time > now() - ${duration} group by time(${groupby}) fill(0);
+       SELECT max(goroutine) FROM runtime WHERE apikey = '${apikey}' and instance = '${instance}' and time > now() - ${duration} group by time(${groupby}) fill(0);`,
       (err, results) => {
         if (err) {
           return reject(err);

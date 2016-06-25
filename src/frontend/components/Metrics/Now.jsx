@@ -156,6 +156,8 @@ class Now extends React.Component {
       yAxis: [
         {
           type: 'value',
+          minInterval: 3000,
+          max: 15000,
           scale: true,
           axisLabel: {
             formatter: '{value}ms',
@@ -201,11 +203,19 @@ class Now extends React.Component {
       _.forEach(data, (v, date) => {
         const ms = now - new Date(date).getTime();
         if (ms <= 180000) {
+          let tooltipText = '';
+          if (tg === '0') {
+            tooltipText = '< 0ms';
+          } else if (tg === '60') {
+            tooltipText = '>= 15s';
+          } else {
+            tooltipText = `${(tg - 1) * 250} ~ ${tg * 250}ms`;
+          }
           tempData[name].data.push([
             new Date(date),
             tg * 250,
             v,
-            tg === '0' ? '< 0ms' : `${(tg - 1) * 250} ~ ${tg * 250}ms`]);
+            tooltipText]);
         }
       });
     });
