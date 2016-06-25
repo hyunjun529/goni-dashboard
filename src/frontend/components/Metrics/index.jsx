@@ -74,6 +74,7 @@ class Metrics extends React.Component {
       },
     };
     const axisLabel = {
+      formatter: `{value}${unit}`,
       textStyle: {
         color: '#4d5256',
       },
