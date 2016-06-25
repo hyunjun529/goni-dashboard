@@ -320,8 +320,7 @@ class Response extends React.Component {
       yAxis: [
         {
           type: 'value',
-          minInterval: 3000,
-          max: 15000,
+          minInterval: 250,
           scale: true,
           axisLabel: {
             formatter: '{value}ms',
