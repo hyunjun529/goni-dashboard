@@ -179,7 +179,7 @@ export function getAPIRealtime(apikey) {
   return new Promise((resolve, reject) => {
     goniPlus.query(
       `SELECT sum(count) from realtime where apikey = '${apikey}' and time >= now() - 5s group by timegroup;
-      SELECT res from http where apikey = '${apikey}' and time >= now() - 2m;`,
+      SELECT res from http where apikey = '${apikey}' and time >= now() - 3m;`,
       (err, results) => {
         if (err) {
           return reject(err);
