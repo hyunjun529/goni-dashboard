@@ -53,8 +53,22 @@ class Response extends React.Component {
   _handleAPIDetailClick(e) {
     const { dispatch } = this.props;
     if (e.source && e.target) {
-      dispatch(MetricAction.openCrumbModal(`${e.source.name} > ${e.target.name}`,
-        this.breadcrumbCalculated[e.source.name][e.target.name].time));
+      const data = {
+        min: 0,
+        mean: 0,
+        max: 0,
+      };
+      const t = this.breadcrumbCalculated[e.source.name][e.target.name].time;
+      const tLen = t.length;
+      for (let i = 0; i < tLen; i++) {
+        data.min += t[i].min;
+        data.mean += t[i].mean;
+        data.max += t[i].max;
+      }
+      data.min = ~~(data.min / tLen);
+      data.mean = ~~(data.mean / tLen);
+      data.max = ~~(data.max / tLen);
+      dispatch(MetricAction.openCrumbModal(`${e.source.name} > ${e.target.name}`, data));
     }
   }
 

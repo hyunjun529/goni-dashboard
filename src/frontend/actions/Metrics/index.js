@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import {
   METRIC_DATA_FETCH_ERROR,
   METRIC_DATA_FETCHED,
@@ -278,9 +277,9 @@ const Actions = {
         type: METRIC_OVERVIEW_CRUMB_SELECTED,
         selected: {
           title,
-          min: _.min(data),
-          mean: _.mean(data),
-          max: _.max(data),
+          min: data.min,
+          mean: data.mean,
+          max: data.max,
         },
       });
       dispatch({
