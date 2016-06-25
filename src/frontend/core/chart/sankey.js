@@ -1,6 +1,7 @@
 /* eslint no-param-reassign:0, no-loop-func:0, no-use-before-define:0
     no-shadow:0, no-floating-decimal:0, no-unused-vars:0 */
 // https://github.com/d3/d3-plugins/blob/master/sankey/sankey.js
+// http://bl.ocks.org/soxofaan/bb6f91d57dc4b6afe91d
 // import d3 / es5 => es6
 import d3 from 'd3';
 
@@ -119,16 +120,62 @@ d3.sankey = () => {
         node.x = x;
         node.dx = nodeWidth;
         node.sourceLinks.forEach((link) => {
-          if (nextNodes.indexOf(link.target) < 0) {
+          if (nextNodes.indexOf(link.target) < 0 && !link.cycleBreaker) {
             nextNodes.push(link.target);
           }
         });
       });
+      if (nextNodes.length === remainingNodes.length) {
+        findAndMarkCycleBreaker(nextNodes);
+      }
       remainingNodes = nextNodes;
       ++x;
     }
     moveSinksRight(x);
     scaleNodeBreadths((size[0] - nodeWidth) / (x - 1));
+  }
+
+  // Find a link that breaks a cycle in the graph (if any).
+  function findAndMarkCycleBreaker(nodes) {
+  // Go through all nodes from the given subset and traverse links searching for cycles.
+    let link;
+    for (let n = nodes.length - 1; n >= 0; n--) {
+      link = depthFirstCycleSearch(nodes[n], []);
+      if (link) {
+        return link;
+      }
+    }
+    return null;
+
+    // Depth-first search to find a link that is part of a cycle.
+    function depthFirstCycleSearch(cursorNode, path) {
+      let target;
+      let link;
+      for (let n = cursorNode.sourceLinks.length - 1; n >= 0; n--) {
+        link = cursorNode.sourceLinks[n];
+        if (link.cycleBreaker) {
+          // Skip already known cycle breakers.
+          continue;
+        }
+        // Check if target makes a cycle with current path.
+        target = link.target;
+        if (path.indexOf(target) > -1) {
+          // Mark this link as a known cycle breaker.
+          link.cycleBreaker = true;
+          // Stop further search if we found a cycle breaker.
+          return link;
+        }
+        // Recurse deeper.
+        path.push(cursorNode);
+        link = depthFirstCycleSearch(target, path);
+        path.pop();
+        // Stop further search if we found a cycle breaker.
+        if (link) {
+          return link;
+        }
+      }
+      return null;
+    }
   }
 
   function moveSourcesRight() {
