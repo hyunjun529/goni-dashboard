@@ -146,11 +146,18 @@ class Now extends React.Component {
       },
       xAxis: [
         {
-          type: 'time',
-          scale: true,
-          splitLine: {
-            show: false,
-          },
+          type: 'category',
+          boundaryGap: true,
+          data: (() => {
+            let now = new Date();
+            const res = [];
+            let len = 180;
+            while (len--) {
+              res.unshift(now.toLocaleTimeString().replace(/^\D*/, ''));
+              now = new Date(now - 1000);
+            }
+            return res;
+          })(),
         },
       ],
       yAxis: [
@@ -211,7 +218,7 @@ class Now extends React.Component {
             tooltipText = `${(tg - 1) * 250} ~ ${tg * 250}ms`;
           }
           tempData[name].data.push([
-            new Date(date),
+            new Date(date).toLocaleTimeString().replace(/^\D*/, ''),
             tg * 250,
             v,
             tooltipText]);
