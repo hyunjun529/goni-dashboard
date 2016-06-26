@@ -43,8 +43,14 @@ class Transaction extends React.Component {
   _handleAPIDetailClick(e) {
     const { dispatch } = this.props;
     if (e.source && e.target) {
+      const t = this.breadcrumbCalculated[e.source.name][e.target.name].time;
+      const data = {
+        min: _.min(t),
+        mean: _.mean(t),
+        max: _.max(t),
+      };
       dispatch(MetricAction.openCrumbModal(`${e.source.name} > ${e.target.name}`,
-        this.breadcrumbCalculated[e.source.name][e.target.name].time));
+        data));
     }
   }
 
