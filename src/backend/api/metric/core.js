@@ -323,15 +323,18 @@ export function getExpvar(apikey, instance, duration) {
 export function getInstances(apikey, metric) {
   return new Promise((resolve, reject) => {
     goniPlus.query(
-      `SELECT DISTINCT(instance) FROM ${metric} WHERE apikey='${apikey}' and time > now() - 6h;`,
+      `SELECT count(${metric === 'expvar' ? 'numgc' : 'cgo'}) from ${metric} WHERE apikey='${apikey}' and time > now() - 6h group by instance;`,
       (err, results) => {
         if (err) {
           return reject(err);
         }
-        if (results && results[0].length !== 0) {
-          return resolve(results[0][0].distinct);
-        }
-        return resolve([]);
+        const instances = [];
+        _.forEach(results[0], (v) => {
+          if (v.count > 0) {
+            instances.push(v.instance);
+          }
+        });
+        return resolve(instances);
       });
   });
 }
