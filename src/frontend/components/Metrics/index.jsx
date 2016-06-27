@@ -73,12 +73,6 @@ class Metrics extends React.Component {
         color: '#4d5256',
       },
     };
-    const axisLabel = {
-      formatter: `{value}${unit}`,
-      textStyle: {
-        color: '#4d5256',
-      },
-    };
     const chartData = {
       color: ['#4c80f1'],
       tooltip: {
@@ -89,13 +83,22 @@ class Metrics extends React.Component {
       },
       xAxis: {
         type: 'time',
-        axisLabel,
+        axisLabel: {
+          textStyle: {
+            color: '#4d5256',
+          },
+        },
         axisLine,
       },
       yAxis: {
         type: 'value',
         minInterval: 1,
-        axisLabel,
+        axisLabel: {
+          formatter: `{value}${unit}`,
+          textStyle: {
+            color: '#4d5256',
+          },
+        },
         axisLine,
       },
       series: [],
