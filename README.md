@@ -4,7 +4,7 @@
 Backend / Frontend for Goni Dashboard
 
 ## Quickstart with Docker
-Too hard to install? You can use [goni-docker-solo](https://github.com/goniapm/goni-docker-solo) for test usage.
+Too hard to install? You can use [goni-docker-solo](https://github.com/monitflux/goni/tree/master/docker) for test usage.
 
 ## Contribution
 ### Coding Convention
