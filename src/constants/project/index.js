@@ -12,7 +12,7 @@ export const PROJECT_FETCHING = 'PROJECT_FETCHING';
 export const PROJECT_INIT = 'PROJECT_INIT';
 
 export const GONIPLUS_SIDEBAR = [{
-  header: 'overview',
+  header: 'Overview',
   item: [{
     title: 'Now',
     key: 'overview_now',
@@ -30,7 +30,7 @@ export const GONIPLUS_SIDEBAR = [{
     key: 'api_statistics',
   }],
 }, {
-  header: 'metrics',
+  header: 'Metrics',
   item: [{
     title: 'Expvar',
     key: 'metrics_expvar',
@@ -39,7 +39,7 @@ export const GONIPLUS_SIDEBAR = [{
     key: 'metrics_runtime',
   }],
 }, {
-  header: 'SETTINGS',
+  header: 'Settings',
   item: [{
     title: 'Member',
     key: 'settings_member',

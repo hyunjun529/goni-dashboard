@@ -6,6 +6,18 @@ import { connect } from 'react-redux';
 import SidebarItem from './item';
 
 class Sidebar extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      liked: false
+    };
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  handleClick() {
+    this.setState({liked: !this.state.liked});
+  }
+
   _renderItems() {
     const { menu } = this.props;
     return menu.map((section) => {
@@ -15,7 +27,7 @@ class Sidebar extends React.Component {
 
   render() {
     return (
-      <div className="sidebar">
+      <div className={this.state.liked ? 'subnav toggled' :'subnav'} onClick={this.handleClick}>
         {this._renderItems()}
       </div>
     );

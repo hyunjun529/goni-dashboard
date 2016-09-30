@@ -7,7 +7,8 @@
     "dev": "gulp build-dev && npm run startdev",
     "lint": "eslint . --ext .js,.jsx",
     "start": "gulp build && node build/dist/index.js",
-    "startdev": "node build/dist/index.js --DEV"
+    "startdev": "node build/dist/index.js --DEV",
+    "gulp-build": "gulp build"
   },
   "babel": {
     "presets": [

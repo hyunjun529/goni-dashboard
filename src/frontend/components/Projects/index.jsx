@@ -108,16 +108,20 @@ class Projects extends React.Component {
     const { projects } = this.props;
     return projects.map((project) => {
       return (
-        <div key={project.id} className="col-xs-12 col-sm-6 col-md-6 col-lg-4">
-          <div className="project-card" onClick={(e) => this._handleProjectClick(e, project)}>
+        <div key={project.id} className="pj-item" onClick={(e) => this._handleProjectClick(e, project)}>
+          <small onClick={(e) => this._handleProjectClick(e, project)}>
             {project.is_plus ? <p className="isplus">Goni+</p> : <p className="isplus">Goni</p>}
-            <p className="title">{project.name}</p>
-            <CopyToClipboard onCopy={() => this._handleKeyCopied()} text={project.apikey}>
-              <div className="tag" ref="clip-tag-wrap">
-                <a ref="clip-tag">APIKEY : {project.apikey.substr(0, 6)}</a>
-              </div>
-            </CopyToClipboard>
-          </div>
+          </small>
+
+          <h3>
+            {project.name}
+          </h3>
+          
+          <CopyToClipboard onCopy={() => this._handleKeyCopied()} text={project.apikey}>
+            <div className="tag" ref="clip-tag-wrap">
+              <a ref="clip-tag">APIKEY : {project.apikey.substr(0, 6)}</a>
+            </div>
+          </CopyToClipboard>
         </div>
       );
     });
@@ -125,13 +129,17 @@ class Projects extends React.Component {
 
   _renderNewProjectBtn() {
     return (
-      <div className="col-xs-12 col-sm-6 col-md-6 col-lg-4">
-        <div className="project-card" onClick={(e) => this._handleNewProjectClick(e)}>
-          <p className="isplus">NEW PROJECT</p>
-          <p className="title">+ 프로젝트 추가</p>
-          <div className="tag" onClick={(e) => this._handleProjectGuideClick(e)}>
-            <a>QUICKSTART GUIDE</a>
-          </div>
+      <div className="pj-item" onClick={(e) => this._handleNewProjectClick(e)}>
+        <small>
+          NEW PROJECT
+        </small>
+        
+        <h3>
+          + 프로젝트 추가
+        </h3>
+        
+        <div className="tag" onClick={(e) => this._handleProjectGuideClick(e)}>
+          <a>QUICKSTART GUIDE</a>
         </div>
       </div>
     );
@@ -140,14 +148,15 @@ class Projects extends React.Component {
   _renderLayout() {
     const { fetching } = this.props;
     return (
-      <div className="child">
-        <div className="dashboard">
-          <div className="dashboard-header">
+      <div className="container">
+        <div className="row">
+          <div className="projects">
             <h1>PROJECTS { fetching ? <i className="fa fa-circle-o-notch fa-spin" aria-hidden="true" /> : null }</h1>
-          </div>
-          <div className="row">
-            {this._renderProjects()}
-            {this._renderNewProjectBtn()}
+            <hr/>
+            <div className="row">
+              {this._renderProjects()}
+              {this._renderNewProjectBtn()}
+            </div>
           </div>
         </div>
       </div>
