@@ -29,6 +29,7 @@ class Login extends React.Component {
     dispatch(AuthAction.login(data));
   }
 
+  // TODO: TBD
   _renderError() {
     const { errors } = this.props;
     if (!errors) return false;
@@ -43,29 +44,23 @@ class Login extends React.Component {
     return (
       <div>
         <Header page="login" />
-        <div className="child">
-          <div className="login-parent">
-            <div className="login-middle">
-              <div className="login-child">
-                <form role="form" onSubmit={::this._login}>
-                  <div className="form-group">
-                    {::this._renderError()}
-                    <p className="login-title">GONI DASHBOARD</p>
-                    <div className="login-input-wrapper">
-                      <input ref="email" className="login-input-email" placeholder="Email" type="text" required />
-                    </div>
-                    <div className="login-input-wrapper">
-                      <input ref="password" className="login-input-password" placeholder="Password" type="password" required />
-                    </div>
-                  </div>
-                  <div className="login-help-parent">
-                    <a className="login-help">비밀번호를 잊으셨나요?</a>
-                  </div>
-                  <div className="login-button-wrapper">
-                    <button className="login-button" type="submit">LOGIN</button>
-                  </div>
-                </form>
-              </div>
+        <div className="container">
+          <div className="row">
+            <div className="login">
+              <h1 className="text-center">Goni Dashboard</h1>
+              <form role="form" onSubmit={::this._login}>
+                <div className="form-group">
+                  <input ref="email" type="email" className="form-control" placeholder="Email" required />
+                  <input ref="password" type="password" className="form-control" placeholder="Password" required />
+                </div>
+                <div className="form-group">
+                  <p className="help-block text-center">
+                    <a>비밀번호를 잊으셨나요?</a>
+                  </p>
+                </div>
+                <button type="submit" className="btn btn-default">LOGIN</button>
+                {::this._renderError()}
+              </form>
             </div>
           </div>
         </div>

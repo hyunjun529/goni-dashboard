@@ -29,63 +29,76 @@ class Header extends React.Component {
     dispatch(push('/register'));
   }
 
+  // TODO: too many code duplication
   _renderHeader() {
     switch (this.props.page) {
       case 'login':
         return (
-          <div>
-            <ul className="header-left">
-              <li>
-                <a href="#" onClick={() => this._home()}>GONI</a>
-              </li>
-            </ul>
-            <ul className="header-right">
-              <li>
-                <a href="https://github.com/layer123/goni"><i className="fa fa-github" aria-hidden="true" /> GITHUB</a>
-              </li>
-              <li>
-                <a href="#" onClick={() => this._register()}>REGISTER</a>
-              </li>
-            </ul>
+          <div className="container">
+            <div className="navbar-header">
+
+              <button type="button" className="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span className="sr-only">Toggle navigation</span>
+                <span className="icon-bar"></span>
+                <span className="icon-bar"></span>
+                <span className="icon-bar"></span>
+              </button>
+
+              <a className="navbar-brand" href="#" onClick={() => this._home()}>GONI</a>
+            </div>
+
+            <div id="navbar" className="navbar-collapse collapse">
+              <ul className="nav navbar-nav navbar-right">
+                <li><a href="https://github.com/layer123/goni"><i className="fa fa-github" aria-hidden="true"></i> GITHUB</a></li>
+                <li><a href="#" onClick={() => this._register()}>REGISTER</a></li>
+              </ul>
+            </div>
           </div>
         );
       case 'register':
         return (
-          <div>
-            <ul className="header-left">
-              <li>
-                <a href="#" onClick={() => this._home()}>GONI</a>
-              </li>
-            </ul>
-            <ul className="header-right">
-              <li>
-                <a href="https://github.com/layer123/goni"><i className="fa fa-github" aria-hidden="true" /> GITHUB</a>
-              </li>
-              <li>
-                <a href="#" onClick={() => this._login()}>LOGIN</a>
-              </li>
-            </ul>
+          <div className="container">
+            <div className="navbar-header">
+
+              <button type="button" className="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span className="sr-only">Toggle navigation</span>
+                <span className="icon-bar"></span>
+                <span className="icon-bar"></span>
+                <span className="icon-bar"></span>
+              </button>
+
+              <a className="navbar-brand" href="#" onClick={() => this._home()}>GONI</a>
+            </div>
+
+            <div id="navbar" className="navbar-collapse collapse">
+              <ul className="nav navbar-nav navbar-right">
+                <li><a href="https://github.com/layer123/goni"><i className="fa fa-github" aria-hidden="true"></i> GITHUB</a></li>
+                <li><a href="#" onClick={() => this._login()}>LOGIN</a></li>
+              </ul>
+            </div>
           </div>
         );
       default:
         return (
-          <div>
-            <ul className="header-left">
-              <li>
-                <a href="#" onClick={() => this._home()}>GONI</a>
-              </li>
-            </ul>
-            <ul className="header-right">
-              <li>
-                <a href="https://github.com/layer123/goni"><i className="fa fa-github" aria-hidden="true" /> GITHUB</a>
-              </li>
-              <li>
-                <a href="#">MYPAGE</a>
-              </li>
-              <li>
-                <a href="#" onClick={() => this._logout()}>LOGOUT</a>
-              </li>
-            </ul>
+          <div className="container-fluid">
+            <div className="navbar-header">
+
+              <button type="button" className="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span className="sr-only">Toggle navigation</span>
+                <span className="icon-bar"></span>
+                <span className="icon-bar"></span>
+                <span className="icon-bar"></span>
+              </button>
+
+              <a className="navbar-brand" href="#" onClick={() => this._home()}>GONI</a>
+            </div>
+
+            <div id="navbar" className="navbar-collapse collapse">
+              <ul className="nav navbar-nav navbar-right">
+                <li><a href="https://github.com/layer123/goni"><i className="fa fa-github" aria-hidden="true"></i> GITHUB</a></li>
+                <li><a href="#" onClick={() => this._logout()}>LOGOUT</a></li>
+              </ul>
+            </div>
           </div>
         );
     }
@@ -93,7 +106,7 @@ class Header extends React.Component {
 
   render() {
     return (
-      <div className="header">
+      <div className="navbar navbar-default navbar-fixed-top">
         {this._renderHeader()}
       </div>
     );

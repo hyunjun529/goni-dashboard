@@ -1,0 +1,332 @@
+html, body {
+  background-color: #f8fafb;
+  width: 100%;
+  margin: 0;
+  /* padding: 0; */
+}
+html {
+  height: 100%;
+}
+body {
+  /* min-height: 100%; */
+}
+#app {
+  min-height: 100%;
+}
+.header {
+  z-index: 100;
+  position: fixed;
+  width: 100%;
+  height: 75px;
+  border-bottom: 1px solid #eaeeef;
+  left: 0px;
+  top: 0px;
+  background-color: #FFF;
+}
+.header-left {
+  float: left;
+  margin: 0px 0px 0px 15px;
+  padding: 0px;
+}
+.header-right {
+  float: right;
+  margin: 0px 15px 0px 0px;
+  padding: 0px;
+}
+.header-left ul {
+  padding: 0px;
+  white-space: nowrap;
+}
+.header-right ul {
+  padding: 0px;
+  white-space: nowrap;
+}
+.header li {
+  display: inline;
+  list-style: none;
+}
+.header a {
+  line-height: 75px;
+  padding-top: 30.5px;
+  padding-bottom: 25.5px;
+  padding-left: 15px;
+  padding-right: 15px;
+  text-decoration: none !important;
+  font-size: 14px;
+  color: #4d5256;
+  font-family: 'Spoqa Han Sans', 'Sans-serif';
+  font-weight: 500;
+}
+.header a:hover {
+  text-decoration: none !important;
+  border-bottom: 5px solid #eaeeef;
+}
+.child {
+  background-color: #f8fafb;
+  padding-top: 75px;
+  min-height: calc(100% - 75px);
+}
+.sidebar {
+  position: fixed;
+  height: calc(100% - 75px);
+  width: 17vw;
+  border-right: 1px solid #eaeeef;
+  left: 0px;
+  top: 0px;
+  padding-top: -75px;
+  margin-top: 75px;
+  background-color: #FFF;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+.sidebar-section {
+  border-top: 1px solid #eaeeef;
+  margin-bottom: 25px;
+}
+.sidebar-item {
+  width: 100%;
+  margin-left: 20px;
+  margin-right: 10px;
+}
+.sidebar-menu {
+  padding: 0px;
+  margin: 0px;
+}
+.sidebar-menu li {
+  width: 100%;
+  list-style: none;
+  padding: 8px 0px;
+  margin: 0px;
+  cursor: pointer;
+}
+.sidebar-menu li:hover {
+  width: 100%;
+  text-decoration: none !important;
+  background-color: #f1f5f5;
+}
+.sidebar-menu a {
+  width: 100%;
+  padding-left: 20px;
+  text-decoration: none !important;
+}
+.sidebar-header {
+  color: rgba(0, 0, 0, 0.54);
+  font-size: 0.8vw;
+  text-transform: uppercase;
+  letter-spacing: 0.1vw;
+}
+.default {
+  color: rgba(0, 0, 0, 0.54);
+  font-size: 1.2vw;
+}
+.selected {
+  color: rgba(0, 0, 0, 0.87);
+  font-size: 1.2vw;
+}
+.dialog {
+  border: 1px solid #eaeeef;
+  background-color: #fff;
+  width: 33%;
+  height: 33%;
+  margin-top: 25%;
+  margin-left: 25%;
+}
+.error {
+  color: #ff7595;
+}
+/*
+.dashboard {
+  background: #ffffff;
+  border: 1px solid #eaeeef;
+  margin: 20px;
+  padding: 10px;
+  min-height: 100%;
+}
+*/
+.dashboard-sidebar {
+  background: #ffffff;
+  border: 1px solid #eaeeef;
+  margin: 20px 20px 20px calc(17vw + 20px);
+  padding: 10px;
+  min-height: 100%;
+}
+h1 {
+  color: #4d5256;
+  font-family: 'Spoqa Han Sans', 'Sans-serif';
+  font-weight: 100;
+}
+h2 {
+  color: #4d5256;
+  font-family: 'Spoqa Han Sans', 'Sans-serif';
+  font-weight: normal;
+}
+h3 {
+  color: #4d5256;
+  font-family: 'Spoqa Han Sans', 'Sans-serif';
+  font-weight: bold;
+}
+.dashboard-header {
+  border-bottom: 1px solid #eaeeef;
+  margin-bottom: 15px;
+}
+.project-card {
+  border: 1px solid #eaeeef;
+  padding: 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+.isplus {
+  color: #a9afb3;
+  font-size: 12px;
+  font-family: 'Spoqa Han Sans', 'Sans-serif';
+  font-weight: normal;
+  margin: 0px;
+}
+.title {
+  color: #4d5256;
+  font-size: 22px;
+  font-family: 'Spoqa Han Sans', 'Sans-serif';
+  font-weight: bold;
+  margin: 10px 0px 0px 0px;
+}
+.tag {
+  border: 1px solid #2c5ae9;
+  display: inline-block;
+  padding: 2px 5px;
+  margin: 10px 0px 0px 0px;
+  border-radius: 2px;
+  cursor: pointer;
+}
+.tag-tab-wrap {
+  margin: 0px 0px 10px 0px;
+}
+.tag-tab {
+  border: 1px solid #5f6466;
+  display: inline-block;
+  padding: 2px 5px;
+  margin: 0px;
+  border-radius: 2px;
+  cursor: pointer;
+}
+.tag-tab-more {
+  border: 1px solid #5f6466;
+  display: inline-block;
+  padding: 2px 5px;
+  margin: 0px 0px 0px 10px;
+  border-radius: 2px;
+  cursor: pointer;
+}
+.tag a {
+  color: #2c5ae9;
+  font-size: 12px;
+  font-family: 'Spoqa Han Sans', 'Sans-serif';
+  font-weight: normal;
+  text-decoration: none !important;
+}
+.tag-tab a {
+  color: #5f6466;
+  font-size: 12px;
+  font-family: 'Spoqa Han Sans', 'Sans-serif';
+  font-weight: normal;
+  text-decoration: none !important;
+}
+.tag-tab-more a {
+  color: #5f6466;
+  font-size: 12px;
+  font-family: 'Spoqa Han Sans', 'Sans-serif';
+  font-weight: normal;
+  text-decoration: none !important;
+}
+.tag-selected {
+  border: 1px solid #2c5ae9;
+}
+.tag-selected a {
+  color: #2c5ae9 !important;
+}
+.tag-alert {
+  border: 1px solid #ff7595;
+}
+.tag-alert a {
+  color: #ff7595 !important;
+}
+.tab-header {
+  border-bottom: 1px solid #eaeeef;
+  padding-bottom: 1px;
+  margin-bottom: 1px;
+}
+.chart-wrapper {
+  height: 300px;
+  width: calc(100% - 20px);
+  color: #4d5256;
+  font-family: 'Spoqa Han Sans', 'Sans-serif';
+  font-size: 12px;
+  font-weight: 100;
+  padding: 10px;
+  border: 1px solid #eaeeef;
+}
+.chart-wrapper-header {
+  color: #4d5256;
+  font-family: 'Spoqa Han Sans', 'Sans-serif';
+  font-size: 22px;
+  font-weight: 100;
+  margin: 15px 0px;
+}
+.chart-wrapper-placeholder {
+  height: 300px;
+  width: calc(100% - 20px);
+  color: #4d5256;
+  font-family: 'Spoqa Han Sans', 'Sans-serif';
+  font-size: 22px;
+  font-weight: 100;
+  padding: 10px;
+  border: 1px solid #eaeeef;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.overview-card {
+  border: 1px solid #eaeeef;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+.overview-card-header {
+  color: #a9afb3;
+  font-size: 14px;
+  font-family: 'Spoqa Han Sans', 'Sans-serif';
+  font-weight: 100;
+  margin: 0px;
+}
+.overview-card-data {
+  padding-top: 5px;
+  color: #4d5256;
+  font-size: 22px;
+  font-family: 'Spoqa Han Sans', 'Sans-serif';
+  font-weight: 100;
+  margin: 0px;
+}
+/* sankey */
+.node rect {
+  fill: #888888;
+  shape-rendering: crispEdges;
+}
+.node {
+  fill-opacity: .7;
+}
+.node:hover {
+  cursor: pointer;
+  fill-opacity: 1;
+}
+.node text {
+  fill: #888888;
+  stroke: none;
+  font-size: .8em;
+}
+.link {
+  stroke: #cccccc;
+  stroke-opacity: .15;
+  fill: none;
+}
+.link:hover {
+  stroke-opacity: .9;
+  cursor: pointer;
+}

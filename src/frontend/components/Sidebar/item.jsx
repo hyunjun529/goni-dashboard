@@ -18,10 +18,10 @@ const SidebarItem = (props) => {
 
   const menu = item => (
     item.key === props.dashboard.key ? (
-      <a className="selected">{item.title}</a>
+      <a><strong>{item.title}</strong></a>
     )
     : (
-      <a className="default">{item.title}</a>
+      <a>{item.title}</a>
     )
   );
   const createItem = (item) => (
@@ -30,17 +30,15 @@ const SidebarItem = (props) => {
     </li>
   );
   const createHeader = (title) => (
-    <div key={title} className="sidebar-item">
-      <p className="sidebar-header">{title}</p>
-    </div>
+    <li key={title}>
+      <h4>{title}</h4>
+    </li>
   );
   return (
-    <div className="sidebar-section">
+    <ul>
         {createHeader(props.menu.header)}
-        <ul className="sidebar-menu">
-          {props.menu.item.map(createItem)}
-        </ul>
-    </div>
+        {props.menu.item.map(createItem)}
+    </ul>
   );
 };
 

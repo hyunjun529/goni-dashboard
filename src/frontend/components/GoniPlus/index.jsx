@@ -122,20 +122,25 @@ class GoniPlus extends React.Component {
   _renderLayout() {
     const { fetching, project } = this.props;
     return (
-      <div className="child">
-        <Sidebar menu={GONIPLUS_SIDEBAR} />
-        <div className="dashboard-sidebar">
-          <div className="dashboard-header">
-            <h1>{ project.name }
-              { fetching ?
-                <i className="fa fa-circle-o-notch fa-spin" aria-hidden="true" /> :
-                null
-              }
-            </h1>
-            {this._renderTab()}
-          </div>
+      <div className="container-fluid dashboard">
+        
+        <div className="row">
+          <Sidebar menu={GONIPLUS_SIDEBAR} />
+        </div>
+
+        <div className="content">
+          <h1>
+            { project.name }
+            { fetching ?
+              <i className="fa fa-circle-o-notch fa-spin" aria-hidden="true" /> :
+              null
+            }
+          </h1>
+          <hr/>
+          {this._renderTab()}
           {this._renderGraphs()}
         </div>
+        
       </div>
     );
   }
