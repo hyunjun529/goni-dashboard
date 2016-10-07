@@ -90,12 +90,12 @@ class Projects extends React.Component {
           <form role="form" onSubmit={::this._createNewProject}>
             <div className="form-group">
               <p className="login-title">NEW PROJECT</p>
-              <div className="login-input-wrapper">
-                <input ref="name" className="login-input-username" placeholder="Project Name" type="text" required />
+              <div className="login-input-wrapper form-group">
+                <input ref="name" className="login-input-username form-control" placeholder="Project Name" type="text" required />
               </div>
+              <button className="btn btn-default" type="submit">CREATE</button>
             </div>
-            <button className="login-button" type="submit">CREATE</button>
-            <div className="login-help-parent">
+            <div className="login-help-parent help-block">
               <a className="login-help">현재 Goni+ 프로젝트만 생성하실 수 있습니다.</a>
             </div>
           </form>
